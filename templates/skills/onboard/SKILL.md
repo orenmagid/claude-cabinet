@@ -24,6 +24,9 @@ related:
   - type: file
     path: .claude/skills/onboard/phases/summary.md
     role: "Present what was generated/changed"
+  - type: file
+    path: .claude/skills/onboard/phases/post-onboard-audit.md
+    role: "Configuration sanity check after generation"
 ---
 
 # /onboard — Project Onboarding Interview
@@ -218,6 +221,21 @@ through use as orient and debrief reveal what's missing.
 In re-run mode, present a before/after view: what the context layer
 looked like before, what changed, and why.
 
+### 7. Post-Onboard Audit
+
+Read `phases/post-onboard-audit.md` for the configuration sanity check.
+
+**Default (absent/empty):** Run a lightweight audit from the box-health
+perspective, scoped to what was just generated. Checks interview–config
+coherence (did mentioned technologies get wired into phase files?),
+module–phase alignment (do phase files reference skipped modules?),
+structural basics (do referenced files exist?), and first-session
+readiness (will orient work on its first run?).
+
+If everything checks out, one line: "Configuration looks clean." If
+issues are found, present them and offer to fix immediately. This is a
+pre-flight check, not a deferred finding.
+
 ## Phase Summary
 
 | Phase | Absent = | What it customizes |
@@ -228,6 +246,7 @@ looked like before, what changed, and why.
 | `generate-session-loop.md` | Default: wire orient/debrief phases | How to set up the session loop |
 | `modularity-menu.md` | Default: present module hierarchy | Which modules to present and how |
 | `summary.md` | Default: present changes + next steps | How to present results |
+| `post-onboard-audit.md` | Default: box-health sanity check | What to verify after generation |
 
 ## Conversational Stance
 
