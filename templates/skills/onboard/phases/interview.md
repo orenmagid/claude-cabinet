@@ -9,6 +9,41 @@ adapted questions as described below, 2-3 at a time, with follow-ups.
 To explicitly skip the interview (e.g., when generating context from
 existing documentation), write only `skip: true`.
 
+## System Introduction (First Run Only)
+
+Before asking about the project, check: does the user know what Claude
+on Rails does? Ask once:
+
+> "Have you used Claude on Rails before, or is this your first time?"
+
+If **first time**, give a brief walkthrough before the interview:
+
+> "Let me explain how this works, then we'll set it up for your project.
+>
+> Claude on Rails gives your Claude Code sessions a **session loop** —
+> a start and end routine that creates continuity between sessions.
+>
+> - **`/orient`** runs at the start. It reads where things stand — what
+>   you were working on, what's due, what broke. Instead of starting
+>   blind, Claude starts informed.
+> - **`/debrief`** runs at the end. It records what happened — what got
+>   done, what's still open, what you learned. That's what orient reads
+>   next time.
+>
+> Beyond the session loop, there are optional modules: **work tracking**
+> (a local task database), **planning** (structured plans with critique
+> before you build), **audit** (expert perspectives that review your
+> codebase), and more. We'll get to those after we talk about your project.
+>
+> The whole system is customizable through small files called phase files.
+> You don't need to touch them now — that's what this onboarding does."
+
+Then proceed to the interview. Keep it conversational — if they ask
+questions about the system, answer them before moving on.
+
+If **experienced** (they've used it before, or say "I know how it works"),
+skip the walkthrough entirely and go straight to the interview.
+
 ## Communication Calibration
 
 Don't ask the user how technical they are. Listen to how they talk.

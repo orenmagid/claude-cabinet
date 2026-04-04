@@ -5,21 +5,12 @@ of where things stand. The /orient skill reads this file and loads each
 item before proceeding.
 
 When this file is absent or empty, the default behavior is: read the
-project's root CLAUDE.md, system-status.md, and relevant memory files.
-To explicitly skip context loading, write only `skip: true`.
+project's root CLAUDE.md, system-status.md, and enforcement patterns
+from `.claude/memory/patterns/`. To explicitly skip context loading,
+write only `skip: true`.
 
-## What to Include
+## Default Context Sources
 
-For each context source, provide:
-- **What** — the file or data to read
-- **Why** — what it tells you about current state
-- **How** — the command or tool to read it (Read tool, sqlite3, curl, etc.)
-
-## Example Context Sources
-
-Uncomment and adapt these for your project:
-
-<!--
 ### System Status
 ```
 Read system-status.md
@@ -28,14 +19,30 @@ The single-source-of-truth for what's built, what's broken, and what's
 next. Read every session — it's the fastest way to know where things
 stand.
 
-### Memory Files
+### Enforcement Patterns
 ```
-Read memory/MEMORY.md for the index, then load files relevant to the
-session's likely focus.
+Scan .claude/memory/patterns/ — read each pattern file.
 ```
-Persistent context from prior sessions — user preferences, project
-state, feedback patterns, references. Don't read everything — scan
-the index and load what's relevant.
+Project-level feedback from prior sessions. These are consolidated
+observations about what works and what doesn't — they guide behavior
+so the same mistakes aren't repeated. Patterns with `enforcement: guide`
+are behavioral rules. Patterns with `enforcement: prevent` or `detect`
+should already be encoded as hooks or rules, but reading them provides
+context for why those guardrails exist.
+
+## Additional Context Sources
+
+Uncomment and adapt these for your project:
+
+<!--
+### Memory Index
+```
+Read .claude/memory/MEMORY.md for the index, then load files relevant
+to the session's likely focus.
+```
+If your project uses a memory index beyond patterns (user context,
+project state, references), scan the index and load what's relevant.
+Don't read everything — selective loading based on session focus.
 
 ### Project-Specific State
 ```

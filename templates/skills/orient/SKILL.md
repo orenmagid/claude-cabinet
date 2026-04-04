@@ -84,7 +84,9 @@ sessions, and project-specific context.
 **Default (absent/empty):** Read at minimum:
 - The project's root `CLAUDE.md` (already loaded by Claude Code)
 - `system-status.md` or equivalent state file if one exists
-- Memory files from prior sessions if the project uses memory
+- `.claude/memory/patterns/` — enforcement patterns from prior sessions.
+  Scan the directory, read each pattern file. These are project-level
+  feedback that guides behavior (what to avoid, what to keep doing).
 
 The goal: build a mental model of where things stand before doing
 anything else.
