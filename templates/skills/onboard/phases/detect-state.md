@@ -24,8 +24,14 @@ npx create-claude-rails --yes
 Use `--yes` to accept defaults — the interview (this skill) handles all
 the intelligent configuration. The CLI just puts files in place.
 
-After the CLI finishes, continue with the artifact scan below. Do not
-ask the user to run the CLI manually — just run it.
+After the CLI finishes, read `.pibrc.json` and tell the user what was
+installed:
+
+> "I just set up Claude on Rails for this project. Here's what was
+> installed: [list modules from .pibrc.json]. We'll configure everything
+> in a moment — first, let me learn about your project."
+
+Do not ask the user to run the CLI manually — just run it.
 
 **If `.pibrc.json` exists:** The CLI has been run. Proceed to scanning.
 
