@@ -1,27 +1,27 @@
 ---
-name: upgrade
+name: cor-upgrade
 description: |
   Conversational upgrade when new Claude on Rails skeletons arrive. Detects current
   adoption state, diffs against upstream, and for each change walks through
   an intelligent merge — conversation not mechanical copy. Intelligence is
-  the merge strategy. Use when: "upgrade", "update CoR", "new skeletons",
-  "/upgrade".
+  the merge strategy. Use when: "cor-upgrade", "update CoR", "new skeletons",
+  "/cor-upgrade".
 related:
   - type: file
-    path: .claude/skills/upgrade/phases/detect-current.md
+    path: .claude/skills/cor-upgrade/phases/detect-current.md
     role: "Inventory current adoption state"
   - type: file
-    path: .claude/skills/upgrade/phases/diff-upstream.md
+    path: .claude/skills/cor-upgrade/phases/diff-upstream.md
     role: "Semantic diff against upstream CoR"
   - type: file
-    path: .claude/skills/upgrade/phases/merge.md
+    path: .claude/skills/cor-upgrade/phases/merge.md
     role: "Intelligent merge strategy — the core of the skill"
   - type: file
-    path: .claude/skills/upgrade/phases/apply.md
+    path: .claude/skills/cor-upgrade/phases/apply.md
     role: "Apply approved changes"
 ---
 
-# /upgrade — Conversational Claude on Rails Upgrade
+# /cor-upgrade — Conversational Claude on Rails Upgrade
 
 ## Purpose
 
@@ -211,13 +211,13 @@ the workflow. Execute them at their declared position.
 The upgrade skill doesn't have to wait for the user to invoke it.
 Orient can detect when upstream CoR files are newer than the project's
 adopted copies and surface "CoR updates available" in the briefing.
-This is a hint, not a blocker — the user decides when to run /upgrade.
+This is a hint, not a blocker — the user decides when to run /cor-upgrade.
 
 To enable this, a project's orient `phases/health-checks.md` or a
 custom orient phase can compare modification times between upstream
 skeleton SKILL.md files and their adopted counterparts. When drift is
 detected, orient mentions it. When the user is ready, they invoke
-/upgrade and the full conversational merge begins.
+/cor-upgrade and the full conversational merge begins.
 
 ## Extending
 
@@ -253,7 +253,7 @@ spent two sessions tuning is gone, replaced by the upstream default.
 
 ### With Skill (Good)
 
-New CoR skeletons arrive. The user runs `/upgrade`. Claude inventories
+New CoR skeletons arrive. The user runs `/cor-upgrade`. Claude inventories
 what's adopted, diffs against upstream, and walks through each change:
 "The orient skeleton added a calendar-check phase. Your project doesn't
 have calendar integration, so this would be a no-op — skip it for now?"

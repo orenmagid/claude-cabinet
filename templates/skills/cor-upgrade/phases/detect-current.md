@@ -5,15 +5,15 @@ manifest is consumed by the diff-upstream phase to determine what has
 changed.
 
 When this file is absent or empty, the default behavior is: read
-`.pibrc.json` for version and module metadata, then scan the project's
+`.corrc.json` for version and module metadata, then scan the project's
 `.claude/skills/`, perspectives, hooks, and database for CoR artifacts.
 To explicitly skip detection, write only `skip: true`.
 
 ## What to Inventory
 
-### Package Metadata (.pibrc.json)
+### Package Metadata (.corrc.json)
 
-Read `.pibrc.json` from the project root. This file is written by the
+Read `.corrc.json` from the project root. This file is written by the
 CLI installer (`npx create-claude-rails`) and contains:
 
 - **`version`** — the installed package version (for diff-upstream comparison)
@@ -22,7 +22,7 @@ CLI installer (`npx create-claude-rails`) and contains:
 - **`skipped`** — modules the user opted out of, with reasons
 - **`upstreamPackage`** — the npm package name (`create-claude-rails`)
 
-If `.pibrc.json` is missing, this is either a pre-npm adoption or a
+If `.corrc.json` is missing, this is either a pre-npm adoption or a
 manual install. Note this in the manifest — the diff-upstream phase
 needs to know whether version comparison is possible or if it must fall
 back to pure filesystem diffing.
@@ -68,9 +68,9 @@ For each directory in `.claude/skills/`:
 ## Output Format
 
 Produce a structured manifest (in conversation, not a file) listing:
-- **Package version** from `.pibrc.json` (or "unknown — no .pibrc.json")
-- **Installed modules** from `.pibrc.json` modules map
-- **Skipped modules** with reasons from `.pibrc.json` skipped map
+- **Package version** from `.corrc.json` (or "unknown — no .corrc.json")
+- **Installed modules** from `.corrc.json` modules map
+- **Skipped modules** with reasons from `.corrc.json` skipped map
 - Each adopted skill with its phase file statuses
 - Each adopted perspective group with member count
 - Hook count and types

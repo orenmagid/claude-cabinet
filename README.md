@@ -49,7 +49,7 @@ hooks.
 - **`/onboard`** — conversational project interview, re-runnable as the
   project matures.
 - **`/seed`** — detects new tech in your project, proposes expertise.
-- **`/upgrade`** — conversational merge when Claude on Rails updates.
+- **`/cor-upgrade`** — conversational merge when Claude on Rails updates.
 
 ## How It Works
 
@@ -97,7 +97,7 @@ scripts/
 ├── pib-db.js        # work tracking CLI (if installed)
 └── ...              # triage tools (if audit installed)
 
-.pibrc.json          # installation metadata
+.corrc.json          # installation metadata
 ```
 
 ## Upgrading
@@ -106,7 +106,7 @@ scripts/
 npx create-claude-rails            # re-run to add modules
 ```
 
-In Claude Code, run `/upgrade` for conversational merge of upstream
+In Claude Code, run `/cor-upgrade` for conversational merge of upstream
 changes with your customizations.
 
 ## Philosophy
