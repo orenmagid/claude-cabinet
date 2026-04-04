@@ -9,6 +9,26 @@ standard PIB artifact set, classify each artifact's richness, and
 determine the mode. To explicitly skip state detection (force first-run
 mode), write only `skip: true`.
 
+## Pre-Check: Is the CLI Installed?
+
+Before scanning artifacts, check whether `create-claude-rails` has been
+run in this directory. The signal is `.pibrc.json` at the project root.
+
+**If `.pibrc.json` is absent:** The CLI hasn't been run. The skeleton
+skills, hooks, and settings aren't installed yet. Run the CLI first:
+
+```bash
+npx create-claude-rails --yes
+```
+
+Use `--yes` to accept defaults — the interview (this skill) handles all
+the intelligent configuration. The CLI just puts files in place.
+
+After the CLI finishes, continue with the artifact scan below. Do not
+ask the user to run the CLI manually — just run it.
+
+**If `.pibrc.json` exists:** The CLI has been run. Proceed to scanning.
+
 ## What to Scan
 
 Check for these artifacts and classify each as absent, empty, or populated:
