@@ -1,2 +1,13 @@
 node_modules/
 *.db
+
+# Local CoR install (dogfooding — not part of the distributable package)
+.claude/skills/
+.claude/hooks/
+.claude/settings.json
+.corrc.json
+scripts/merge-findings.js
+scripts/load-triage-history.js
+scripts/triage-server.mjs
+scripts/triage-ui.html
+scripts/finding-schema.json
