@@ -1,4 +1,5 @@
 ---
+model: opus
 name: execute
 description: |
   Execute a single plan with perspective-based guardrails at structured

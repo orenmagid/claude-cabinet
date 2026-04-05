@@ -1,4 +1,5 @@
 ---
+model: opus
 name: audit
 description: |
   Systematic quality audit. Selects perspectives, loads triage suppression,

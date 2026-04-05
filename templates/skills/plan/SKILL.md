@@ -1,4 +1,5 @@
 ---
+model: opus
 name: plan
 description: |
   Create a structured implementation plan with perspective-based critique and

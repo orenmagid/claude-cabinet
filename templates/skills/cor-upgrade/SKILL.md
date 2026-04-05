@@ -1,4 +1,5 @@
 ---
+model: opus
 name: cor-upgrade
 description: |
   Conversational upgrade when new Claude on Rails skeletons arrive. Detects current

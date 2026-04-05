@@ -1,4 +1,5 @@
 ---
+model: opus
 name: investigate
 description: |
   Structured codebase exploration before planning. Four phases: observe
