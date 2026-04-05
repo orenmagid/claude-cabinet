@@ -1,6 +1,6 @@
 {
   "name": "create-claude-rails",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Claude on Rails — opinionated process scaffolding for Claude Code projects",
   "bin": {
     "create-claude-rails": "bin/create-claude-rails.js"

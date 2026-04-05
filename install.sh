@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude on Rails — shell installer
-# Works without Node.js, npm, or git.
+# Works without Node.js, npm, or git — installs them if needed.
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
@@ -16,59 +16,97 @@ PROJECT_DIR="${1:-.}"
 PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)"
 
 CLAUDE_DIR="$PROJECT_DIR/.claude"
-VERSION="0.5.2"
+VERSION="0.5.3"
 TARBALL_URL="https://registry.npmjs.org/create-claude-rails/-/create-claude-rails-${VERSION}.tgz"
 
 echo ""
 echo "  🚂 Claude on Rails v${VERSION}"
-echo "  Shell installer (no Node.js required)"
 echo ""
 
-# Check for existing install
+# --- Install prerequisites ---
+HAS_BREW=false
+command -v brew >/dev/null 2>&1 && HAS_BREW=true
+
+install_via_brew() {
+  tool="$1"
+  if [ "$HAS_BREW" = false ]; then
+    echo "  First, installing Homebrew (a package manager for your Mac)."
+    echo "  It may ask for your password — that's normal."
+    echo ""
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" </dev/tty
+    # Homebrew may not be in PATH yet
+    if [ -f /opt/homebrew/bin/brew ]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -f /usr/local/bin/brew ]; then
+      eval "$(/usr/local/bin/brew shellenv)"
+    fi
+    command -v brew >/dev/null 2>&1 && HAS_BREW=true
+  fi
+  if [ "$HAS_BREW" = true ]; then
+    brew install "$tool" 2>&1 | sed 's/^/  /'
+    return $?
+  else
+    echo "  ⚠ Could not install Homebrew. Please install $tool manually and re-run."
+    return 1
+  fi
+}
+
+# Git: version control. Every project should have it.
+if ! command -v git >/dev/null 2>&1; then
+  echo "  Installing git (version control — keeps a history of your work)..."
+  install_via_brew git
+  echo ""
+fi
+
+# Node.js: needed for work tracking database
+if ! command -v node >/dev/null 2>&1; then
+  echo "  Installing Node.js (needed for task tracking)..."
+  install_via_brew node
+  echo ""
+fi
+
+# Initialize git repo if this folder doesn't have one
+if command -v git >/dev/null 2>&1 && [ ! -d "$PROJECT_DIR/.git" ]; then
+  git -C "$PROJECT_DIR" init -q
+  echo "  ✓ Initialized git repository"
+  echo ""
+fi
+
+# --- Check for existing install ---
 EXISTING_INSTALL=false
 if [ -f "$PROJECT_DIR/.corrc.json" ]; then
   EXISTING_INSTALL=true
   OLD_VERSION=$(grep '"version"' "$PROJECT_DIR/.corrc.json" 2>/dev/null | head -1 | sed 's/.*: *"\([^"]*\)".*/\1/')
   echo "  Existing installation found (v${OLD_VERSION:-unknown})"
-  echo "  Updating upstream-managed files..."
+  echo "  Updating to v${VERSION}..."
   echo ""
 fi
 
-# Create temp directory for download
+# --- Download templates ---
 TMPDIR=$(mktemp -d)
 trap 'rm -rf "$TMPDIR"' EXIT
 
-echo "  Downloading templates..."
+echo "  Downloading..."
 curl -fsSL "$TARBALL_URL" | tar xz -C "$TMPDIR" 2>/dev/null
 TEMPLATE_DIR="$TMPDIR/package/templates"
 
 if [ ! -d "$TEMPLATE_DIR" ]; then
-  echo "  Error: failed to download templates."
+  echo "  Error: download failed. Check your internet connection and try again."
   exit 1
 fi
 
-# --- Module selection: lean install ---
-# session-loop, hooks, planning, audit, lifecycle
-# Skip: work-tracking, compliance, validate
+# --- Install everything ---
+echo "  Setting up..."
 
-# Skill directories to copy
-SKILL_DIRS="orient orient-quick debrief debrief-quick menu plan execute investigate audit pulse triage-audit perspectives onboard seed cor-upgrade link unlink publish extract"
+# All skill directories
+SKILL_DIRS="orient orient-quick debrief debrief-quick menu plan execute investigate audit pulse triage-audit perspectives onboard seed cor-upgrade link unlink publish extract validate"
 
-# Individual hook/script files
-HOOK_FILES="cor-upstream-guard.sh skill-telemetry.sh skill-tool-telemetry.sh"
-HOOK_STOP="stop-hook.md"
-SCRIPT_FILES="cor-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js triage-server.mjs triage-ui.html"
-
-echo "  Installing lean modules..."
-
-# --- Copy skills ---
+# Copy skills
 copied=0
 for skill in $SKILL_DIRS; do
   src="$TEMPLATE_DIR/skills/$skill"
   dst="$CLAUDE_DIR/skills/$skill"
   if [ -d "$src" ]; then
-    # For skeleton skills (not perspectives, not instruction-bearing),
-    # skip phases/ — they use defaults until /onboard creates them
     skip_phases=false
     case "$skill" in
       orient|debrief|plan|execute|audit|pulse|investigate|validate|triage-audit)
@@ -78,18 +116,15 @@ for skill in $SKILL_DIRS; do
 
     mkdir -p "$dst"
     if [ "$skip_phases" = true ]; then
-      # Copy everything except phases/
       find "$src" -maxdepth 1 -type f | while read -r f; do
         cp "$f" "$dst/"
         copied=$((copied + 1))
       done
     else
-      # Copy everything recursively
       cp -R "$src"/* "$dst/" 2>/dev/null || true
       copied=$((copied + $(find "$src" -type f | wc -l | tr -d ' ')))
     fi
 
-    # Always copy upstream-feedback.md for debrief (instruction-bearing)
     if [ "$skill" = "debrief" ] && [ -f "$src/phases/upstream-feedback.md" ]; then
       mkdir -p "$dst/phases"
       cp "$src/phases/upstream-feedback.md" "$dst/phases/"
@@ -98,30 +133,46 @@ for skill in $SKILL_DIRS; do
   fi
 done
 
-# --- Copy hooks (skip git-guardrails — no git assumed) ---
+# Copy hooks
 mkdir -p "$CLAUDE_DIR/hooks"
-for hook in $HOOK_FILES; do
+for hook in cor-upstream-guard.sh git-guardrails.sh skill-telemetry.sh skill-tool-telemetry.sh; do
   if [ -f "$TEMPLATE_DIR/hooks/$hook" ]; then
     cp "$TEMPLATE_DIR/hooks/$hook" "$CLAUDE_DIR/hooks/"
     chmod 755 "$CLAUDE_DIR/hooks/$hook"
     copied=$((copied + 1))
   fi
 done
-if [ -f "$TEMPLATE_DIR/hooks/$HOOK_STOP" ]; then
-  cp "$TEMPLATE_DIR/hooks/$HOOK_STOP" "$CLAUDE_DIR/hooks/"
+if [ -f "$TEMPLATE_DIR/hooks/stop-hook.md" ]; then
+  cp "$TEMPLATE_DIR/hooks/stop-hook.md" "$CLAUDE_DIR/hooks/"
   copied=$((copied + 1))
 fi
 
-# --- Copy scripts ---
+# Copy scripts
 mkdir -p "$PROJECT_DIR/scripts"
-for script in $SCRIPT_FILES; do
+for script in cor-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.js pib-db-schema.sql triage-server.mjs triage-ui.html; do
   if [ -f "$TEMPLATE_DIR/scripts/$script" ]; then
     cp "$TEMPLATE_DIR/scripts/$script" "$PROJECT_DIR/scripts/"
     copied=$((copied + 1))
   fi
 done
 
-echo "  📁 Copied $copied files"
+# Copy rules
+mkdir -p "$CLAUDE_DIR/rules"
+if [ -f "$TEMPLATE_DIR/rules/enforcement-pipeline.md" ]; then
+  cp "$TEMPLATE_DIR/rules/enforcement-pipeline.md" "$CLAUDE_DIR/rules/"
+  copied=$((copied + 1))
+fi
+
+# Copy memory patterns
+mkdir -p "$CLAUDE_DIR/memory/patterns"
+for memfile in _pattern-template.md pattern-intelligence-first.md; do
+  if [ -f "$TEMPLATE_DIR/memory/patterns/$memfile" ]; then
+    cp "$TEMPLATE_DIR/memory/patterns/$memfile" "$CLAUDE_DIR/memory/patterns/"
+    copied=$((copied + 1))
+  fi
+done
+
+echo "  ✓ Installed $copied files"
 
 # --- Write settings.json ---
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
@@ -136,6 +187,15 @@ if [ ! -f "$SETTINGS_FILE" ]; then
           {
             "type": "command",
             "command": ".claude/hooks/cor-upstream-guard.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/git-guardrails.sh"
           }
         ]
       }
@@ -176,15 +236,19 @@ if [ ! -f "$SETTINGS_FILE" ]; then
   }
 }
 SETTINGS
-  echo "  ⚙️  Created settings.json"
-else
-  echo "  ⚙️  settings.json already exists (skipped)"
+  echo "  ✓ Configured settings"
+fi
+
+# --- Initialize work tracking database ---
+if command -v node >/dev/null 2>&1 && [ -f "$PROJECT_DIR/scripts/pib-db.js" ]; then
+  if [ ! -f "$PROJECT_DIR/pib.db" ]; then
+    node "$PROJECT_DIR/scripts/pib-db.js" init 2>/dev/null && echo "  ✓ Created task database" || true
+  fi
 fi
 
 # --- Clean up files removed upstream ---
 if [ "$EXISTING_INSTALL" = true ]; then
   removed=0
-  # Extract file paths from old manifest and check if they still exist in new templates
   grep -o '"[^"]*": "[a-f0-9]*"' "$PROJECT_DIR/.corrc.json" 2>/dev/null | while read -r line; do
     oldfile=$(echo "$line" | sed 's/"\([^"]*\)".*/\1/')
     case "$oldfile" in
@@ -192,10 +256,7 @@ if [ "$EXISTING_INSTALL" = true ]; then
       .claude/settings.json) continue ;;
     esac
     fullpath="$PROJECT_DIR/$oldfile"
-    # If the file exists locally but wasn't just copied (i.e., the template no longer has it)
     if [ -f "$fullpath" ]; then
-      # Check if there's a corresponding template source
-      # Map installed path back to template path
       case "$oldfile" in
         .claude/skills/*) tplpath="$TEMPLATE_DIR/skills/${oldfile#.claude/skills/}" ;;
         .claude/hooks/*) tplpath="$TEMPLATE_DIR/hooks/${oldfile#.claude/hooks/}" ;;
@@ -209,11 +270,11 @@ if [ "$EXISTING_INSTALL" = true ]; then
     fi
   done
   if [ "$removed" -gt 0 ]; then
-    echo "  🧹 Removed $removed file(s) no longer in upstream"
+    echo "  ✓ Cleaned up $removed old file(s)"
   fi
 fi
 
-# --- Build manifest with hashes ---
+# --- Build manifest ---
 build_manifest() {
   echo "{"
   echo '  "version": "'"$VERSION"'",'
@@ -222,23 +283,21 @@ build_manifest() {
   echo '  "modules": {'
   echo '    "session-loop": true,'
   echo '    "hooks": true,'
+  echo '    "work-tracking": true,'
   echo '    "planning": true,'
+  echo '    "compliance": true,'
   echo '    "audit": true,'
-  echo '    "lifecycle": true'
+  echo '    "lifecycle": true,'
+  echo '    "validate": true'
   echo '  },'
-  echo '  "skipped": {'
-  echo '    "work-tracking": "Skipped by shell installer",'
-  echo '    "compliance": "Skipped by shell installer",'
-  echo '    "validate": "Skipped by shell installer"'
-  echo '  },'
+  echo '  "skipped": {},'
   echo '  "manifest": {'
 
   first=true
-  # Hash all installed files
-  find "$CLAUDE_DIR" "$PROJECT_DIR/scripts" -type f 2>/dev/null | sort | while read -r filepath; do
-    # Get path relative to project dir
+  find_paths="$CLAUDE_DIR"
+  [ -d "$PROJECT_DIR/scripts" ] && find_paths="$find_paths $PROJECT_DIR/scripts"
+  find $find_paths -type f 2>/dev/null | sort | while read -r filepath; do
     relpath="${filepath#$PROJECT_DIR/}"
-    # Skip settings.json (not a template file)
     case "$relpath" in
       .claude/settings.json) continue ;;
     esac
@@ -252,22 +311,28 @@ build_manifest() {
       printf '    "%s": "%s"' "$relpath" "$hash"
     fi
   done
-
   echo ""
   echo "  }"
   echo "}"
 }
 
 build_manifest > "$PROJECT_DIR/.corrc.json"
-echo "  📝 Created .corrc.json"
 
-# --- Summary ---
+# --- Done ---
 echo ""
-echo "  ✅ Claude on Rails installed!"
+echo "  ✅ All set!"
 echo ""
-echo "  Next steps:"
-echo "  1. Open Claude Code in this directory"
-echo "  2. Say: /onboard"
-echo "  3. Start sessions with /orient"
-echo "  4. End sessions with /debrief"
+echo "  Here's what to do next:"
+echo ""
+echo "  1. Open Claude Code in this folder"
+echo "     (Open the app and drag this folder in, or run 'claude' in terminal)"
+echo ""
+echo "  2. Type:  /onboard"
+echo "     Claude will ask about your project. Just answer the questions."
+echo "     There are no wrong answers — it adapts to you."
+echo ""
+echo "  3. That's it! After onboarding, use:"
+echo "     /orient   — at the start of each work session"
+echo "     /debrief  — at the end of each work session"
+echo "     /menu     — to see everything else you can do"
 echo ""

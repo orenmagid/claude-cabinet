@@ -16,11 +16,15 @@ Open a terminal, `cd` into your project folder, and run:
 curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
 ```
 
-That's it. No Node.js, no npm, no git required — just a terminal.
+That's it. If you don't have git or Node.js, it installs them.
+No choices to make — it sets up everything.
 
 Then open [Claude Code](https://claude.ai/code) in the same folder and
 say `/onboard`. It'll interview you about your project and set everything
 up based on your answers.
+
+**New to this?** See [GETTING-STARTED.md](GETTING-STARTED.md) for a
+step-by-step walkthrough.
 
 ### For developers
 
