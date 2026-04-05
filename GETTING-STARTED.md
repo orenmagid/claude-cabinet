@@ -64,9 +64,7 @@ The installer handles everything:
 
 The first time you run it, it'll ask two extra questions: **your name**
 and **what you do**. This creates a profile that Claude sees in every
-project — so you never have to re-explain who you are. It also asks
-what this project is called and what it's for, so if you have multiple
-projects, Claude knows how they relate.
+project — so you never have to re-explain who you are.
 
 ### Step 3: Open Claude Code
 
