@@ -174,11 +174,46 @@ reference `§ Friction Captures` which the project hasn't defined yet.
 Show the section template from `_context-template.md` and help the
 user fill it in.
 
-#### Phase File Implications
-If a skeleton's workflow changed in a way that interacts with existing
-phase files, discuss the implications. "The orient skeleton reorganized
-its steps — your custom `health-checks.md` phase still works, but it
-now runs earlier in the workflow. Is that okay?"
+#### Phase File Opportunities
+For each skeleton that changed, check its phase files against the
+project's `phases/` directory. There are three cases:
+
+1. **Existing phase file, workflow changed around it.** The project
+   customized this phase and the skeleton shifted. Discuss the
+   implications: "The orient skeleton reorganized its steps — your
+   custom `health-checks.md` phase still works, but it now runs
+   earlier in the workflow. Is that okay?"
+
+2. **New phase the skeleton now references.** The upstream added a
+   phase that didn't exist before. Explain what the default behavior
+   is and what customizing it would look like. Don't push — just
+   surface the opportunity. "The debrief skeleton now has an
+   `upstream-feedback` step. It runs by default — here's what it does.
+   If you ever want to change that behavior, you'd create
+   `phases/upstream-feedback.md`."
+
+3. **Existing default that changed meaningfully.** The project uses
+   the default (no phase file) and the default behavior shifted. The
+   project gets the improvement automatically, but mention it so they
+   know. If the new default does something they might not want, suggest
+   creating a phase file to customize or skip it. "The plan skeleton's
+   default research phase now reads test files too. You've been using
+   the default — you'll get this automatically. If that's too noisy,
+   create `phases/research.md` to scope it."
+
+4. **Default that won't fit the project.** Read `_context.md` and
+   compare against what the default actually does. If there's a
+   mismatch, say so and offer to create the phase file now. "The
+   orient skeleton added a `work-scan` phase. The default reads git
+   history — but your `_context.md` says you use Linear. The default
+   won't see your tickets. Want to create `phases/work-scan.md` that
+   checks Linear?" This isn't speculation — it's reading both sides
+   and spotting the gap.
+
+**Don't enumerate every absent phase file.** That's `/onboard`'s job.
+The upgrade skill only surfaces phase opportunities that are *relevant
+to what changed* in this upgrade — including cases where the project's
+context makes a default obviously insufficient.
 
 #### Schema Migrations
 If the upstream schema has new columns or tables:

@@ -16,7 +16,7 @@ PROJECT_DIR="${1:-.}"
 PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)"
 
 CLAUDE_DIR="$PROJECT_DIR/.claude"
-VERSION="0.5.0"
+VERSION="0.5.1"
 TARBALL_URL="https://registry.npmjs.org/create-claude-rails/-/create-claude-rails-${VERSION}.tgz"
 
 echo ""
@@ -179,6 +179,38 @@ SETTINGS
   echo "  ⚙️  Created settings.json"
 else
   echo "  ⚙️  settings.json already exists (skipped)"
+fi
+
+# --- Clean up files removed upstream ---
+if [ "$EXISTING_INSTALL" = true ]; then
+  removed=0
+  # Extract file paths from old manifest and check if they still exist in new templates
+  grep -o '"[^"]*": "[a-f0-9]*"' "$PROJECT_DIR/.corrc.json" 2>/dev/null | while read -r line; do
+    oldfile=$(echo "$line" | sed 's/"\([^"]*\)".*/\1/')
+    case "$oldfile" in
+      version|installedAt|upstreamPackage) continue ;;
+      .claude/settings.json) continue ;;
+    esac
+    fullpath="$PROJECT_DIR/$oldfile"
+    # If the file exists locally but wasn't just copied (i.e., the template no longer has it)
+    if [ -f "$fullpath" ]; then
+      # Check if there's a corresponding template source
+      # Map installed path back to template path
+      case "$oldfile" in
+        .claude/skills/*) tplpath="$TEMPLATE_DIR/skills/${oldfile#.claude/skills/}" ;;
+        .claude/hooks/*) tplpath="$TEMPLATE_DIR/hooks/${oldfile#.claude/hooks/}" ;;
+        scripts/*) tplpath="$TEMPLATE_DIR/scripts/${oldfile#scripts/}" ;;
+        *) tplpath="" ;;
+      esac
+      if [ -n "$tplpath" ] && [ ! -f "$tplpath" ]; then
+        rm "$fullpath"
+        removed=$((removed + 1))
+      fi
+    fi
+  done
+  if [ "$removed" -gt 0 ]; then
+    echo "  🧹 Removed $removed file(s) no longer in upstream"
+  fi
 fi
 
 # --- Build manifest with hashes ---
