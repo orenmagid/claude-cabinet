@@ -46,4 +46,4 @@ groups:
   #     - process
   #     - documentation
   #     - meta-process
-  #     - box-health          # CoR adoption health, configuration drift, anti-bloat
+  #     - cor-health          # CoR adoption health, configuration drift, anti-bloat

@@ -1,7 +1,7 @@
 ---
-name: perspective-box-health
+name: perspective-cor-health
 description: |
-  Box adoption and configuration health analyst. Evaluates whether Claude on Rails is
+  CoR adoption and configuration health analyst. Evaluates whether Claude on Rails is
   configured correctly for this project — phase file coverage, perspective
   activation patterns, skill usage, configuration drift, anti-bloat.
   Different from meta-process (skill quality) — this checks adoption fitness.
@@ -14,7 +14,7 @@ files:
   - .claude/skills/perspectives/_groups.yaml
   - .claude/hooks/*.sh
 topics:
-  - box health
+  - cor health
   - adoption
   - configuration
   - phase coverage
@@ -33,7 +33,7 @@ related:
     role: "Adjacent perspective — skill quality (not adoption health)"
 ---
 
-# Box Health
+# CoR Health
 
 See `_context.md` for shared perspective context.
 
@@ -79,7 +79,7 @@ the *current state* of the project it serves.
 - **Files:** `.claude/skills/*/SKILL.md`, `.claude/skills/*/phases/*.md`,
   `.claude/skills/perspectives/*/SKILL.md`, `.claude/skills/perspectives/_groups.yaml`,
   `.claude/hooks/*.sh`
-- **Topics:** box health, adoption, configuration, phase coverage, bloat,
+- **Topics:** cor health, adoption, configuration, phase coverage, bloat,
   retirement, drift
 
 Also activates when:

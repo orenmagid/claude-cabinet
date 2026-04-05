@@ -246,7 +246,72 @@ generalizable pattern, perspective, or convention? If so, mention
 `/extract` as an option for proposing it upstream to CoR. This is
 rarer than project-specific skills.
 
-### 10. Capture Loose Ends (core)
+### 10. Perspective Check (core)
+
+Silently reflect: is this project's expertise coverage still right
+for what it's actually doing?
+
+This is the anti-entropy mechanism for the perspective cabinet. Without
+it, a project can adopt a framework, start handling sensitive data, or
+grow complex enough to need architectural review — and none of the
+relevant expertise ever activates because nobody ran `/seed`.
+
+**Two checks, both silent unless they find something:**
+
+**Check A — Uncovered technology.** Quickly scan what this session
+touched. Did the work involve a framework, library, data store, or
+infrastructure that isn't covered by any existing perspective? Compare
+against the perspectives in `.claude/skills/perspectives/` and the
+groups in `_groups.yaml`.
+
+Examples of what to catch:
+- Session used Mantine components but there's no framework-quality
+  perspective
+- Session wrote database queries but there's no data-integrity
+  perspective
+- Session built UI but accessibility isn't in any active group
+
+**Check B — Dormant perspective that should be active.** Are there
+perspectives installed in the project that aren't in any `_groups.yaml`
+group, but based on the last few sessions, probably should be? A
+perspective sitting dormant while the project does exactly the kind of
+work it's designed to review is a waste.
+
+**Most sessions: nothing.** These checks should be completely silent
+when nothing is off. Don't mention perspectives if everything is fine.
+
+**When there's a gap:** Explain it plainly — no jargon about
+"perspectives" or "cabinets." Talk about what the project is missing
+in terms of what it would DO for them:
+
+> "You've been building UI for the last few sessions, but nothing is
+> checking whether it works well on phones or is usable for people
+> with accessibility needs. I can set that up so it gets checked
+> automatically when you run quality reviews. Want me to?"
+
+or:
+
+> "You're using Mantine a lot now. There's a specialist review that
+> checks whether you're getting the full value from it — catching
+> things like hand-rolling components that Mantine already provides.
+> Want me to turn that on?"
+
+or:
+
+> "This project has gotten complex enough that it might help to have
+> something watching whether the overall architecture still makes
+> sense as it grows. Want me to set that up?"
+
+If the user says yes, either:
+- Activate a dormant perspective (add it to `_groups.yaml`)
+- Run `/seed` to build a new one
+- Install a Tier 3 perspective that isn't in the project yet
+
+If the user says no, move on. Don't re-suggest the same gap next
+session. Track declined suggestions in system-status.md or equivalent
+so you don't nag.
+
+### 11. Capture Loose Ends (core)
 
 Read `phases/loose-ends.md` for non-project items and environmental
 concerns to capture before closing. Sessions generate non-project
@@ -255,14 +320,14 @@ these aren't captured somewhere, they rely on human memory.
 
 **Skip (absent/empty).**
 
-### 11. Discover Custom Phases
+### 12. Discover Custom Phases
 
 After running the core phases above, check for any additional phase
 files in `phases/` that the skeleton doesn't define. These are project-
 specific extensions. Each custom phase file declares its position in
 the workflow. Execute them at their declared position.
 
-### 12. Present Report (presentation)
+### 13. Present Report (presentation)
 
 Read `phases/report.md` for how to present the debrief summary.
 
@@ -294,7 +359,7 @@ skip presentation phases. Core phases always run.
 
 - **Core phases** (always run): inventory, close-work, auto-maintenance,
   update-state, health-checks, record-lessons, upstream-feedback,
-  skill-discovery, loose-ends, persist work
+  skill-discovery, perspective-check, loose-ends, persist work
 - **Presentation phases** (skippable): report
 
 A project that wants a quick debrief variant skips the report and

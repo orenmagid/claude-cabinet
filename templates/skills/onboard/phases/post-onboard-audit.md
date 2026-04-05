@@ -1,7 +1,7 @@
 # Post-Onboard Audit — Configuration Sanity Check
 
 After generating all files and presenting the summary, run a lightweight
-audit from the box-health perspective to catch configuration issues before
+audit from the cor-health perspective to catch configuration issues before
 the user starts their first session.
 
 When this file is absent or empty, the default behavior is: run the audit
@@ -20,7 +20,7 @@ starts relying on the configuration.
 
 ## What to Check
 
-Run as the **box-health perspective** but scoped to what onboard just
+Run as the **cor-health perspective** but scoped to what onboard just
 generated. This is NOT a full audit — it's a focused sanity check on
 the fresh configuration.
 
@@ -111,7 +111,7 @@ finding — it's a pre-flight check.
 
 ## What This Is NOT
 
-- **Not a full box-health audit.** That runs periodically via /audit and
+- **Not a full cor-health audit.** That runs periodically via /audit and
   covers telemetry, usage patterns, drift over time. This only checks
   what was just generated.
 - **Not a product quality review.** Whether the _context.md is well-written

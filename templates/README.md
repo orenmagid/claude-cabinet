@@ -22,7 +22,7 @@ whole system work out of the box. Wave 6 documents how Flow extends
 and will adopt the package — see [EXTENSIONS.md](EXTENSIONS.md) for
 annotated phase file overrides, reusable patterns, and perspective
 writing examples. Wave 7 adds the lifecycle layer — onboarding,
-capability seeding, upgrades, and box health monitoring.
+capability seeding, upgrades, and CoR health monitoring.
 
 Everything is organized to mirror the `.claude/` directory structure, so
 adoption is straightforward: copy what you need into your project's
@@ -106,7 +106,7 @@ execution, audit). Each is a named domain expert encoded in markdown.
 
 | Perspective | Domain | Activation |
 |------------|--------|-----------|
-| `box-health` | CoR adoption health, phase file coverage, configuration drift, anti-bloat | Always-on during audit |
+| `cor-health` | CoR adoption health, phase file coverage, configuration drift, anti-bloat | Always-on during audit |
 
 **Infrastructure files (7):**
 
@@ -430,7 +430,7 @@ This package includes all 7 waves of the extraction:
    reusable patterns, perspective writing guide with 3 examples)
 7. **Lifecycle layer** — done (onboard skeleton for project adoption with
    3-mode re-runnability, seed skeleton for capability seeding from tech
-   signals, upgrade skeleton for conversational box updates, box-health
+   signals, upgrade skeleton for conversational box updates, cor-health
    perspective for adoption monitoring, pib-db enhancements: status
    tracking, tags, update-action command, migration logic)
 

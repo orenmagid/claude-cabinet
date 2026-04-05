@@ -256,7 +256,7 @@ looked like before, what changed, and why.
 
 Read `phases/post-onboard-audit.md` for the configuration sanity check.
 
-**Default (absent/empty):** Run a lightweight audit from the box-health
+**Default (absent/empty):** Run a lightweight audit from the cor-health
 perspective, scoped to what was just generated. Checks interview–config
 coherence (did mentioned technologies get wired into phase files?),
 module–phase alignment (do phase files reference skipped modules?),
@@ -279,7 +279,7 @@ pre-flight check, not a deferred finding.
 | `generate-session-loop.md` | Default: wire orient/debrief phases | How to set up the session loop |
 | `modularity-menu.md` | Default: present module hierarchy | Which modules to present and how |
 | `summary.md` | Default: present changes + next steps | How to present results |
-| `post-onboard-audit.md` | Default: box-health sanity check | What to verify after generation |
+| `post-onboard-audit.md` | Default: cor-health sanity check | What to verify after generation |
 
 ## Conversational Stance
 
