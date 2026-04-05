@@ -1,21 +1,39 @@
 # Claude on Rails
 
-Opinionated process scaffolding for Claude Code projects.
+Process scaffolding for Claude Code projects, by a guy who'd rather
+talk to Claude than write code.
 
 One command gives you a session loop (orient/debrief), work tracking,
 structured planning, an audit system with expert perspectives, and
 enforcement hooks — all configured through conversational onboarding.
+Most of it was built by Claude. I just complained until it worked.
 
-## Quick Start
+## Install
+
+Open a terminal, `cd` into your project folder, and run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
+```
+
+That's it. No Node.js, no npm, no git required — just a terminal.
+
+Then open [Claude Code](https://claude.ai/code) in the same folder and
+say `/onboard`. It'll interview you about your project and set everything
+up based on your answers.
+
+### For developers
+
+If you have Node.js installed and want interactive module selection,
+database setup, or the full install:
 
 ```bash
 npx create-claude-rails
 ```
 
-That's it. The CLI walks you through module selection, copies skill files,
+The CLI walks you through module selection, copies skill files,
 sets up hooks, and optionally installs a local SQLite work tracker. When
-it's done, open Claude Code and run `/onboard` — it interviews you about
-your project and generates the context layer that makes everything work.
+it's done, open Claude Code and run `/onboard`.
 
 ## What You Get
 
@@ -36,9 +54,9 @@ you already use GitHub Issues, Linear, or something else.
 - **`/execute`** — step-through execution with checkpoints and guardrails.
 
 ### Audit System (opt-in)
-15 expert perspectives (security, accessibility, data integrity,
-performance, etc.) that analyze your codebase and produce structured
-findings. Triage UI for reviewing results.
+20 expert perspectives (security, accessibility, data integrity,
+performance, architecture, process, etc.) that analyze your codebase and
+produce structured findings. Triage UI for reviewing results.
 
 ### Compliance Stack (opt-in)
 Scoped instructions in `.claude/rules/` that load by file path. An
@@ -102,8 +120,14 @@ scripts/
 
 ## Upgrading
 
+Re-run the installer to pick up new versions:
+
 ```bash
-npx create-claude-rails            # re-run to add modules
+# Shell installer (re-downloads latest)
+curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
+
+# npm installer (if using Node.js)
+npx create-claude-rails
 ```
 
 In Claude Code, run `/cor-upgrade` for conversational merge of upstream
@@ -121,8 +145,14 @@ starts from zero. Orient/debrief creates continuity. Planning with
 perspectives catches problems before they ship. The enforcement pipeline
 turns recurring mistakes into permanent fixes.
 
-None of this requires you to be a developer. The onboarding interview
-meets you where you are, and the system adapts based on what you tell it.
+None of this requires you to be a developer. I'm barely one myself. The
+onboarding interview meets you where you are, and the system adapts
+based on what you tell it.
+
+This is very much a work in progress. Things will break. The session
+loop is solid; everything else is still finding its shape. If you try it
+and something's weird, that's not you — it's probably me. Or Claude.
+We're figuring it out together.
 
 ## License
 
