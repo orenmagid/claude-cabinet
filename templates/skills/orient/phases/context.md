@@ -30,6 +30,15 @@ are behavioral rules. Patterns with `enforcement: prevent` or `detect`
 should already be encoded as hooks or rules, but reading them provides
 context for why those guardrails exist.
 
+### Sibling Projects
+```
+Read ~/.claude/cor-registry.json if it exists.
+```
+If the user has other CoR projects, note them. Don't deep-read them,
+but know they exist — if work in this session touches something that
+relates to another project, mention it. "This API change might affect
+your investor-reports project too."
+
 ## Additional Context Sources
 
 Uncomment and adapt these for your project:

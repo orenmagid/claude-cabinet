@@ -16,7 +16,7 @@ PROJECT_DIR="${1:-.}"
 PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)"
 
 CLAUDE_DIR="$PROJECT_DIR/.claude"
-VERSION="0.5.3"
+VERSION="0.5.4"
 TARBALL_URL="https://registry.npmjs.org/create-claude-rails/-/create-claude-rails-${VERSION}.tgz"
 
 echo ""
@@ -70,6 +70,109 @@ if command -v git >/dev/null 2>&1 && [ ! -d "$PROJECT_DIR/.git" ]; then
   git -C "$PROJECT_DIR" init -q
   echo "  ✓ Initialized git repository"
   echo ""
+fi
+
+# --- User identity (global, first time only) ---
+CLAUDE_HOME="$HOME/.claude"
+mkdir -p "$CLAUDE_HOME"
+
+FIRST_COR_INSTALL=false
+if [ ! -f "$CLAUDE_HOME/cor-registry.json" ]; then
+  FIRST_COR_INSTALL=true
+fi
+
+if [ "$FIRST_COR_INSTALL" = true ] && [ ! -s "$CLAUDE_HOME/CLAUDE.md" ]; then
+  echo "  This looks like your first time using Claude on Rails."
+  echo "  Let's set up your profile so Claude knows who you are"
+  echo "  across all your projects."
+  echo ""
+  printf "  What's your name? "
+  read -r USER_NAME </dev/tty 2>/dev/null || USER_NAME=""
+  printf "  What do you do? (e.g. \"I run a bakery\", \"I'm a freelance designer\") "
+  read -r USER_ROLE </dev/tty 2>/dev/null || USER_ROLE=""
+
+  if [ -n "$USER_NAME" ] || [ -n "$USER_ROLE" ]; then
+    # Append to CLAUDE.md (don't overwrite if it has other content)
+    {
+      echo ""
+      echo "# About Me"
+      echo ""
+      [ -n "$USER_NAME" ] && echo "Name: $USER_NAME"
+      [ -n "$USER_ROLE" ] && echo "$USER_ROLE"
+      echo ""
+      echo "<!-- Added by Claude on Rails. Claude sees this in every project. -->"
+      echo "<!-- Edit ~/.claude/CLAUDE.md to update. -->"
+    } >> "$CLAUDE_HOME/CLAUDE.md"
+    echo ""
+    echo "  ✓ Saved your profile to ~/.claude/CLAUDE.md"
+    echo "    Claude will know this in every project you open."
+    echo ""
+  else
+    echo ""
+    echo "  (Skipped — you can set this up later in ~/.claude/CLAUDE.md)"
+    echo ""
+  fi
+fi
+
+# --- Project registry (global) ---
+REGISTRY_FILE="$CLAUDE_HOME/cor-registry.json"
+
+# Ask for project name and description
+PROJECT_NAME=$(basename "$PROJECT_DIR")
+PROJECT_DESC=""
+
+if [ ! -f "$PROJECT_DIR/.corrc.json" ]; then
+  printf "  What's this project called? [%s] " "$PROJECT_NAME"
+  read -r input_name </dev/tty 2>/dev/null || input_name=""
+  [ -n "$input_name" ] && PROJECT_NAME="$input_name"
+
+  printf "  One line about what it is: "
+  read -r PROJECT_DESC </dev/tty 2>/dev/null || PROJECT_DESC=""
+  echo ""
+fi
+
+# Update the registry
+if command -v node >/dev/null 2>&1; then
+  # Use Node for reliable JSON manipulation
+  node -e "
+    const fs = require('fs');
+    const reg = fs.existsSync('$REGISTRY_FILE')
+      ? JSON.parse(fs.readFileSync('$REGISTRY_FILE', 'utf8'))
+      : { projects: [] };
+    const existing = reg.projects.findIndex(p => p.path === '$PROJECT_DIR');
+    const entry = {
+      path: '$PROJECT_DIR',
+      name: $(printf '%s' "$PROJECT_NAME" | node -e "process.stdout.write(JSON.stringify(require('fs').readFileSync('/dev/stdin','utf8')))"),
+      description: $(printf '%s' "$PROJECT_DESC" | node -e "process.stdout.write(JSON.stringify(require('fs').readFileSync('/dev/stdin','utf8')))"),
+      version: '$VERSION',
+      updatedAt: new Date().toISOString()
+    };
+    if (existing >= 0) {
+      // Preserve description if not re-entered
+      if (!entry.description) entry.description = reg.projects[existing].description;
+      reg.projects[existing] = entry;
+    } else {
+      reg.projects.push(entry);
+    }
+    fs.writeFileSync('$REGISTRY_FILE', JSON.stringify(reg, null, 2) + '\\n');
+  " 2>/dev/null
+
+  # Count other projects
+  if [ -f "$REGISTRY_FILE" ]; then
+    OTHER_COUNT=$(node -e "
+      const reg = JSON.parse(require('fs').readFileSync('$REGISTRY_FILE','utf8'));
+      console.log(reg.projects.filter(p => p.path !== '$PROJECT_DIR').length);
+    " 2>/dev/null)
+    if [ "$OTHER_COUNT" -gt 0 ] 2>/dev/null; then
+      echo "  ✓ Registered in project registry ($OTHER_COUNT other project(s))"
+    else
+      echo "  ✓ Registered in project registry"
+    fi
+  fi
+else
+  # Without Node, write a simple registry
+  echo "{\"projects\":[{\"path\":\"$PROJECT_DIR\",\"name\":\"$PROJECT_NAME\",\"version\":\"$VERSION\"}]}" > "$REGISTRY_FILE"
+  echo "  ✓ Registered in project registry"
 fi
 
 # --- Check for existing install ---
@@ -335,4 +438,7 @@ echo "  3. That's it! After onboarding, use:"
 echo "     /orient   — at the start of each work session"
 echo "     /debrief  — at the end of each work session"
 echo "     /menu     — to see everything else you can do"
+echo ""
+echo "  Have other projects? Run this installer in each project folder."
+echo "  Claude will know about all of them and how they connect."
 echo ""

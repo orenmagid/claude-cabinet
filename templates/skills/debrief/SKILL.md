@@ -149,6 +149,17 @@ reality so the next orient reads accurate information.
 (or equivalent) needs updating to reflect what was built, fixed, or
 changed.
 
+Also check the **user-level state** (silently — don't make this a
+conversation unless something needs updating):
+
+- **`~/.claude/CLAUDE.md`** — did the user reveal something about
+  themselves this session that isn't in their profile? A new role,
+  a new tool they use, a preference about how they work? If so,
+  propose adding it. Keep it brief — this isn't an interview.
+- **`~/.claude/cor-registry.json`** — does this project's name or
+  description still match reality? If the project has evolved
+  significantly, propose updating the registry entry.
+
 ### 5. Health Checks (core)
 
 Read `phases/health-checks.md` for end-of-session health checks. These
@@ -204,7 +215,38 @@ what was confusing, what needed a workaround.
 
 **This phase should not be skipped.** It's how CoR learns from use.
 
-### 9. Capture Loose Ends (core)
+### 9. Skill Discovery (core)
+
+Silently reflect: did this session involve a workflow the user is
+likely to repeat? Not every session produces one — most don't. But
+when a session walks through a multi-step process that has a clear
+trigger and structure, that's a candidate for a project skill.
+
+**Most sessions: nothing.** This check should be silent when there's
+nothing to surface. Don't force it.
+
+**When there's a candidate:** Describe the pattern and ask:
+
+> "We walked through [analyzing that deal / onboarding that client /
+> writing that report] step by step. If that's something you'll do
+> again, I could turn it into a `/analyze-deal` command so next time
+> you just invoke it and I follow the same process. Want me to?"
+
+If the user says yes, create the skill: a SKILL.md in
+`.claude/skills/[name]/` with the workflow captured as steps. Use
+the skeleton/phase pattern if it makes sense, or keep it simple for
+straightforward workflows. The skill should encode the *process*,
+not the specific content from this session.
+
+If the user says no, move on.
+
+**Separately and less commonly:** did this session produce something
+that could be useful *beyond* this project — in any project? A
+generalizable pattern, perspective, or convention? If so, mention
+`/extract` as an option for proposing it upstream to CoR. This is
+rarer than project-specific skills.
+
+### 10. Capture Loose Ends (core)
 
 Read `phases/loose-ends.md` for non-project items and environmental
 concerns to capture before closing. Sessions generate non-project
@@ -213,14 +255,14 @@ these aren't captured somewhere, they rely on human memory.
 
 **Skip (absent/empty).**
 
-### 10. Discover Custom Phases
+### 11. Discover Custom Phases
 
 After running the core phases above, check for any additional phase
 files in `phases/` that the skeleton doesn't define. These are project-
 specific extensions. Each custom phase file declares its position in
 the workflow. Execute them at their declared position.
 
-### 11. Present Report (presentation)
+### 12. Present Report (presentation)
 
 Read `phases/report.md` for how to present the debrief summary.
 
@@ -252,7 +294,7 @@ skip presentation phases. Core phases always run.
 
 - **Core phases** (always run): inventory, close-work, auto-maintenance,
   update-state, health-checks, record-lessons, upstream-feedback,
-  loose-ends, persist work
+  skill-discovery, loose-ends, persist work
 - **Presentation phases** (skippable): report
 
 A project that wants a quick debrief variant skips the report and

@@ -123,6 +123,13 @@ references, failed background processes, configuration drift.
 **Skip (absent/empty).** Projects add health checks as they discover
 failure modes worth detecting early.
 
+**Built-in check (always runs):** If `~/.claude/cor-registry.json`
+exists, verify this project is in it and the entry is current. If
+other registry entries point to paths that no longer exist, silently
+note it — mention during briefing only if the user might care (e.g.,
+"Your old project 'deal-v1' seems to have been deleted — want me to
+remove it from the registry?").
+
 > **Orient vs Pulse vs Audit:** Orient health checks verify *operational*
 > state — is the system running, is data fresh, are processes alive?
 > Pulse (embedded in orient) verifies *descriptive* accuracy — do counts

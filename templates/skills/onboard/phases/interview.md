@@ -44,6 +44,26 @@ questions about the system, answer them before moving on.
 If **experienced** (they've used it before, or say "I know how it works"),
 skip the walkthrough entirely and go straight to the interview.
 
+## User Context (Read Before Interviewing)
+
+Before asking any questions, read two global files if they exist:
+
+1. **`~/.claude/CLAUDE.md`** — the user's identity and preferences.
+   If this has an "About Me" section, you already know who they are
+   and what they do. Don't re-ask questions this answers. Acknowledge
+   it: "I see you run a real estate fund — let's talk about how this
+   project fits into that."
+
+2. **`~/.claude/cor-registry.json`** — a list of all their CoR projects.
+   If they have other projects, ask how this one relates to them: "You
+   also have [project X] and [project Y]. Does this project connect to
+   either of those?" The answer goes into `_context.md` so orient and
+   debrief can reference sibling projects when relevant.
+
+If neither file exists, that's fine — the installer may not have created
+them (npm install path, or the user skipped the identity questions).
+Proceed normally.
+
 ## Communication Calibration
 
 Don't ask the user how technical they are. Listen to how they talk.

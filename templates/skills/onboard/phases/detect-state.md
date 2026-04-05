@@ -20,6 +20,19 @@ Also read `.corrc.json` if it exists — it records which modules the CLI
 installed and which were skipped (with reasons). The interview phase uses
 this to skip redundant questions.
 
+## User-Level State
+
+Before scanning the project, check the user-level layer:
+
+- **`~/.claude/CLAUDE.md`** — does a user profile exist? If yes, the
+  interview can skip identity questions. If it's sparse or stale (e.g.,
+  mentions a role the user seems to have moved past), flag it for the
+  interview phase to offer an update.
+- **`~/.claude/cor-registry.json`** — how many other projects does this
+  user have? The interview phase uses this to ask about relationships
+  between projects. If the registry doesn't exist, skip — the user may
+  have installed via npm instead of the shell installer.
+
 ## Full Scan (re-runs only)
 
 Only when `_context.md` exists, scan these artifacts to distinguish

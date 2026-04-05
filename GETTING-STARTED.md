@@ -62,7 +62,11 @@ The installer handles everything:
 - It installs all the Claude on Rails features
 - It creates a task database for tracking work between sessions
 
-You don't need to make any choices. Just let it run.
+The first time you run it, it'll ask two extra questions: **your name**
+and **what you do**. This creates a profile that Claude sees in every
+project — so you never have to re-explain who you are. It also asks
+what this project is called and what it's for, so if you have multiple
+projects, Claude knows how they relate.
 
 ### Step 3: Open Claude Code
 
@@ -133,14 +137,18 @@ Type `/menu` to see everything available. Here are the highlights:
 
 ## Multiple related projects
 
-Each project folder gets its own Claude on Rails setup. If you have
-related projects (like a website and an API), install Claude on Rails
-in each folder separately. Each project gets its own context, its own
-work tracking, and its own session history.
+Each project folder gets its own Claude on Rails setup. Install it in
+each folder separately — each project gets its own context, work
+tracking, and session history.
 
-There's no built-in way to link projects right now. If you need Claude
-to know about another project, just tell it: "I also have a project
-in ~/other-folder that this connects to."
+But they're not isolated. Claude on Rails maintains a **project
+registry** (`~/.claude/cor-registry.json`) that lists all your projects.
+When you onboard a new project, Claude asks how it relates to your
+other ones. During `/orient`, Claude is aware of your other projects
+and can flag when work in one might affect another.
+
+Your **user profile** (`~/.claude/CLAUDE.md`) also carries across every
+project. Set it up once and Claude knows who you are everywhere.
 
 ## Updating
 

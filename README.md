@@ -137,6 +137,23 @@ npx create-claude-rails
 In Claude Code, run `/cor-upgrade` for conversational merge of upstream
 changes with your customizations.
 
+## Works Across Projects
+
+Claude on Rails isn't just for one project — it manages how you work
+with Claude everywhere.
+
+- **Your identity** (`~/.claude/CLAUDE.md`) — set up once, carries to
+  every project. Claude always knows who you are and what you do.
+- **Project registry** (`~/.claude/cor-registry.json`) — tracks all
+  your CoR projects. `/onboard` asks how they relate; `/orient` flags
+  when work in one might affect another.
+- **Debrief maintenance** — if you mention something new about yourself
+  or your project evolves, `/debrief` proposes updating your profile
+  and registry so the next session starts current.
+
+Install in each project folder. They're independent but aware of each
+other.
+
 ## Philosophy
 
 This started as the process layer of [Flow](https://github.com/orenmagid/flow),
