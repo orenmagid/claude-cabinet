@@ -16,7 +16,11 @@ PROJECT_DIR="${1:-.}"
 PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)"
 
 CLAUDE_DIR="$PROJECT_DIR/.claude"
-VERSION="0.6.2"
+VERSION=$(curl -fsSL https://registry.npmjs.org/create-claude-cabinet/latest 2>/dev/null | grep -o '"version":"[^"]*"' | head -1 | sed 's/"version":"//;s/"//')
+if [ -z "$VERSION" ]; then
+  echo "  Error: could not fetch latest version from npm. Check your internet connection."
+  exit 1
+fi
 TARBALL_URL="https://registry.npmjs.org/create-claude-cabinet/-/create-claude-cabinet-${VERSION}.tgz"
 
 echo ""
@@ -402,13 +406,19 @@ build_manifest() {
   echo '  "manifest": {'
 
   first=true
-  find_paths="$CLAUDE_DIR"
-  [ -d "$PROJECT_DIR/scripts" ] && find_paths="$find_paths $PROJECT_DIR/scripts"
-  find $find_paths -type f 2>/dev/null | sort | while read -r filepath; do
-    relpath="${filepath#$PROJECT_DIR/}"
-    case "$relpath" in
-      .claude/settings.json) continue ;;
+  # Only hash files that were installed from templates — not all project files
+  find "$TEMPLATE_DIR" -type f 2>/dev/null | sort | while read -r tplfile; do
+    tplrel="${tplfile#$TEMPLATE_DIR/}"
+    # Map template path to installed path
+    case "$tplrel" in
+      skills/*|cabinet/*|briefing/*|hooks/*|rules/*|memory/*)
+        relpath=".claude/$tplrel" ;;
+      scripts/*)
+        relpath="$tplrel" ;;
+      *) continue ;;
     esac
+    filepath="$PROJECT_DIR/$relpath"
+    [ -f "$filepath" ] || continue
     hash=$(shasum -a 256 "$filepath" 2>/dev/null | cut -c1-16)
     if [ -n "$hash" ]; then
       if [ "$first" = true ]; then

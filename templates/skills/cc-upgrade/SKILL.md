@@ -177,13 +177,13 @@ with shared context in `perspectives/_context.md`. The new structure uses
 5. Remove the empty `perspectives/` directory only after all content
    is migrated
 
-**Custom perspectives require special handling:**
-- A custom perspective (one not in the CC template set) may have a
+**Custom cabinet members require special handling:**
+- A custom cabinet member (one not in the CC template set) may have a
   SKILL.md with old frontmatter keys (`context:` instead of `briefing:`,
   `always-on-for:` instead of `standing-mandate:`)
 - Migrate the frontmatter keys as part of the move
 - Present the before/after to the user for approval
-- If the custom perspective's SKILL.md references `_context.md` paths,
+- If the custom cabinet member's SKILL.md references `_context.md` paths,
   update those to `_briefing.md`
 
 #### c. Old `cor-` Prefixed Files
@@ -193,6 +193,7 @@ The installer adds new `cc-` prefixed files but doesn't remove old
 - `.claude/hooks/cor-upstream-guard.sh` (replaced by `cc-upstream-guard.sh`)
 - `.claude/scripts/cor-drift-check.cjs` (replaced by `cc-drift-check.cjs`)
 - `.claude/skills/cor-upgrade/` (replaced by `cc-upgrade/`)
+- `.claude/skills/upgrade/` (replaced by `cc-upgrade/`)
 - `.claude/skills/cabinet-cor-health/` (replaced by `cabinet-cc-health/`)
 
 For each: verify the replacement exists before removing the old file.
