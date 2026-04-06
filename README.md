@@ -76,7 +76,7 @@ left off.
 
 ### The Cabinet (included in lean)
 
-20 expert cabinet members who each own a domain and stay in their lane.
+27 expert cabinet members who each own a domain and stay in their lane.
 **Speed-freak** watches performance. **Boundary-man** catches edge cases.
 **Record-keeper** flags when docs drift from code. **Workflow-cop**
 evaluates whether your process actually works. Each member has a
@@ -174,7 +174,7 @@ source code.
 ```
 .claude/
 ├── skills/          # orient, debrief, plan, execute, audit, etc.
-│   └── cabinet-*/   # 20 cabinet member definitions
+│   └── cabinet-*/   # 27 cabinet member definitions
 ├── cabinet/         # committees, lifecycle, composition patterns
 ├── briefing/        # project briefing templates
 ├── hooks/           # git guardrails, telemetry

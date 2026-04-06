@@ -10,7 +10,7 @@ for Claude Code projects. Small codebase: 6 files in `lib/`, templates in
 - `lib/copy.js` — template copying with conflict detection
 - `templates/skills/` — skill definitions (SKILL.md) and phase files
 - `templates/skills/onboard/` — conversational onboarding skill
-- `templates/skills/cabinet-*/` — 20 expert cabinet member definitions
+- `templates/skills/cabinet-*/` — 27 expert cabinet member definitions
 - `templates/cabinet/` — cabinet infrastructure (committees, lifecycle, etc.)
 - `templates/briefing/` — project briefing templates
 - `.ccrc.json` — installation metadata and manifest (generated, gitignored)

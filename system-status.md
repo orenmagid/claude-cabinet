@@ -27,7 +27,7 @@
 ## What's Active
 
 - Published at v0.7.2 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (27 upstream + 5 project-specific cabinet members)
+- One downstream consumer: Flow (27 upstream + 7 project-specific cabinet members)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
@@ -43,14 +43,8 @@
 
 ### Imminent
 
-- Cabinet extraction published in v0.7.0: 7 new upstream members
-  (framework-quality, goal-alignment, information-design, mantine-quality,
-   ui-experimentalist, user-advocate, vision)
-- Briefing rename: scopes → jurisdictions (cabinet metaphor alignment)
-- Briefing template extensions: identity (design philosophy, principle
-  catalog, strategic direction), architecture (UI framework)
-- 5 members stay Flow-only: gtd, sync-health, life-optimization,
-  life-tracker, philosophical-grounding
+- Flow cleanup: remove legacy `system-tutor` (replaced by upstream
+  `user-advocate`), verify `committees-project.yaml` includes new members
 
 ### Later
 
