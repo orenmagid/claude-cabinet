@@ -2,11 +2,11 @@
 model: opus
 name: plan
 description: |
-  Create a structured implementation plan with cabinet member-based critique and
-  user approval. Plans are self-contained: a future session (or parallel agent)
-  can execute them without re-exploring the codebase. This is a skeleton skill
-  using the phases/ directory pattern. Use when: "plan this", "create a plan",
-  "/plan", or when triaging work into actionable items.
+  Structured planning with cabinet critique. The relevant cabinet members
+  weigh in on your approach before you build. Plans are self-contained: a
+  future session can execute them without re-exploring the codebase. This is
+  a skeleton skill using the phases/ directory pattern. Use when: "plan this",
+  "create a plan", "/plan", or when triaging work into actionable items.
 related:
   - type: file
     path: .claude/skills/plan/phases/research.md
@@ -40,14 +40,15 @@ related:
     role: "Project identity and configuration"
 ---
 
-# /plan — Structured Implementation Planning
+# /plan — Structured Planning with Cabinet Critique
 
 ## Purpose
 
 Create a plan that carries enough detail to be executed by a future session
-without re-exploring the codebase. Plans are the unit of work — they carry
-the problem, the approach, the surface area, and the acceptance criteria.
-Without structured planning, sessions produce code changes that miss edge
+without re-exploring the codebase. The relevant cabinet members critique the
+approach before you build. Plans carry the problem, the approach, the
+surface area, and the acceptance criteria. Without structured planning,
+sessions produce code changes that miss edge
 cases, duplicate existing work, and can't be verified.
 
 This is a **skeleton skill** using the `phases/` directory pattern. The

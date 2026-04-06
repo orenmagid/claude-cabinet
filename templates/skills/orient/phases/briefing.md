@@ -49,5 +49,5 @@ If the session time matters for your project:
 - **Standard** (all other): focus on work surface and system state
 
 Track which mode ran today with a datestamp file to avoid repeating
-the morning briefing on subsequent sessions.
+the extended briefing on subsequent sessions.
 -->

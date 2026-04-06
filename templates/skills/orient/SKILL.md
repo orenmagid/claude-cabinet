@@ -1,13 +1,12 @@
 ---
 name: orient
 description: |
-  Session start orientation. Reads project state, syncs data, scans work
-  items, runs health checks and maintenance, then presents a briefing so
-  the session starts informed. This is a skeleton skill using the phases/
-  directory pattern. Use when: session start, "orient", "what's the state",
-  "/orient", "quick orient", "orient-quick", "/orient-quick".
-  If "quick" is mentioned, use the Quick Mode section — run core phases
-  only, skip presentation phases.
+  Session briefing. Reads project state, syncs data, scans work items,
+  runs health checks, then briefs you so the session starts informed.
+  This is a skeleton skill using the phases/ directory pattern. Use when:
+  session start, "orient", "what's the state", "/orient", "quick orient",
+  "orient-quick", "/orient-quick". If "quick" is mentioned, use the Quick
+  Mode section — run core phases only, skip presentation phases.
 related:
   - type: file
     path: .claude/skills/orient/phases/context.md
@@ -35,15 +34,16 @@ related:
     role: "Project identity and configuration"
 ---
 
-# /orient — Session Orientation
+# /orient — Session Briefing
 
 ## Purpose
 
-Start every session with a clear picture of current state so the user
-doesn't have to carry it in their head. Without orientation, Claude starts
-blind — makes the same mistakes, asks the same questions, misses what
-changed since last time. The session loop is the system's learning
-mechanism: orient reads the past, debrief writes the future.
+Start every session with a briefing. Before anyone makes a decision,
+assemble what happened since last time, what needs attention, and what's
+on the agenda. Without this, Claude starts every session blind — same
+mistakes, same questions, same missed context. Orient reads the past so
+debrief can write the future. That's the loop that gives your cabinet
+continuity.
 
 This is a **skeleton skill** using the `phases/` directory pattern. The
 orchestration (what to do and in what order) is generic. Your project
@@ -221,7 +221,7 @@ phases. Claude reads whatever phase files exist at runtime.
 Examples of phases mature projects add:
 - Command queue processing (check for instructions from external UIs)
 - Deferred item evaluation (re-check trigger conditions on paused work)
-- Time-aware briefing modes (morning briefing vs. standard session)
+- Time-aware briefing modes (first session of day vs. returning session)
 - Proactive skill suggestions (surface tools relevant to current state)
 - Calendar integration (upcoming events that need preparation)
 

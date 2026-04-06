@@ -2,11 +2,10 @@
 model: opus
 name: execute
 description: |
-  Execute a single plan with cabinet member-based guardrails at structured
-  checkpoints. Reads the plan, activates relevant cabinet members, implements
-  file-group by file-group with checkpoint reviews. This is a skeleton skill
-  using the phases/ directory pattern. Use when: "execute this plan",
-  "implement this", "/execute".
+  Execute a plan with cabinet member checkpoints. Reads the plan, activates
+  relevant cabinet members, then implements step by step with checkpoint
+  reviews. This is a skeleton skill using the phases/ directory pattern.
+  Use when: "execute this plan", "implement this", "/execute".
 related:
   - type: skill
     name: validate
@@ -30,14 +29,14 @@ related:
     role: "Project identity and configuration"
 ---
 
-# /execute — Plan Execution with Cabinet Member Checkpoints
+# /execute — Plan Execution with Cabinet Checkpoints
 
 ## Purpose
 
-Execute a single implementation plan with structured checkpoints where
-cabinet members provide feedback. This is the inner loop — it takes
-one plan and implements it with guardrails. The cabinet member checkpoints
-catch issues that code review alone would miss: security gaps, data
+Execute a plan with cabinet members providing checkpoint reviews along
+the way. This is the inner loop: take one plan and implement it with
+guardrails. The cabinet checkpoints catch issues that code review alone
+would miss: security gaps, data
 integrity violations, boundary condition failures.
 
 This is a **skeleton skill** using the `phases/` directory pattern. The

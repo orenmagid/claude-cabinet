@@ -1,12 +1,25 @@
 # Claude Cabinet
 
-Process scaffolding for Claude Code projects, by a guy who'd rather
-talk to Claude than write code.
+A cabinet of expert advisors for your Claude Code project. One command
+gives Claude a memory, 20 domain experts, a planning process, and the
+habit of starting sessions informed and ending them properly.
 
-One command gives you a session loop (orient/debrief), work tracking,
-structured planning, an audit system with expert cabinet members, and
-enforcement hooks — all configured through conversational onboarding.
-Most of it was built by Claude. I just complained until it worked.
+Built by a guy who'd rather talk to Claude than write code. Most of it
+was built by Claude. I just complained until it worked.
+
+## The Idea
+
+Your project gets a cabinet — specialist advisors who each own a domain
+and weigh in when their expertise matters:
+
+- **Cabinet members** — 20 domain experts (security, accessibility,
+  architecture, QA, etc.) who review your project and surface what
+  you'd miss alone
+- **Briefings** — project context members read before weighing in
+- **Committees** — members grouped by concern so you convene the right
+  experts for the right question
+- **The session loop** — `/orient` briefs you at the start, `/debrief`
+  closes the loop for next time
 
 ## Install
 
@@ -41,51 +54,51 @@ it's done, open Claude Code and run `/onboard`.
 
 ## What You Get
 
-### Session Loop (always installed)
-- **`/orient`** — reads project state, checks health, surfaces what's
-  overdue or due today. Every session starts informed.
-- **`/debrief`** — marks work done, records lessons, updates state.
-  Every session closes the loop.
+### The Session Loop (always installed)
+- **`/orient`** — session briefing. Reads project state, checks health,
+  surfaces what needs attention. Every session starts informed.
+- **`/debrief`** — session close. Marks work done, records lessons,
+  updates state. Every session closes the loop so the next one starts
+  clean.
+
+### The Cabinet (opt-in)
+20 expert cabinet members who audit your project from their domain:
+**speed-freak** watches performance, **boundary-man** catches edge cases,
+**record-keeper** flags when docs drift from code, **workflow-cop**
+evaluates whether your process actually works. Each member has a
+portfolio, stays in it, and produces structured findings you can
+triage. Convene the whole cabinet or just the committee you need.
+
+### Planning + Execution (opt-in)
+- **`/plan`** — structured planning with cabinet critique. Before you
+  build, the relevant members weigh in on your approach.
+- **`/execute`** — step-through execution with checkpoints. Cabinet
+  members watch at each stage.
 
 ### Work Tracking (opt-in)
 Local SQLite database for actions, projects, and status tracking. Claude
 reads and writes it directly — no external service needed. Skip this if
 you already use GitHub Issues, Linear, or something else.
 
-### Planning + Execution (opt-in)
-- **`/plan`** — structured implementation planning with cabinet member
-  critique before you build.
-- **`/execute`** — step-through execution with checkpoints and guardrails.
-
-### Audit System (opt-in)
-20 expert cabinet members (security, accessibility, data integrity,
-speed-freak, architecture, workflow-cop, etc.) that analyze your codebase
-and produce structured findings. Triage UI for reviewing results.
-
 ### Compliance Stack (opt-in)
 Scoped instructions in `.claude/rules/` that load by file path. An
 enforcement pipeline that promotes recurring feedback into deterministic
-hooks.
+hooks — things that keep going wrong become things that can't go wrong.
 
 ### Lifecycle (opt-in)
 - **`/onboard`** — conversational project interview, re-runnable as the
   project matures.
-- **`/seed`** — detects new tech in your project, proposes expertise.
+- **`/seed`** — detects new tech in your project, recruits cabinet
+  members with the right expertise.
 - **`/cor-upgrade`** — conversational merge when Claude Cabinet updates.
 
 ## How It Works
 
 The CLI handles mechanical setup: copying files, merging settings,
 installing dependencies. `/onboard` handles intelligent configuration:
-it interviews you about your project and generates briefing files based
-on your answers.
-
-**For new projects:** CLI installs everything with defaults. `/onboard`
-asks what you're building and sets up the session loop accordingly.
-
-**For existing projects:** CLI detects your project and offers to install
-alongside it. `/onboard` scans your tech stack, asks about pain points,
-and generates briefings that make Claude effective from session one.
+it interviews you about your project and generates the briefings your
+cabinet needs — who you are, what you're building, what the architecture
+looks like, where things live.
 
 Everything is customizable through **phase files** — small markdown files
 that override default behavior for any skill. Write content in a phase
@@ -104,14 +117,14 @@ npx create-claude-cabinet --dry-run       # Preview without writing files
 
 ## What Gets Installed
 
-Everything goes into `.claude/` (skills, hooks, rules, memory, cabinet
-infrastructure, briefings) or `scripts/` (database, triage tools).
-Nothing touches your source code.
+Everything goes into `.claude/` or `scripts/`. Nothing touches your
+source code.
 
 ```
 .claude/
-├── skills/          # orient, debrief, plan, execute, audit, cabinet-*, etc.
-├── cabinet/         # cabinet infrastructure (committees, lifecycle, etc.)
+├── skills/          # orient, debrief, plan, execute, audit, etc.
+│   └── cabinet-*/   # 20 cabinet member definitions
+├── cabinet/         # committees, lifecycle, composition patterns
 ├── briefing/        # project briefing templates
 ├── hooks/           # git guardrails, telemetry
 ├── rules/           # enforcement pipeline
@@ -161,13 +174,13 @@ other.
 
 This started as the process layer of [Flow](https://github.com/orenmagid/flow),
 a cognitive workspace built on Claude Code over months of daily use. The
-patterns that emerged — session loops, cabinet member audits, feedback
-enforcement pipelines — turned out to be transferable to any project.
+patterns that emerged — the session loop, cabinet-style audits, feedback
+enforcement — turned out to be transferable to any project.
 
 The core idea: Claude Code is powerful, but without process, each session
-starts from zero. Orient/debrief creates continuity. Planning with
-cabinet critique catches problems before they ship. The enforcement
-pipeline turns recurring mistakes into permanent fixes.
+starts from zero. The session loop creates continuity. The cabinet catches
+problems before they ship. The enforcement pipeline turns recurring
+mistakes into permanent fixes.
 
 None of this requires you to be a developer. I'm barely one myself. The
 onboarding interview meets you where you are, and the system adapts

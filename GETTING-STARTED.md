@@ -5,15 +5,28 @@ and a terminal. That's it. No programming experience needed.
 
 ## What is this?
 
-Claude Cabinet gives Claude a workflow: a way to start sessions informed,
-plan work before doing it, review quality, and close sessions properly.
-Without it, every conversation with Claude starts from scratch. With it,
-Claude remembers what happened last time, knows what's on your plate, and
-follows a structured process.
+Claude Cabinet gives your project a cabinet — a team of expert advisors
+and a structured way to get things done across multiple sessions. Without
+it, every conversation with Claude starts from scratch. With it, Claude
+starts each session already briefed on where things stand, what needs
+attention, and what happened last time.
 
 It works for any project — code, writing, research, business planning.
 If you're using Claude Code to build or manage something over multiple
 sessions, this helps.
+
+## How it works
+
+- **`/orient`** — start each session briefed. Claude reads project state,
+  checks what's due, and tells you what needs attention.
+- **The cabinet** — 20 domain experts (security, performance,
+  accessibility, architecture, etc.) who review your project and flag
+  what you'd miss alone. They show up during audits and planning.
+- **`/debrief`** — end each session by closing the loop. Claude records
+  what happened, closes finished work, and prepares the briefing for
+  next time.
+
+You're the decision-maker. The cabinet advises. Claude does the legwork.
 
 ## Do I need this?
 
@@ -26,8 +39,7 @@ context. You end up re-explaining what you're doing, what you decided
 last time, what's left. The bigger the project gets, the more time
 you spend catching Claude up instead of making progress.
 
-Claude Cabinet fixes that. It gives Claude a memory, a workflow, and
-a habit of closing loops. You sit down, say `/orient`, and Claude
+Claude Cabinet fixes that. You sit down, say `/orient`, and Claude
 already knows where things stand.
 
 If you're just asking Claude a quick question and moving on — "what's
@@ -59,7 +71,8 @@ The installer handles everything:
 - If you don't have git or Node.js, it installs them (may ask for your
   Mac password — that's normal)
 - It sets up a git repository in your folder if there isn't one
-- It installs all the Claude Cabinet features
+- It installs the full cabinet: session loop, 20 expert members,
+  planning tools, hooks, and triage system
 - It creates a task database for tracking work between sessions
 
 The first time you run it, it'll ask two extra questions: **your name**
@@ -90,32 +103,30 @@ Claude will interview you about your project. It asks things like:
 - What's your workflow like?
 
 Just answer honestly. There are no wrong answers. Claude uses your
-responses to customize how it works with you. If you don't know the
-answer to something, say so — Claude will use sensible defaults.
+responses to prepare the briefings that the cabinet needs — who you are,
+what you're building, where things live, what matters to you. If you
+don't know the answer to something, say so — Claude will use sensible
+defaults.
 
-## Daily use
+## Each session
 
 Once you're set up, there are really only two commands to remember:
 
 ### Start a session: `/orient`
 
-When you sit down to work, type `/orient`. Claude will:
-- Review what happened in previous sessions
-- Check what's on your plate
-- Tell you what needs attention
-- Suggest what to work on
-
-Think of it as your morning briefing.
+When you sit down to work, type `/orient`. Claude reads the briefing:
+- What happened in previous sessions
+- What's on your plate
+- What needs attention
+- What to work on next
 
 ### End a session: `/debrief`
 
-When you're done working, type `/debrief`. Claude will:
-- Record what was accomplished
-- Close out finished tasks
-- Capture any lessons learned
-- Note anything left for next time
-
-Think of it as closing out the day.
+When you're done working, type `/debrief`. Claude:
+- Records what was accomplished
+- Closes out finished tasks
+- Captures any lessons learned
+- Prepares the briefing for next time
 
 ### That's the core habit
 
@@ -127,8 +138,8 @@ Type `/menu` to see everything available. Here are the highlights:
 
 | Command | What it does |
 |---------|-------------|
-| `/plan` | Create a structured plan before doing complex work |
-| `/audit` | Run expert quality reviews on your project |
+| `/plan` | Create a structured plan — cabinet members critique it before you build |
+| `/audit` | Convene the cabinet for a full quality review of your project |
 | `/investigate` | Systematically explore a question or problem |
 | `/orient-quick` | Fast version of orient — just the essentials |
 | `/debrief-quick` | Fast version of debrief — just close things out |
@@ -136,8 +147,8 @@ Type `/menu` to see everything available. Here are the highlights:
 ## Multiple related projects
 
 Each project folder gets its own Claude Cabinet setup. Install it in
-each folder separately — each project gets its own briefings, work
-tracking, and session history.
+each folder separately — each project gets its own briefings, cabinet
+configuration, work tracking, and session history.
 
 But they're not isolated. Claude Cabinet maintains a **project
 registry** (`~/.claude/cor-registry.json`) that lists all your projects.
@@ -158,8 +169,8 @@ curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/inst
 ```
 
 It'll update the framework files without touching your project-specific
-customizations. Then type `/cor-upgrade` in Claude Code and it'll
-explain what changed.
+customizations. Then type `/cor-upgrade` in Claude Code and Claude will
+walk you through what changed.
 
 ## Something went wrong?
 
@@ -169,6 +180,6 @@ explain what changed.
   in the project folder (not a parent or different folder).
 - **Claude seems confused:** Try `/orient` to re-sync. If that doesn't
   help, try `/onboard` again — it won't erase anything, just refresh
-  the setup.
+  the briefings.
 - **Need help:** Open an issue at
   https://github.com/orenmagid/claude-on-rails/issues

@@ -276,7 +276,7 @@ eslint. Should the skill be updated to include eslint, or was the CLAUDE.md
 addition aspirational?"
 
 **Good (section 7 — architecture patterns):** "/orient's description says
-'session start orientation and daily briefing' but the user often says
+'session start orientation and briefing' but the user often says
 'what's the state' or 'orient me.' The description includes these triggers
 but they're buried in the third sentence. Moving trigger phrases to the
 first two sentences would improve routing accuracy. Test: does Claude

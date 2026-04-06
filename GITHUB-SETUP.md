@@ -9,8 +9,8 @@ This takes about 10 minutes, and you only do it once.
 
 ## What is GitHub?
 
-GitHub is where developers store and collaborate on code. Claude on
-Rails lives on GitHub. When you set up a GitHub account, your feedback
+GitHub is where developers store and collaborate on code. Claude
+Cabinet lives on GitHub. When you set up a GitHub account, your feedback
 can be posted there as an "issue" — basically a message the developer
 sees in their project dashboard.
 

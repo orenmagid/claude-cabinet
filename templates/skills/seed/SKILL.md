@@ -1,11 +1,11 @@
 ---
 name: seed
 description: |
-  Detect technology adoption signals and initiate expertise conversations.
-  Scans project configuration, proposes cabinet members for adopted technologies,
-  builds them collaboratively, and maintains existing ones over time.
-  Use when: "seed", "check for new tech", "build a cabinet member", "/seed",
-  after adding dependencies or frameworks.
+  Recruit new cabinet members. Scans your project for technologies and
+  frameworks, proposes expert members to cover them, builds them
+  collaboratively, and maintains existing ones over time. Use when: "seed",
+  "check for new tech", "build a cabinet member", "/seed", after adding
+  dependencies or frameworks.
 related:
   - type: file
     path: .claude/skills/seed/phases/scan-signals.md
@@ -27,20 +27,18 @@ related:
     role: "Template for project briefing"
 ---
 
-# /seed — Technology Adoption Detection and Expertise Seeding
+# /seed — Recruit New Cabinet Members
 
 ## Purpose
 
-Proactive growth mechanism for your project's expertise cabinet. The
-methodology says "technology choices imply expertise needs" — when you
-add React, you need accessibility expertise; when you add SQLite, you
-need data-integrity expertise; when you deploy to Railway, you need
-deployment and security expertise. These connections are predictable,
-but humans don't reliably act on them at the moment of adoption. They
-add the dependency, start building, and only discover the expertise gap
-after an incident.
+Recruit cabinet members as your project grows. When you adopt React, you
+need accessibility expertise. When you add SQLite, you need data-integrity
+expertise. When you deploy to Railway, you need security and deployment
+expertise. These connections are predictable, but people don't reliably
+act on them at the moment of adoption — they add the dependency, start
+building, and only discover the expertise gap after an incident.
 
-This skill makes that detection systematic. It scans for technology
+Seed makes that recruitment systematic. It scans for technology
 signals in your project's configuration files, compares them against
 your existing cabinet members, identifies gaps, and initiates
 collaborative conversations to build the missing expertise.

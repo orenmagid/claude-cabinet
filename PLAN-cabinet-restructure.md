@@ -718,18 +718,20 @@ need cor-upgrade or fresh install.
 
 ---
 
-## Part 5: Flow Migration Plan
+## Part 5: Flow Migration Plan (Updated Post-Restructure)
 
-Flow is the first (and currently only) downstream consumer of Claude on Rails.
-It has 32 perspectives (20 CoR standard + 12 Flow-custom), extensively
-customized phase files, and a live production system. Migration must be
-careful.
+Flow is the first (and currently only) downstream consumer. It has 32
+perspectives (20 CoR standard + 12 Flow-custom), extensively customized
+phase files, and a live production system. Migration must be careful.
+
+**Status:** The upstream restructure is complete. This plan reflects the
+actual changes that were made (not the original proposal).
 
 ### 5A: Flow's Current State
 
 **CoR version installed:** 0.5.1
 **Total perspectives deployed:** 32
-- 20 CoR standard perspectives
+- 20 CoR standard perspectives (old names)
 - 12 Flow-custom: life-tracker, prep-scout, life-optimization,
   philosophical-grounding, mantine-quality, information-design,
   ui-experimentalist, goal-alignment, vision, gtd, sync-health,
@@ -750,37 +752,45 @@ careful.
 **Hooks:**
 - `cor-upstream-guard.sh` reads `.corrc.json` to block upstream file edits
 
-### 5B: What Changes in Flow
+### 5B: What Actually Changed in the Restructure
 
-**Directory moves:**
+**Package rename:**
+- `create-claude-rails` → `create-claude-cabinet` (npm)
+- Version: 0.6.0
+
+**7 cabinet member renames:**
 ```
-# CoR-managed perspective directories (20) move:
-.claude/skills/perspectives/accessibility/    → .claude/skills/cabinet-accessibility/
-.claude/skills/perspectives/boundary-conditions/ → .claude/skills/cabinet-boundary-man/
-# ... (all 20)
-
-# Flow-custom perspectives (12) also move:
-.claude/skills/perspectives/life-tracker/     → .claude/skills/cabinet-life-tracker/
-.claude/skills/perspectives/prep-scout/       → .claude/skills/cabinet-prep-scout/
-# ... (all 12)
-
-# Infrastructure moves:
-.claude/skills/perspectives/_groups.yaml      → .claude/cabinet/committees.yaml
-.claude/skills/perspectives/_lifecycle.md     → .claude/cabinet/lifecycle.md
-.claude/skills/perspectives/_composition-patterns.md → .claude/cabinet/composition-patterns.md
-.claude/skills/perspectives/_eval-protocol.md → .claude/cabinet/eval-protocol.md
-.claude/skills/perspectives/_prompt-guide.md  → .claude/cabinet/prompt-guide.md
-.claude/skills/perspectives/output-contract.md → .claude/cabinet/output-contract.md
-
-# Context files move:
-.claude/skills/perspectives/_context.md       → .claude/briefing/_briefing.md
-# (Flow uses monolithic _context.md, not split files — it becomes _briefing.md)
-
-# Empty directory removed:
-.claude/skills/perspectives/                  → deleted
+boundary-conditions → cabinet-boundary-man
+meta-process        → cabinet-process-therapist
+mobile-responsiveness → cabinet-small-screen
+skills-coverage     → cabinet-roster-check
+documentation       → cabinet-record-keeper
+process             → cabinet-workflow-cop
+performance         → cabinet-speed-freak
 ```
 
-**Phase file renames (CoR-managed, need renaming in Flow):**
+**13 cabinet members kept their names (just got cabinet- prefix):**
+```
+accessibility, api-design, architecture, code-quality, consistency,
+cor-health, data-integrity, dependency-health, error-handling,
+security, testing, ui-patterns, usability
+```
+
+**Directory restructure:**
+```
+# perspectives/ split into three locations:
+skills/perspectives/*/           → skills/cabinet-*/     (20 members)
+skills/perspectives/_groups.yaml → cabinet/committees.yaml
+skills/perspectives/_lifecycle.md → cabinet/lifecycle.md
+skills/perspectives/_composition-patterns.md → cabinet/composition-patterns.md
+skills/perspectives/_eval-protocol.md → cabinet/eval-protocol.md
+skills/perspectives/_prompt-guide.md → cabinet/prompt-guide.md
+skills/perspectives/output-contract.md → cabinet/output-contract.md
+skills/perspectives/_context.md  → briefing/_briefing.md
+# (plus 6 other briefing template files in briefing/)
+```
+
+**Phase file renames:**
 ```
 orient/phases/perspectives.md         → orient/phases/cabinet.md
 execute/phases/perspectives.md        → execute/phases/cabinet.md
@@ -791,115 +801,154 @@ seed/phases/build-perspective.md      → seed/phases/build-member.md
 onboard/phases/generate-context.md    → onboard/phases/generate-briefing.md
 ```
 
-**Content updates in Flow-owned files:**
-- `orient/phases/cabinet.md` (was perspectives.md) — Flow's custom content
-  references perspective names → update to new names
-- `_groups.yaml` content → `committees.yaml` content with new member names
-- Any Flow-custom perspective SKILL.md files — update frontmatter keys
-  (context→briefing, always-on-for→standing-mandate, name prefix)
-- Flow's CLAUDE.md — if it references "perspectives" or paths
+**SKILL.md frontmatter key changes:**
+```yaml
+# Old:
+context: briefing/_briefing.md
+always-on-for: [group1, group2]
 
-**`.corrc.json` manifest:**
-- Must be regenerated with new file paths and hashes
-- The `cor-upstream-guard.sh` hook reads this — if manifest is stale,
-  it may block or allow wrong files
+# New:
+briefing: briefing/_briefing.md
+standing-mandate: [committee1, committee2]
+```
 
-### 5C: Flow Migration Steps
+**Content terminology (in SKILL.md files, phase files, docs):**
+- "perspective" → "cabinet member" (in prose)
+- "group" → "committee"
+- "lane" → "portfolio"
+- "activation signals" → "convening criteria"
+- "scan scope" → "paths" (in briefing frontmatter)
+- "cross-cutting" → "cross-portfolio"
 
-**Option A: Clean reinstall (recommended)**
+**What did NOT change:**
+- `cor-` prefix on infrastructure files (cor-health, cor-upgrade, etc.)
+- `.corrc.json` filename
+- Database schema field names (`perspective` column in pib-db-schema.sql,
+  JSON field in finding-schema.json) — backward compat
+- GitHub repo URL (still `orenmagid/claude-on-rails`)
+- `_briefing-template.md` files (these are templates, not renamed)
 
-1. Back up all Flow-custom files:
+### 5C: Flow Migration Steps (Option A — Clean Reinstall)
+
+1. **Back up all Flow-custom files:**
    ```bash
-   # Back up custom perspectives
-   cp -r .claude/skills/perspectives/life-tracker /tmp/flow-backup/
-   cp -r .claude/skills/perspectives/prep-scout /tmp/flow-backup/
-   # ... all 12 custom perspectives
+   mkdir -p /tmp/flow-backup/perspectives /tmp/flow-backup/phases
 
-   # Back up custom phase files
-   cp .claude/skills/orient/phases/perspectives.md /tmp/flow-backup/orient-perspectives.md
-   # ... all custom phases
+   # Back up 12 custom perspectives
+   for p in life-tracker prep-scout life-optimization philosophical-grounding \
+            mantine-quality information-design ui-experimentalist goal-alignment \
+            vision gtd sync-health system-tutor; do
+     cp -r .claude/skills/perspectives/$p /tmp/flow-backup/perspectives/
+   done
 
-   # Back up context
+   # Back up custom phase files (check each — some may not exist)
+   cp .claude/skills/orient/phases/perspectives.md /tmp/flow-backup/phases/orient-cabinet.md 2>/dev/null
+   cp .claude/skills/execute/phases/perspectives.md /tmp/flow-backup/phases/execute-cabinet.md 2>/dev/null
+   cp .claude/skills/plan/phases/perspective-critique.md /tmp/flow-backup/phases/plan-cabinet-critique.md 2>/dev/null
+   # ... any other custom phase files
+
+   # Back up context and groups
    cp .claude/skills/perspectives/_context.md /tmp/flow-backup/
    cp .claude/skills/perspectives/_groups.yaml /tmp/flow-backup/
    ```
 
-2. Remove old CoR installation:
+2. **Remove old CoR installation:**
    ```bash
-   # Remove CoR-managed files (guided by .corrc.json manifest)
-   # Or: rm -rf .claude/skills/perspectives/ and let reinstall rebuild
+   # Remove the entire perspectives directory
+   rm -rf .claude/skills/perspectives/
+
+   # Remove old .corrc.json (will be regenerated)
+   rm .corrc.json
    ```
 
-3. Run new Claude Cabinet installer:
+3. **Run new Claude Cabinet installer:**
    ```bash
    npx create-claude-cabinet
    ```
+   This creates `skills/cabinet-*/`, `cabinet/`, `briefing/`, and a
+   fresh `.corrc.json`.
 
-4. Restore and migrate Flow-custom files:
+4. **Restore Flow-custom files with new naming:**
    ```bash
    # Move custom perspectives to new paths with cabinet- prefix
-   mv /tmp/flow-backup/life-tracker .claude/skills/cabinet-life-tracker
-   # ... etc
+   for p in life-tracker prep-scout life-optimization philosophical-grounding \
+            mantine-quality information-design ui-experimentalist goal-alignment \
+            vision gtd sync-health system-tutor; do
+     mv /tmp/flow-backup/perspectives/$p .claude/skills/cabinet-$p
+   done
 
-   # Move context to briefing
-   mv /tmp/flow-backup/_context.md .claude/briefing/_briefing.md
+   # Move context to briefing (overwrites the template)
+   cp /tmp/flow-backup/_context.md .claude/briefing/_briefing.md
 
-   # Migrate _groups.yaml content into committees.yaml
-   # (manual merge — add Flow's custom groups to the generated committees.yaml)
+   # Merge _groups.yaml content into committees.yaml
+   # MANUAL: open both files, merge Flow's custom groups into the
+   # generated committees.yaml, updating member names per the rename map
 
-   # Rename and restore custom phase files
-   mv /tmp/flow-backup/orient-perspectives.md .claude/skills/orient/phases/cabinet.md
-   # ... etc
+   # Restore custom phase files with new names
+   cp /tmp/flow-backup/phases/orient-cabinet.md .claude/skills/orient/phases/cabinet.md 2>/dev/null
+   cp /tmp/flow-backup/phases/execute-cabinet.md .claude/skills/execute/phases/cabinet.md 2>/dev/null
+   cp /tmp/flow-backup/phases/plan-cabinet-critique.md .claude/skills/plan/phases/cabinet-critique.md 2>/dev/null
    ```
 
-5. Update Flow-custom file content:
-   - Each custom perspective SKILL.md: update frontmatter keys
-   - Each custom phase file: update terminology in content
-   - `committees.yaml`: update member names to match renames
+5. **Update Flow-custom file content:**
 
-6. Verify:
+   For each of the 12 custom perspective SKILL.md files, update:
+   ```yaml
+   # Frontmatter changes:
+   context: → briefing:
+   always-on-for: → standing-mandate:
+   # Update any group references to committee names
+   ```
+
+   In prose content:
+   - "perspective" → "cabinet member"
+   - "group" → "committee"
+   - "lane" → "portfolio"
+   - Reference old member names → new names (e.g., "boundary-conditions" → "boundary-man")
+
+   In custom phase files:
+   - Same terminology updates
+   - Any path references to `perspectives/` → new locations
+
+   In committees.yaml:
+   - Old member names → new names per rename map above
+   - "groups:" key → appropriate committee structure
+
+6. **Verify:**
    ```bash
-   # Check all cabinet members are discoverable
-   ls .claude/skills/cabinet-*/SKILL.md
+   # All 32 cabinet members discoverable (20 CoR + 12 Flow)
+   ls .claude/skills/cabinet-*/SKILL.md | wc -l  # should be 32
 
-   # Check infrastructure
-   ls .claude/cabinet/
-   ls .claude/briefing/
+   # Infrastructure in place
+   ls .claude/cabinet/committees.yaml
+   ls .claude/briefing/_briefing.md
 
-   # Check no stale paths
-   grep -rn "perspectives/" .claude/
+   # No stale references
+   grep -rn "skills/perspectives/" .claude/
+   grep -rn "_groups\.yaml" .claude/
+   grep -rn "_context\.md" .claude/ | grep -v "cor-upgrade"
+
+   # Run orient and debrief to verify
    ```
-
-**Option B: In-place migration via cor-upgrade**
-
-Build a migration script into the `cor-upgrade` skill that:
-1. Detects old directory structure
-2. Moves files to new locations
-3. Renames frontmatter keys
-4. Updates `.corrc.json` manifest
-5. Reports what it changed
-
-This is more complex to build but better for future users who upgrade.
-**Recommendation:** Do Option A for Flow now (it's one project), build
-Option B into cor-upgrade for the general case later.
 
 ### 5D: Flow Migration Risk Matrix
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
 | Custom phase content lost | Low | High | Back up everything first |
-| Perspective activation breaks | Medium | Medium | Test orient + debrief after migration |
-| API calls in perspectives fail | Low | Low | API endpoints don't change, only file locations |
-| cor-upstream-guard blocks valid edits | Medium | Low | Regenerate .corrc.json manifest |
+| Cabinet member activation breaks | Medium | Medium | Test orient + debrief after migration |
+| API calls fail | Low | Low | Endpoints don't change, only file locations |
+| cor-upstream-guard blocks valid edits | Medium | Low | Fresh .corrc.json from reinstall |
 | Memory files reference old paths | Low | Low | Memory files don't hardcode .claude/ paths |
-| Hooks reference old paths | Medium | Medium | Verify session-start.sh, all hooks |
+| Hooks reference old paths | Medium | Medium | Verify all hooks post-migration |
 | Custom _groups.yaml entries lost | Low | High | Manual merge into committees.yaml |
-| Monolithic _context.md content lost | Low | High | It becomes _briefing.md — direct rename |
+| Monolithic _context.md content lost | Low | High | Direct copy to _briefing.md |
+| Frontmatter keys not updated | Medium | Medium | Grep for old keys after migration |
 
 ### 5E: Flow Migration Timing
 
-1. Land the Claude Cabinet restructure in the upstream repo
-2. Publish to npm as `create-claude-cabinet`
+1. ✅ Land the Claude Cabinet restructure in upstream repo
+2. ✅ Publish to npm as `create-claude-cabinet` v0.6.0
 3. Migrate Flow using Option A (clean reinstall + restore)
 4. Verify Flow works: run `/orient`, trigger a few cabinet members, run `/debrief`
 5. Later: build general-purpose migration into `cor-upgrade`

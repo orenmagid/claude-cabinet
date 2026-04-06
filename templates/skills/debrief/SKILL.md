@@ -1,13 +1,13 @@
 ---
 name: debrief
 description: |
-  Post-session debrief. Inventories what was done, closes work items,
-  updates state, captures lessons, and reports results. The operational
-  closing that prevents entropy between sessions. This is a skeleton skill
-  using the phases/ directory pattern. Use when: session end, "debrief",
-  "wrap up", "/debrief", "quick debrief", "debrief-quick", "/debrief-quick",
-  or after completing significant work. If "quick" is mentioned, use the
-  Quick Mode section — run core phases only, skip presentation phases.
+  Session close. Inventories what was done, closes work items, updates
+  state, captures lessons, and prepares the briefing for next time. This
+  is a skeleton skill using the phases/ directory pattern. Use when:
+  session end, "debrief", "wrap up", "/debrief", "quick debrief",
+  "debrief-quick", "/debrief-quick", or after completing significant work.
+  If "quick" is mentioned, use the Quick Mode section — run core phases
+  only, skip presentation phases.
 related:
   - type: file
     path: .claude/skills/debrief/phases/inventory.md
@@ -41,15 +41,15 @@ related:
     role: "Project identity and configuration"
 ---
 
-# /debrief — Post-Session Debrief
+# /debrief — Session Close
 
 ## Purpose
 
 Close every session properly so the next one starts informed. Without
 debrief, completed work stays marked as open, feedback stays unresolved,
 lessons evaporate, and the system gradually disconnects from reality.
-The session loop is the system's learning mechanism: orient reads the
-past, debrief writes the future.
+Orient reads the past, debrief writes the future. That's the loop that
+gives your cabinet continuity.
 
 This is a **skeleton skill** using the `phases/` directory pattern. The
 orchestration (what to do and in what order) is generic. Your project

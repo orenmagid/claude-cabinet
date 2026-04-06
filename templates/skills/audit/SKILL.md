@@ -2,11 +2,12 @@
 model: opus
 name: audit
 description: |
-  Systematic quality audit. Selects cabinet members, loads triage suppression,
-  spawns parallel cabinet member agents, merges findings, and persists results.
-  The audit is the system's learning mechanism for drift and quality gaps
-  that accumulate silently between sessions. Use when: "audit", "run an
-  audit", "/audit", scheduled audit trigger, or significant milestone.
+  Convene the full cabinet for a quality review. Each cabinet member examines
+  the project from their domain — security, performance, accessibility, and
+  so on — and reports what they find. Like calling a cabinet meeting where
+  every advisor reviews the state of things and flags what needs attention.
+  Use when: "audit", "run an audit", "/audit", scheduled audit trigger,
+  or significant milestone.
 related:
   - type: file
     path: .claude/skills/audit/phases/member-selection.md
@@ -25,7 +26,7 @@ related:
     role: "Project-specific: how to persist and report findings"
   - type: file
     path: cabinet/output-contract.md
-    role: "How cabinet members produce structured findings"
+    role: "How cabinet members report their findings"
   - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
@@ -43,15 +44,17 @@ related:
     role: "Reference data layer for finding persistence"
 ---
 
-# /audit — Systematic Quality Audit
+# /audit — Convene the Cabinet
 
 ## Purpose
 
-Surface drift, convention violations, and quality gaps that no single
-session introduced. Without audit, the only learning channel is friction
-the user notices during active work. But some problems accumulate silently
-— a convention erodes across ten commits, a subsystem degrades gradually,
-an architectural decision's consequences only become visible at scale.
+Call a full cabinet meeting. Every cabinet member examines the project
+from their domain and reports what they find — the way a board of
+advisors would review the state of operations. Without this, the only
+learning channel is friction the user notices during active work. But
+some problems accumulate silently — a convention erodes across ten
+commits, a subsystem degrades gradually, an architectural decision's
+consequences only become visible at scale.
 The audit catches what individual sessions miss.
 
 This is a **skeleton skill** using the `phases/` directory pattern. The

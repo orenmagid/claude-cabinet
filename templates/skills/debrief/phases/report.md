@@ -55,5 +55,5 @@ events or scheduled work, append a brief preview of tomorrow:
 - Items due tomorrow
 - Anything needing morning preparation
 
-This is enough to mentally close the day.
+This is enough to mentally close the session.
 -->

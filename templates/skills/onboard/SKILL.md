@@ -1,10 +1,11 @@
 ---
 name: onboard
 description: |
-  Conversational interview that generates the initial briefing layer for a
-  project adopting Claude Cabinet. Re-runnable at different maturity stages — each run
-  refines based on what the project has learned. Use when: "onboard",
-  "set up CoR", "bootstrap", "/onboard".
+  Assemble the cabinet. Interviews you about your project and prepares the
+  briefings your cabinet members need to do their jobs — who you are, what
+  you're building, where things live, what matters. Re-runnable as the
+  project matures — each run refines based on what the project has learned.
+  Use when: "onboard", "set up CoR", "bootstrap", "/onboard".
 related:
   - type: file
     path: .claude/skills/onboard/phases/detect-state.md
@@ -35,21 +36,23 @@ related:
     role: "Configuration sanity check after generation"
 ---
 
-# /onboard — Project Onboarding Interview
+# /onboard — Assemble the Cabinet
 
 ## Purpose
 
-Generate the briefing layer that makes every other CoR skill work. Without
-briefings — what is this project, what stack does it use, what breaks, who
-works on it — the session loop runs blind. Orient reads files that don't
-exist yet. Debrief records lessons into a structure that hasn't been
-defined. Plan looks for overlap in a work tracker that hasn't been wired.
+Assemble the cabinet. Before your advisors can do their jobs, they need
+briefings — who you are, what you're building, where things live, what
+matters. Without briefings, the session loop runs blind: orient reads
+files that don't exist, debrief records lessons into a structure that
+hasn't been defined, plan looks for overlap in a work tracker that
+hasn't been wired.
 
 Onboard fills this gap through conversation, not mechanical config. It
-asks what the project is, listens to what matters, and generates the
-files that make the rest of the system functional. It is deliberately
-conversational because the best project briefing comes from the person
-who lives with the project, not from scanning a directory tree.
+interviews you about your project — like sitting down with a new hire
+and walking them through how things work here. The answers become the
+briefings your cabinet reads before every session. It's deliberately
+conversational because the best briefing comes from the person who
+lives with the project, not from scanning a directory tree.
 
 This is a **skeleton skill** using the `phases/` directory pattern. The
 orchestration is generic — detect state, interview, generate files. Your

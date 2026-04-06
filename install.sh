@@ -21,6 +21,7 @@ TARBALL_URL="https://registry.npmjs.org/create-claude-cabinet/-/create-claude-ca
 
 echo ""
 echo "  🗄️  Claude Cabinet v${VERSION}"
+echo "  A cabinet of experts for your Claude Code project"
 echo ""
 
 # --- Install prerequisites ---
@@ -82,7 +83,7 @@ if [ ! -f "$CLAUDE_HOME/cor-registry.json" ]; then
 fi
 
 if [ "$FIRST_COR_INSTALL" = true ] && [ ! -s "$CLAUDE_HOME/CLAUDE.md" ]; then
-  echo "  This looks like your first time using Claude Cabinet."
+  echo "  This looks like your first time assembling a cabinet."
   echo "  Let's set up your profile so Claude knows who you are"
   echo "  across all your projects."
   echo ""
@@ -427,22 +428,21 @@ build_manifest > "$PROJECT_DIR/.corrc.json"
 
 # --- Done ---
 echo ""
-echo "  ✅ All set!"
+echo "  ✅ Cabinet assembled!"
 echo ""
-echo "  Here's what to do next:"
+echo "  Next steps:"
 echo ""
 echo "  1. Open Claude Code in this folder"
 echo "     (Open the app and drag this folder in, or run 'claude' in terminal)"
 echo ""
 echo "  2. Type:  /onboard"
-echo "     Claude will ask about your project. Just answer the questions."
-echo "     There are no wrong answers — it adapts to you."
+echo "     Claude will interview you about your project and prepare"
+echo "     the briefings your cabinet needs to do their jobs."
 echo ""
-echo "  3. That's it! After onboarding, use:"
-echo "     /orient   — at the start of each work session"
-echo "     /debrief  — at the end of each work session"
-echo "     /menu     — to see everything else you can do"
+echo "  3. That's it! Each session:"
+echo "     /orient   — start informed"
+echo "     /debrief  — close the loop for next time"
+echo "     /menu     — see everything your cabinet can do"
 echo ""
-echo "  Have other projects? Run this installer in each project folder."
-echo "  Claude will know about all of them and how they connect."
+echo "  Have other projects? Run this installer in each one."
 echo ""
