@@ -26,7 +26,7 @@
 
 ## What's Active
 
-- Published at v0.6.1 on npm as `create-claude-cabinet`
+- Published at v0.6.2 on npm as `create-claude-cabinet`
 - One downstream consumer: Flow (32 cabinet members, v0.5.1 installed — migration ready)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
 - cc-upgrade has legacy migration step (2.5) and intelligent terminology pass
