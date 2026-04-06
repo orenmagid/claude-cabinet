@@ -12,7 +12,7 @@ existing documentation), write only `skip: true`.
 ## System Introduction (First Run Only)
 
 Before asking about the project, check: does the user know what Claude
-on Rails does? Ask once:
+Cabinet does? Ask once:
 
 > "Have you used Claude Cabinet before, or is this your first time?"
 
@@ -57,10 +57,10 @@ Before asking any questions, read two global files if they exist:
    it: "I see you run a real estate fund — let's talk about how this
    project fits into that."
 
-2. **`~/.claude/cor-registry.json`** — a list of all their CoR projects.
+2. **`~/.claude/cc-registry.json`** — a list of all their CC projects.
    If they have other projects registered, explain what that means and
-   ask how this project relates: "I see you're also using Claude on
-   Rails in [project X] — that's a separate project you've set up with
+   ask how this project relates: "I see you're also using Claude Cabinet
+   in [project X] — that's a separate project you've set up with
    the same session loop. Does this project connect to that one in any
    way? For example, does one feed data to the other, or do they share
    code?" The answer goes into `_briefing.md` so orient and debrief can
@@ -86,7 +86,7 @@ are valid starting points.
 
 ## First-Run Questions
 
-The detect-state phase identified this as a first run (no CoR context
+The detect-state phase identified this as a first run (no CC context
 layer exists). But "first run" covers two very different situations:
 
 ### Greenfield (no project yet, or near-empty directory)
@@ -213,7 +213,7 @@ onboard's job.
   planned question.
 - **Follow up on substance.** If an answer reveals something important,
   dig into it before moving on to the next topic.
-- **Note CoR module signals.** When someone describes a pain point that
+- **Note CC module signals.** When someone describes a pain point that
   maps to a specific module, note it internally for the modularity menu
   phase — but don't interrupt the conversation to pitch the module.
 - **Don't assume answers.** Even if you can see the project's files, ask
@@ -227,7 +227,7 @@ onboard's job.
 - **Summarize before generating.** After the interview, reflect back what
   you heard: "Here's what I'm taking away from this conversation..." Let
   the user correct before generating files.
-- **For skipped modules (.corrc.json):** If the CLI's `skipped` field
+- **For skipped modules (.ccrc.json):** If the CLI's `skipped` field
   shows a module was opted out with a reason, weave that into the
   conversation naturally. "I see you're tracking work somewhere else —
   tell me about that" rather than "Module work-tracking was skipped."

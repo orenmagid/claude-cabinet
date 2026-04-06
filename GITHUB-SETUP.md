@@ -76,5 +76,5 @@ ask Claude to send it. In Claude Code, say:
 
 > "I set up GitHub. Can you send any saved feedback from my outbox?"
 
-Claude will read `~/.claude/cor-feedback-outbox.json` and post each
+Claude will read `~/.claude/cc-feedback-outbox.json` and post each
 pending item as a GitHub issue.

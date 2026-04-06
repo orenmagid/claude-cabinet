@@ -32,9 +32,9 @@ context for why those guardrails exist.
 
 ### Sibling Projects
 ```
-Read ~/.claude/cor-registry.json if it exists.
+Read ~/.claude/cc-registry.json if it exists.
 ```
-If the user has other CoR projects, note them. Don't deep-read them,
+If the user has other CC projects, note them. Don't deep-read them,
 but know they exist — if work in this session touches something that
 relates to another project, mention it. "This API change might affect
 your investor-reports project too."

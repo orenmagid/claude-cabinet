@@ -1,11 +1,11 @@
 # Detect State — Scan Claude Cabinet Artifacts and Determine Mode
 
-Scan the project for existing CoR artifacts to determine whether this is
+Scan the project for existing CC artifacts to determine whether this is
 a first run, early re-run, or mature re-run. The mode determination
 drives how every subsequent phase behaves.
 
 When this file is absent or empty, the default behavior is: scan for the
-standard CoR artifact set, classify each artifact's richness, and
+standard CC artifact set, classify each artifact's richness, and
 determine the mode. To explicitly skip state detection (force first-run
 mode), write only `skip: true`.
 
@@ -28,7 +28,7 @@ Before scanning the project, check the user-level layer:
   interview can skip identity questions. If it's sparse or stale (e.g.,
   mentions a role the user seems to have moved past), flag it for the
   interview phase to offer an update.
-- **`~/.claude/cor-registry.json`** — how many other projects does this
+- **`~/.claude/cc-registry.json`** — how many other projects does this
   user have? The interview phase uses this to ask about relationships
   between projects. If the registry doesn't exist, skip — the user may
   have installed via npm instead of the shell installer.

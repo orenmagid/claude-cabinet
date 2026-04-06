@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// CoR Drift Check — detect modified upstream-managed files
+// CC Drift Check — detect modified upstream-managed files
 //
-// Compares current file hashes against .corrc.json manifest hashes.
+// Compares current file hashes against .ccrc.json manifest hashes.
 // Reports files that have been modified since install (drift).
 //
 // Usage:
-//   node scripts/cor-drift-check.js          # exit 0 if clean, 1 if drift
-//   node scripts/cor-drift-check.js --json   # output JSON for programmatic use
-//   node scripts/cor-drift-check.js --fix    # show what /cor-upgrade would fix
+//   node scripts/cc-drift-check.js          # exit 0 if clean, 1 if drift
+//   node scripts/cc-drift-check.js --json   # output JSON for programmatic use
+//   node scripts/cc-drift-check.js --fix    # show what /cc-upgrade would fix
 
 const fs = require('fs');
 const path = require('path');
@@ -15,18 +15,18 @@ const crypto = require('crypto');
 
 const projectRoot = findProjectRoot();
 if (!projectRoot) {
-  console.error('No .corrc.json found — not a CoR project.');
+  console.error('No .ccrc.json found — not a CC project.');
   process.exit(2);
 }
 
-const metadataPath = path.join(projectRoot, '.corrc.json');
+const metadataPath = path.join(projectRoot, '.ccrc.json');
 const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
 const manifest = metadata.manifest || {};
 
 function findProjectRoot() {
   let dir = process.cwd();
   while (dir !== path.dirname(dir)) {
-    if (fs.existsSync(path.join(dir, '.corrc.json'))) return dir;
+    if (fs.existsSync(path.join(dir, '.ccrc.json'))) return dir;
     dir = path.dirname(dir);
   }
   return null;
@@ -64,7 +64,7 @@ if (args.includes('--json')) {
   console.log(JSON.stringify({ drifted, missing, clean: clean.length }, null, 2));
 } else {
   if (drifted.length === 0 && missing.length === 0) {
-    console.log(`All ${clean.length} CoR-managed files match upstream hashes.`);
+    console.log(`All ${clean.length} CC-managed files match upstream hashes.`);
   } else {
     if (drifted.length > 0) {
       console.log(`Drifted (${drifted.length} files modified from upstream):`);
@@ -76,7 +76,7 @@ if (args.includes('--json')) {
     }
     console.log(`\nClean: ${clean.length} files match.`);
     if (args.includes('--fix')) {
-      console.log('\nRun /cor-upgrade to restore drifted files to upstream versions.');
+      console.log('\nRun /cc-upgrade to restore drifted files to upstream versions.');
     }
   }
 }

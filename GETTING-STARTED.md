@@ -151,7 +151,7 @@ each folder separately — each project gets its own briefings, cabinet
 configuration, work tracking, and session history.
 
 But they're not isolated. Claude Cabinet maintains a **project
-registry** (`~/.claude/cor-registry.json`) that lists all your projects.
+registry** (`~/.claude/cc-registry.json`) that lists all your projects.
 When you onboard a new project, Claude asks how it relates to your
 other ones. During `/orient`, Claude is aware of your other projects
 and can flag when work in one might affect another.
@@ -169,7 +169,7 @@ curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/insta
 ```
 
 It'll update the framework files without touching your project-specific
-customizations. Then type `/cor-upgrade` in Claude Code and Claude will
+customizations. Then type `/cc-upgrade` in Claude Code and Claude will
 walk you through what changed.
 
 ## Something went wrong?

@@ -53,13 +53,12 @@ accessibility, anti-confirmation, architecture, cor-health, data-integrity,
 debugger, historian, organized-mind, qa, security, system-advocate,
 technical-debt, usability — already clear or evocative.
 
-### "cor-" Prefix Decision
+### "cor-" → "cc-" Prefix Rename (completed)
 
-The `cor-` prefix appears in: `cor-health`, `cor-upgrade`, `cor-upstream-guard.sh`,
-`cor-drift-check.cjs`, `.corrc.json`. These are **internal infrastructure names**,
-not user-facing brand. Decision: **leave as-is for now**. The abbreviation still
-works ("cabinet" → same first letter). Revisiting later is low-cost since these
-are few files with grep-friendly names.
+The `cor-` prefix was renamed to `cc-` (for Claude Cabinet) in a follow-up pass.
+All infrastructure files now use the `cc-` prefix: `cc-health`, `cc-upgrade`,
+`cc-upstream-guard.sh`, `cc-drift-check.cjs`, `.ccrc.json`, `cc-registry.json`,
+`cc-feedback-outbox.json`.
 
 ---
 
@@ -991,7 +990,7 @@ After publishing, deprecate the old package:
 npm deprecate create-claude-rails "Renamed to create-claude-cabinet. Run: npx create-claude-cabinet"
 ```
 
-#### Step 2: Create new GitHub repo `orenmagid/claude-cabinet`
+#### Step 2: Create new GitHub repo `orenmagid/claude-cabinet` ✅
 GitHub repo renames create redirects, but a fresh repo is cleaner:
 
 1. Create `orenmagid/claude-cabinet` on GitHub (empty, no README)
@@ -1019,7 +1018,7 @@ which name is current. The old repo can be archived with a pointer.
 GitHub redirects from old→new work for clones and raw URLs, but having
 both is belt-and-suspenders.
 
-#### Step 3: Rename local directory
+#### Step 3: Rename local directory ✅
 ```bash
 mv ~/claude-on-rails ~/claude-cabinet
 cd ~/claude-cabinet
@@ -1041,7 +1040,7 @@ cd ~/claude-cabinet
 already updated in Step 2. The directory name isn't referenced in
 any code or config.
 
-#### Step 4: Re-run lean install (dogfooding)
+#### Step 4: Re-run lean install (dogfooding) ✅
 ```bash
 cd ~/claude-cabinet
 npx create-claude-cabinet --lean --yes
@@ -1082,11 +1081,11 @@ To be explicit about what stays the same:
 
 - **Skeleton/phase pattern** — unchanged, just some phase files renamed
 - **SKILL.md as discovery mechanism** — unchanged
-- **`.corrc.json`** — filename stays (cor- prefix kept)
-- **`cor-upstream-guard.sh`** — filename stays
-- **`cor-drift-check.cjs`** — filename stays
-- **`cor-upgrade`** skill name — stays
-- **`cor-health`** cabinet member name — stays
+- **`.ccrc.json`** — manifest file (renamed from `.corrc.json`)
+- **`cc-upstream-guard.sh`** — hook (renamed from `cor-upstream-guard.sh`)
+- **`cc-drift-check.cjs`** — script (renamed from `cor-drift-check.cjs`)
+- **`cc-upgrade`** skill name (renamed from `cor-upgrade`)
+- **`cabinet-cc-health`** cabinet member name (renamed from `cabinet-cor-health`)
 - **Hook architecture** — unchanged
 - **Session loop** (orient/debrief) — unchanged behavior
 - **Individual cabinet member domain logic** — unchanged (just terminology in prose)
@@ -1103,8 +1102,7 @@ These are planned future work, noted here so they don't get lost:
 - [ ] Build 7 new cabinet members: goal-alignment, information-design,
       user-advocate, ui-experimentalist, vision, framework-quality, gtd
 - [ ] Build pre-built variant: mantine-quality (PAIR with framework-quality)
-- [ ] Build general-purpose migration into cor-upgrade for future users
-- [ ] Rename GitHub repo from `claude-on-rails` to `claude-cabinet`
-- [ ] Set up npm redirect from old package name to new
-- [ ] Update `~/.claude/cor-registry.json` schema if needed
-- [ ] Evaluate whether `cor-` prefix should become `cc-` (low priority)
+- [ ] Build general-purpose migration into cc-upgrade for future users
+- [x] Rename GitHub repo from `claude-on-rails` to `claude-cabinet`
+- [x] Set up npm redirect from old package name to new
+- [x] Rename `cor-` prefix to `cc-` across all infrastructure

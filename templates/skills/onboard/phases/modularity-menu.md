@@ -38,7 +38,7 @@ Present these in order from most fundamental to most specialized:
 
 ### 1. Session Loop (orient + debrief) — MANDATORY
 
-Always set up. This is the minimum viable CoR adoption. Orient reads
+Always set up. This is the minimum viable CC adoption. Orient reads
 state at session start; debrief writes state at session end. Without
 this, nothing else has a foundation.
 
@@ -118,7 +118,7 @@ head.
 
 ### 6. Capability Seeding (seed) — OPT-IN
 
-Bootstrap new skills, cabinet members, or process components from CoR
+Bootstrap new skills, cabinet members, or process components from CC
 skeleton templates.
 
 **What you get:** Quick scaffolding of new capabilities with all required

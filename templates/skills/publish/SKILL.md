@@ -14,7 +14,7 @@ description: |
 Handle the full publish flow for the `create-claude-cabinet` package:
 analyze what changed, suggest a version, get confirmation, and ship.
 
-This skill only runs from the CoR source repo (`package.json` has
+This skill only runs from the CC source repo (`package.json` has
 `name: "create-claude-cabinet"`). If run elsewhere, say so and stop.
 
 ## Workflow

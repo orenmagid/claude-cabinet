@@ -13,7 +13,7 @@ for Claude Code projects. Small codebase: 6 files in `lib/`, templates in
 - `templates/skills/cabinet-*/` — 20 expert cabinet member definitions
 - `templates/cabinet/` — cabinet infrastructure (committees, lifecycle, etc.)
 - `templates/briefing/` — project briefing templates
-- `.corrc.json` — installation metadata and manifest (generated, gitignored)
+- `.ccrc.json` — installation metadata and manifest (generated, gitignored)
 
 ## Conventions
 

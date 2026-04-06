@@ -21,7 +21,7 @@ This phase runs in all onboard modes (first-run, early re-run, mature re-run).
 
 Before presenting options, scan for signs of existing work tracking:
 
-1. **pib.db** — SQLite database from a previous CoR install or work-tracking
+1. **pib.db** — SQLite database from a previous CC install or work-tracking
    module selection
 2. **Markdown task files** — `tasks.md`, `TODO.md`, `backlog.md`, `work.md`
    in the project root or `docs/`
@@ -47,7 +47,7 @@ that, or would you like to try one of these built-in options?"
 
 **What it is:** A lightweight, local SQLite database with semantic IDs,
 status tracking, project containers, and tagging. The reference data layer
-that CoR skills (orient, debrief, plan) use by default.
+that CC skills (orient, debrief, plan) use by default.
 
 **Good for:**
 - Projects that want zero external dependencies (no API keys, no service)
@@ -65,7 +65,7 @@ that CoR skills (orient, debrief, plan) use by default.
 
 **Trade-offs:**
 - Requires `better-sqlite3` npm dependency
-- Work must be created via CoR skills or the CLI
+- Work must be created via CC skills or the CLI
 - No native web UI (though custom dashboards are possible)
 
 **Cost:** 2-3 minutes to `npm install better-sqlite3` and initialize.

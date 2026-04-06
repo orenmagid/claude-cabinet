@@ -90,7 +90,7 @@ hooks — things that keep going wrong become things that can't go wrong.
   project matures.
 - **`/seed`** — detects new tech in your project, recruits cabinet
   members with the right expertise.
-- **`/cor-upgrade`** — conversational merge when Claude Cabinet updates.
+- **`/cc-upgrade`** — conversational merge when Claude Cabinet updates.
 
 ## How It Works
 
@@ -135,7 +135,7 @@ scripts/
 ├── pib-db.js        # work tracking CLI (if installed)
 └── ...              # triage tools (if audit installed)
 
-.corrc.json          # installation metadata
+.ccrc.json           # installation metadata
 ```
 
 ## Upgrading
@@ -150,7 +150,7 @@ curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/insta
 npx create-claude-cabinet
 ```
 
-In Claude Code, run `/cor-upgrade` for conversational merge of upstream
+In Claude Code, run `/cc-upgrade` for conversational merge of upstream
 changes with your customizations.
 
 ## Works Across Projects
@@ -160,7 +160,7 @@ with Claude everywhere.
 
 - **Your identity** (`~/.claude/CLAUDE.md`) — set up once, carries to
   every project. Claude always knows who you are and what you do.
-- **Project registry** (`~/.claude/cor-registry.json`) — tracks all
+- **Project registry** (`~/.claude/cc-registry.json`) — tracks all
   your projects. `/onboard` asks how they relate; `/orient` flags
   when work in one might affect another.
 - **Debrief maintenance** — if you mention something new about yourself

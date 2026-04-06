@@ -1,12 +1,12 @@
 #!/bin/bash
-# CoR Upstream Guard — PreToolUse hook for Edit and Write tool calls
+# CC Upstream Guard — PreToolUse hook for Edit and Write tool calls
 #
 # Blocks modifications to files managed by Claude Cabinet. These files
-# are upstream-owned: updates come through /cor-upgrade, not direct edits.
+# are upstream-owned: updates come through /cc-upgrade, not direct edits.
 # Project-specific customization goes in briefing files and phase files.
 #
 # How it works:
-#   Reads .corrc.json manifest (list of CoR-installed files with hashes).
+#   Reads .ccrc.json manifest (list of CC-installed files with hashes).
 #   If the target file_path is in the manifest, block the write.
 #
 # ROLLBACK: Comment out the PreToolUse entry for this hook in
@@ -24,12 +24,12 @@ if [ -z "$FILE_PATH" ]; then
   exit 0
 fi
 
-# Find the project root (where .corrc.json lives)
+# Find the project root (where .ccrc.json lives)
 # Walk up from current directory
 find_project_root() {
   local dir="$PWD"
   while [ "$dir" != "/" ]; do
-    if [ -f "$dir/.corrc.json" ]; then
+    if [ -f "$dir/.ccrc.json" ]; then
       echo "$dir"
       return 0
     fi
@@ -41,7 +41,7 @@ find_project_root() {
 PROJECT_ROOT=$(find_project_root)
 
 if [ -z "$PROJECT_ROOT" ]; then
-  # No .corrc.json found — not a CoR project, allow everything
+  # No .ccrc.json found — not a CC project, allow everything
   echo '{"decision":"allow"}'
   exit 0
 fi
@@ -64,7 +64,7 @@ fi
 IN_MANIFEST=$(python3 -c "
 import json, sys
 try:
-    with open('$PROJECT_ROOT/.corrc.json') as f:
+    with open('$PROJECT_ROOT/.ccrc.json') as f:
         data = json.load(f)
     manifest = data.get('manifest', {})
     print('yes' if '$REL_PATH' in manifest else 'no')
@@ -73,7 +73,7 @@ except:
 " 2>/dev/null)
 
 if [ "$IN_MANIFEST" = "yes" ]; then
-  echo "{\"decision\":\"block\",\"reason\":\"Blocked: $REL_PATH is managed by Claude Cabinet. CoR-managed files are upstream-owned — edits come through /cor-upgrade, not direct modification. Put project-specific content in briefing files or phase files instead.\"}"
+  echo "{\"decision\":\"block\",\"reason\":\"Blocked: $REL_PATH is managed by Claude Cabinet. CC-managed files are upstream-owned — edits come through /cc-upgrade, not direct modification. Put project-specific content in briefing files or phase files instead.\"}"
 else
   echo '{"decision":"allow"}'
 fi

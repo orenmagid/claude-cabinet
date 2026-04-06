@@ -77,12 +77,12 @@ fi
 CLAUDE_HOME="$HOME/.claude"
 mkdir -p "$CLAUDE_HOME"
 
-FIRST_COR_INSTALL=false
-if [ ! -f "$CLAUDE_HOME/cor-registry.json" ]; then
-  FIRST_COR_INSTALL=true
+FIRST_CC_INSTALL=false
+if [ ! -f "$CLAUDE_HOME/cc-registry.json" ]; then
+  FIRST_CC_INSTALL=true
 fi
 
-if [ "$FIRST_COR_INSTALL" = true ] && [ ! -s "$CLAUDE_HOME/CLAUDE.md" ]; then
+if [ "$FIRST_CC_INSTALL" = true ] && [ ! -s "$CLAUDE_HOME/CLAUDE.md" ]; then
   echo "  This looks like your first time assembling a cabinet."
   echo "  Let's set up your profile so Claude knows who you are"
   echo "  across all your projects."
@@ -116,7 +116,7 @@ if [ "$FIRST_COR_INSTALL" = true ] && [ ! -s "$CLAUDE_HOME/CLAUDE.md" ]; then
 fi
 
 # --- Project registry (global) ---
-REGISTRY_FILE="$CLAUDE_HOME/cor-registry.json"
+REGISTRY_FILE="$CLAUDE_HOME/cc-registry.json"
 PROJECT_NAME=$(basename "$PROJECT_DIR")
 
 # Register with folder name. /onboard fills in name and description later.
@@ -164,9 +164,9 @@ fi
 
 # --- Check for existing install ---
 EXISTING_INSTALL=false
-if [ -f "$PROJECT_DIR/.corrc.json" ]; then
+if [ -f "$PROJECT_DIR/.ccrc.json" ]; then
   EXISTING_INSTALL=true
-  OLD_VERSION=$(grep '"version"' "$PROJECT_DIR/.corrc.json" 2>/dev/null | head -1 | sed 's/.*: *"\([^"]*\)".*/\1/')
+  OLD_VERSION=$(grep '"version"' "$PROJECT_DIR/.ccrc.json" 2>/dev/null | head -1 | sed 's/.*: *"\([^"]*\)".*/\1/')
   echo "  Existing installation found (v${OLD_VERSION:-unknown})"
   echo "  Updating to v${VERSION}..."
   echo ""
@@ -189,7 +189,7 @@ fi
 echo "  Setting up..."
 
 # All skill directories
-SKILL_DIRS="orient orient-quick debrief debrief-quick menu plan execute investigate audit pulse triage-audit onboard seed cor-upgrade link unlink publish extract validate cabinet-accessibility cabinet-anti-confirmation cabinet-architecture cabinet-boundary-man cabinet-cor-health cabinet-data-integrity cabinet-debugger cabinet-historian cabinet-organized-mind cabinet-process-therapist cabinet-qa cabinet-record-keeper cabinet-roster-check cabinet-security cabinet-small-screen cabinet-speed-freak cabinet-system-advocate cabinet-technical-debt cabinet-usability cabinet-workflow-cop"
+SKILL_DIRS="orient orient-quick debrief debrief-quick menu plan execute investigate audit pulse triage-audit onboard seed cc-upgrade link unlink publish extract validate cabinet-accessibility cabinet-anti-confirmation cabinet-architecture cabinet-boundary-man cabinet-cc-health cabinet-data-integrity cabinet-debugger cabinet-historian cabinet-organized-mind cabinet-process-therapist cabinet-qa cabinet-record-keeper cabinet-roster-check cabinet-security cabinet-small-screen cabinet-speed-freak cabinet-system-advocate cabinet-technical-debt cabinet-usability cabinet-workflow-cop"
 
 # Copy skills
 copied=0
@@ -243,7 +243,7 @@ done
 
 # Copy hooks
 mkdir -p "$CLAUDE_DIR/hooks"
-for hook in cor-upstream-guard.sh git-guardrails.sh skill-telemetry.sh skill-tool-telemetry.sh; do
+for hook in cc-upstream-guard.sh git-guardrails.sh skill-telemetry.sh skill-tool-telemetry.sh; do
   if [ -f "$TEMPLATE_DIR/hooks/$hook" ]; then
     cp "$TEMPLATE_DIR/hooks/$hook" "$CLAUDE_DIR/hooks/"
     chmod 755 "$CLAUDE_DIR/hooks/$hook"
@@ -257,7 +257,7 @@ fi
 
 # Copy scripts
 mkdir -p "$PROJECT_DIR/scripts"
-for script in cor-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.js pib-db-schema.sql triage-server.mjs triage-ui.html; do
+for script in cc-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.js pib-db-schema.sql triage-server.mjs triage-ui.html; do
   if [ -f "$TEMPLATE_DIR/scripts/$script" ]; then
     cp "$TEMPLATE_DIR/scripts/$script" "$PROJECT_DIR/scripts/"
     copied=$((copied + 1))
@@ -294,7 +294,7 @@ if [ ! -f "$SETTINGS_FILE" ]; then
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/cor-upstream-guard.sh"
+            "command": ".claude/hooks/cc-upstream-guard.sh"
           }
         ]
       },
@@ -357,7 +357,7 @@ fi
 # --- Clean up files removed upstream ---
 if [ "$EXISTING_INSTALL" = true ]; then
   removed=0
-  grep -o '"[^"]*": "[a-f0-9]*"' "$PROJECT_DIR/.corrc.json" 2>/dev/null | while read -r line; do
+  grep -o '"[^"]*": "[a-f0-9]*"' "$PROJECT_DIR/.ccrc.json" 2>/dev/null | while read -r line; do
     oldfile=$(echo "$line" | sed 's/"\([^"]*\)".*/\1/')
     case "$oldfile" in
       version|installedAt|upstreamPackage) continue ;;
@@ -424,7 +424,7 @@ build_manifest() {
   echo "}"
 }
 
-build_manifest > "$PROJECT_DIR/.corrc.json"
+build_manifest > "$PROJECT_DIR/.ccrc.json"
 
 # --- Done ---
 echo ""

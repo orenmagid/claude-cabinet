@@ -71,7 +71,7 @@ Which cabinet members need which briefing files (identity is always loaded):
 | anti-confirmation     |     |     |     |     |     |
 | architecture          |  x  |  x  |     |     |     |
 | boundary-man          |  x  |  x  |     |     |     |
-| cor-health            |     |  x  |  x  |     |     |
+| cc-health             |     |  x  |  x  |     |     |
 | data-integrity        |  x  |  x  |     |     |  x  |
 | debugger              |  x  |     |     |     |     |
 | record-keeper         |     |  x  |     |     |     |
@@ -118,7 +118,7 @@ exists so cabinet members know what's available.
   only if the interview produced content for them.
 - **/seed** adds domain extension files when specialized cabinet members
   are adopted.
-- **/cor-upgrade** can migrate a monolithic `_briefing.md` into the
+- **/cc-upgrade** can migrate a monolithic `_briefing.md` into the
   split format.
 
 ## Backward Compatibility
@@ -131,7 +131,7 @@ or if no `briefing` field is present, the system falls back to reading
 - Existing projects with a monolithic `_briefing.md` continue to work
   without changes.
 - Projects can migrate incrementally — split out one file at a time.
-- `/cor-upgrade` handles the full migration when the project is ready.
+- `/cc-upgrade` handles the full migration when the project is ready.
 
 ## Finding Format
 

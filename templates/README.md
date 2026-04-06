@@ -59,7 +59,7 @@ adoption is straightforward: copy what you need into your project's
 | `skills/triage-audit/SKILL.md` | 5 | **Triage skeleton.** Load findings, prepare commentary, present via local web UI or CLI, apply verdicts (fix/defer/reject), create actions for approved findings. 3 phase files. |
 | `skills/onboard/SKILL.md` | 7 | **Onboarding skeleton.** Conversational interview that generates the initial context layer. Re-runnable: first run generates, subsequent runs refine. 6 phase files. |
 | `skills/seed/SKILL.md` | 7 | **Capability seeding skeleton.** Detects technology adoption signals, proposes expertise conversations, builds and maintains cabinet members collaboratively. 4 phase files. |
-| `skills/cor-upgrade/SKILL.md` | 7 | **Upgrade skeleton.** Conversational merge when new Claude Cabinet skeletons arrive. Intelligence is the merge strategy — conversation, not mechanical copy. 4 phase files. |
+| `skills/cc-upgrade/SKILL.md` | 7 | **Upgrade skeleton.** Conversational merge when new Claude Cabinet skeletons arrive. Intelligence is the merge strategy — conversation, not mechanical copy. 4 phase files. |
 
 ### Scripts (6)
 
@@ -106,7 +106,7 @@ execution, audit). Each is a named domain expert encoded in markdown.
 
 | Cabinet Member | Domain | Activation |
 |------------|--------|-----------|
-| `cor-health` | Claude Cabinet adoption health, phase file coverage, configuration drift, anti-bloat | Always-on during audit |
+| `cc-health` | Claude Cabinet adoption health, phase file coverage, configuration drift, anti-bloat | Always-on during audit |
 
 **Infrastructure files (7):**
 
@@ -395,7 +395,7 @@ There is no `box.yaml` or template engine. Configuration uses two mechanisms:
   (GTD expertise, Mantine quality, sync health, etc.). EXTENSIONS.md
   includes examples showing how to write your own domain cabinet members.
 - **Distribution mechanism** — No npm package, no installer. Copy files.
-  The `/onboard` skill guides adoption. The `/cor-upgrade` skill handles updates.
+  The `/onboard` skill guides adoption. The `/cc-upgrade` skill handles updates.
 
 ## Relationship to Flow
 
@@ -430,7 +430,7 @@ This package includes all 7 waves of the extraction:
    reusable patterns, cabinet member writing guide with 3 examples)
 7. **Lifecycle layer** — done (onboard skeleton for project adoption with
    3-mode re-runnability, seed skeleton for capability seeding from tech
-   signals, upgrade skeleton for conversational box updates, cor-health
+   signals, upgrade skeleton for conversational box updates, cc-health
    cabinet member for adoption monitoring, pib-db enhancements: status
    tracking, tags, update-action command, migration logic)
 

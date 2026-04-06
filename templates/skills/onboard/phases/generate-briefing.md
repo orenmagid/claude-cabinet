@@ -59,7 +59,7 @@ entity types.
 - **The hub lists what exists.** After creating individual files, update
   `_briefing.md` to index them with one-line summaries.
 - **Old monolithic format still works.** If migrating from an existing
-  monolithic `_briefing.md`, `/cor-upgrade` handles the split. Don't
+  monolithic `_briefing.md`, `/cc-upgrade` handles the split. Don't
   rewrite an existing monolith during onboard re-runs — propose the
   migration instead.
 
@@ -102,7 +102,7 @@ Common re-run updates:
 
 ## Update Project Registry
 
-After generating the briefing layer, update `~/.claude/cor-registry.json`
+After generating the briefing layer, update `~/.claude/cc-registry.json`
 with what you learned from the interview. The installer registers the
 project with just its folder name and an empty description — onboard
 is where the real name and description get filled in.

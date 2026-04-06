@@ -6,22 +6,22 @@
 - 8 modules: session-loop, hooks, work-tracking, planning, compliance, audit, lifecycle, validate
 - 3 install modes: Everything, Lean (`--lean`), Custom (interactive per-module)
 - Template copying with hash-based conflict detection and manifest tracking
-- Existing installs: add-only (no overwrite prompts), updates via `/cor-upgrade`
+- Existing installs: add-only (no overwrite prompts), updates via `/cc-upgrade`
 - Safe reset via `--reset` (manifest-aware, won't delete customized files)
 - Settings merge (hooks into `.claude/settings.json`)
 - Optional SQLite work tracker setup
 - 20 expert cabinet members for audit system
 - Split briefing files: identity, architecture, scopes, cabinet, work-tracking, api
 - Cabinet member gap detection in debrief (anti-entropy)
-- Feedback outbox for non-developers (`~/.claude/cor-feedback-outbox.json`)
+- Feedback outbox for non-developers (`~/.claude/cc-feedback-outbox.json`)
 - GitHub setup guide for non-developer feedback delivery
-- Conversational onboard, seed, and cor-upgrade skills
+- Conversational onboard, seed, and cc-upgrade skills
 - Link/unlink skills for local dev workflow
 - Publish skill with post-publish dogfood sync
 - Extract skill for proposing upstream extraction from consuming projects
-- Upstream feedback loop: debrief phase auto-surfaces CoR friction from consuming projects
+- Upstream feedback loop: debrief phase auto-surfaces CC friction from consuming projects
 - Write protection: hook blocks edits to manifest-tracked files, prevents downstream drift
-- Drift detection: `cor-drift-check.cjs` compares file hashes against manifest
+- Drift detection: `cc-drift-check.cjs` compares file hashes against manifest
 - Dogfooded: installed on itself via `--lean`
 
 ## What's Active
@@ -41,9 +41,16 @@
 
 ### Before Migration
 
-- Create new GitHub repo `orenmagid/claude-cabinet`, push, update URLs
-- Rename local directory `~/claude-on-rails` → `~/claude-cabinet`
-- Re-run lean install to dogfood published package
+- ✅ Publish to npm as `create-claude-cabinet` (v0.6.0)
+- ✅ Deprecate old `create-claude-rails` package (all 21 versions)
+- ✅ Create new GitHub repo `orenmagid/claude-cabinet`, push, update URLs
+- ✅ Rename local directory `~/claude-on-rails` → `~/claude-cabinet`
+- ✅ Copy memory files to new Claude Code project path
+- ✅ Re-run lean install to dogfood published package (v0.6.0)
+- ✅ Fix `~/.claude/cc-registry.json` (updated path and version)
+- ✅ Migrate project briefing from `perspectives/_context.md` to `briefing/_briefing.md`
+- ✅ Remove stale `perspectives/` directory
+- ✅ Update orient `context.md` phase to reference new briefing path
 - See PLAN-cabinet-restructure.md Part 5F for ordered steps
 
 ### After Migration
@@ -51,6 +58,6 @@
 - Build 7 new cabinet members: goal-alignment, information-design,
   user-advocate, ui-experimentalist, vision, framework-quality, gtd
 - Build pre-built variant: mantine-quality (PAIR with framework-quality)
-- Build general-purpose migration into cor-upgrade
+- Build general-purpose migration into cc-upgrade
 - Archive old GitHub repo `orenmagid/claude-on-rails`
 - Onboard interview testing across project types

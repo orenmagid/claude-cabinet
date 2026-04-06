@@ -5,11 +5,11 @@ description: |
   briefings your cabinet members need to do their jobs — who you are, what
   you're building, where things live, what matters. Re-runnable as the
   project matures — each run refines based on what the project has learned.
-  Use when: "onboard", "set up CoR", "bootstrap", "/onboard".
+  Use when: "onboard", "set up CC", "bootstrap", "/onboard".
 related:
   - type: file
     path: .claude/skills/onboard/phases/detect-state.md
-    role: "Detect existing CoR artifacts and determine run mode"
+    role: "Detect existing CC artifacts and determine run mode"
   - type: file
     path: .claude/skills/onboard/phases/interview.md
     role: "Conversational interview questions"
@@ -78,7 +78,7 @@ Onboard is re-runnable. What it does depends on what already exists:
 
 ### 1. First Run (no _briefing.md)
 
-No CoR briefing layer exists yet. This is the full interview: who are you,
+No CC briefing layer exists yet. This is the full interview: who are you,
 what is this, what breaks, what do you need. Generates the complete
 initial briefing layer — `_briefing.md`, CLAUDE.md additions, system-status.md,
 and session loop wiring. The goal is a working session loop by the end of
@@ -86,7 +86,7 @@ the conversation.
 
 ### 2. Early Re-Run (sparse artifacts)
 
-Some CoR artifacts exist but the project is young. The session loop has
+Some CC artifacts exist but the project is young. The session loop has
 run a few times and the user has learned what works and what doesn't.
 The interview shifts to refinement: What has the session loop taught you
 that CLAUDE.md doesn't reflect? What friction have you hit? What briefing
@@ -95,7 +95,7 @@ existing files rather than creating new ones.
 
 ### 3. Mature Re-Run (rich context)
 
-The project has been using CoR for a while. Briefing files are populated,
+The project has been using CC for a while. Briefing files are populated,
 multiple modules are active, patterns have accumulated. The interview
 becomes a health check: Which modules are you actually using? Is anything
 ready to retire? What gaps have you noticed? Are there new areas the
@@ -107,7 +107,7 @@ doesn't have to declare it.
 
 ## Why This Matters
 
-Every CoR skill reads from the briefing layer. Orient reads `_briefing.md`
+Every CC skill reads from the briefing layer. Orient reads `_briefing.md`
 to know what files to check. Plan reads it to know where work items live.
 Cabinet members read it to know where to look. If the briefing layer is empty
 or wrong, every skill downstream is degraded. Onboard is the foundation
@@ -122,9 +122,9 @@ the periodic recalibration that keeps the briefing layer honest.
 
 ### 1. Detect State
 
-Read `phases/detect-state.md` for how to scan existing CoR artifacts.
+Read `phases/detect-state.md` for how to scan existing CC artifacts.
 
-**Default (absent/empty):** Scan for the standard CoR artifact set:
+**Default (absent/empty):** Scan for the standard CC artifact set:
 `_briefing.md`, `system-status.md`, `orient/phases/`, `debrief/phases/`,
 `pib.db`, `committees.yaml`, `memory/patterns/`. Count what exists, classify
 its richness (empty file vs populated), and determine the run mode. Report
@@ -158,7 +158,7 @@ by now?
 
 This is a conversation, not a form. Ask 2-3 questions at a time, not all
 at once. Follow up on answers — if the user mentions a pain point, dig
-into it. If something sounds like it maps to a specific CoR module, note
+into it. If something sounds like it maps to a specific CC module, note
 it for the modularity menu phase. The interview is the most valuable
 phase because it captures knowledge that no amount of file scanning can
 surface.
@@ -232,7 +232,7 @@ that's a signal to update the work-scan or health-checks phase.
 
 ### 7. Modularity Menu
 
-Read `phases/modularity-menu.md` for which CoR modules to present.
+Read `phases/modularity-menu.md` for which CC modules to present.
 
 **Default (absent/empty):** Present the module hierarchy with adoption
 recommendations based on the interview. The session loop is always set up.
@@ -259,7 +259,7 @@ looked like before, what changed, and why.
 
 Read `phases/post-onboard-audit.md` for the configuration sanity check.
 
-**Default (absent/empty):** Run a lightweight audit from the cor-health
+**Default (absent/empty):** Run a lightweight audit from the cc-health
 cabinet member, scoped to what was just generated. Checks interview–config
 coherence (did mentioned technologies get wired into phase files?),
 module–phase alignment (do phase files reference skipped modules?),
@@ -274,7 +274,7 @@ pre-flight check, not a deferred finding.
 
 | Phase | Absent = | What it customizes |
 |-------|----------|-------------------|
-| `detect-state.md` | Default: scan standard CoR artifacts | What artifacts to scan and how to determine mode |
+| `detect-state.md` | Default: scan standard CC artifacts | What artifacts to scan and how to determine mode |
 | `interview.md` | Default: mode-adapted questions | What to ask and how to follow up |
 | `work-tracking.md` | Default: detect & present choices | What work tracking system to use (pib-db, markdown, or external) |
 | `options.md` | Default: present decisions with trade-offs | What decisions to surface and how to frame options |
@@ -282,7 +282,7 @@ pre-flight check, not a deferred finding.
 | `generate-session-loop.md` | Default: wire orient/debrief phases | How to set up the session loop |
 | `modularity-menu.md` | Default: present module hierarchy | Which modules to present and how |
 | `summary.md` | Default: present changes + next steps | How to present results |
-| `post-onboard-audit.md` | Default: cor-health sanity check | What to verify after generation |
+| `post-onboard-audit.md` | Default: cc-health sanity check | What to verify after generation |
 
 ## Conversational Stance
 
@@ -290,7 +290,7 @@ Onboard is a companion, not a configurator. The framing is "let's figure
 out what your project needs" — not "I'll set up your system now." The
 interview is genuine curiosity about the project, not a checklist to get
 through. When the user describes a pain point, the right response is to
-understand it, not to immediately map it to a CoR module.
+understand it, not to immediately map it to a CC module.
 
 This matters because the quality of the briefing layer depends on the
 quality of the conversation. A mechanical interview produces mechanical
@@ -320,13 +320,13 @@ Examples of phases mature adopters add:
 
 ## Calibration
 
-**Core failure this targets:** Starting CoR adoption with empty context
+**Core failure this targets:** Starting CC adoption with empty context
 files, causing the session loop to run without knowing anything about the
 project it's supposed to help.
 
 ### Without Skill (Bad)
 
-A project adopts CoR. They copy the skeleton files, run `/orient` — it
+A project adopts CC. They copy the skeleton files, run `/orient` — it
 reads a blank `_briefing.md` and an empty `system-status.md`, reports
 nothing useful. They run `/debrief` — it tries to close work items but
 doesn't know where work is tracked. They create a plan — cabinet members
@@ -341,7 +341,7 @@ discovering context gaps one at a time.
 
 ### With Skill (Good)
 
-A project adopts CoR and runs `/onboard`. The interview asks what the
+A project adopts CC and runs `/onboard`. The interview asks what the
 project is, what stack it uses, what hurts. The user mentions they have a
 Rails app with a PostgreSQL database, three developers, and a recurring
 problem with stale feature flags. From the conversation, onboard generates

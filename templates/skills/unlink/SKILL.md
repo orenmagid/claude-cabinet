@@ -3,7 +3,7 @@ name: unlink
 description: |
   Remove local development linking for Claude Cabinet. Returns the
   project to using the published npm version. Use when: "unlink",
-  "stop using local CoR", "use published version", "/unlink".
+  "stop using local CC", "use published version", "/unlink".
 ---
 
 # /unlink — Remove Local Development Link
@@ -15,7 +15,7 @@ the published npm version.
 
 ## Context Detection
 
-**CoR source repo** (`package.json` has `name: "create-claude-cabinet"`):
+**CC source repo** (`package.json` has `name: "create-claude-cabinet"`):
 - Run `npm unlink` to remove the global registration
 - Warn: "This will break the link for all consuming projects that depend
   on it. They'll need to `npm unlink create-claude-cabinet` too, or
@@ -31,5 +31,5 @@ the published npm version.
 
 - Before testing against the published npm version
 - When done with a local development cycle
-- When the local CoR checkout is moving to a branch you don't want
+- When the local CC checkout is moving to a branch you don't want
   consuming projects to track

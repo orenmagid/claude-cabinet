@@ -21,7 +21,6 @@ SKILLS=""
 for skill_path in "$SKILL_DIR"/*/SKILL.md; do
     [ -f "$skill_path" ] || continue
     skill=$(basename "$(dirname "$skill_path")")
-    [ "$skill" = "perspectives" ] && continue
     [ "$skill" = "_template" ] && continue
     SKILLS="$SKILLS $skill"
 done

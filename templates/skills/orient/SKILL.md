@@ -123,7 +123,7 @@ references, failed background processes, configuration drift.
 **Skip (absent/empty).** Projects add health checks as they discover
 failure modes worth detecting early.
 
-**Built-in check (always runs):** If `~/.claude/cor-registry.json`
+**Built-in check (always runs):** If `~/.claude/cc-registry.json`
 exists, verify this project is in it and the entry is current. If
 other registry entries point to paths that no longer exist, silently
 note it — mention during briefing only if the user might care (e.g.,

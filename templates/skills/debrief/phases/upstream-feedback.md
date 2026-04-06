@@ -1,17 +1,17 @@
-# Upstream Feedback — Surface CoR Friction to the Source
+# Upstream Feedback — Surface CC Friction to the Source
 
 **Position:** Runs after record-lessons (step 7), before capture loose
 ends (step 8). Lessons are fresh; friction is top of mind.
 
 **This is an instruction phase** — it tells Claude what to do, not a
-customization point for the project. It ships with CoR and should not
+customization point for the project. It ships with CC and should not
 be deleted or replaced with `skip: true`.
 
 ## What This Phase Does
 
 During debrief, Claude already has full session context: what was built,
 what went wrong, what was learned. This phase asks Claude to reflect on
-one narrow question: **was there friction with anything CoR provided?**
+one narrow question: **was there friction with anything CC provided?**
 
 - A skill whose flow didn't match how the project actually works
 - A phase file whose default behavior was wrong or confusing
@@ -27,9 +27,9 @@ hurt when I used it."
 
 ### 1. Claude Reflects (silent)
 
-Review the session for CoR-specific friction. Consider:
+Review the session for CC-specific friction. Consider:
 
-- Did any CoR skill need to be worked around or used in an unintended way?
+- Did any CC skill need to be worked around or used in an unintended way?
 - Did a phase file's default behavior cause confusion or extra work?
 - Was a SKILL.md unclear, leading to misinterpretation?
 - Did the skeleton/phase separation feel wrong for something?
@@ -37,7 +37,7 @@ Review the session for CoR-specific friction. Consider:
 - Did orient or debrief surface irrelevant information or miss something important?
 
 If nothing comes to mind — **stop here silently**. Most sessions have
-no CoR friction. Do not prompt the user with "any CoR feedback?" every
+no CC friction. Do not prompt the user with "any CC feedback?" every
 time. The phase produces nothing and costs nothing unless there's
 something real.
 
@@ -48,7 +48,7 @@ For each friction point, draft a short feedback item:
 ```
 ## [Short title]
 
-**Skill/phase:** [which CoR component]
+**Skill/phase:** [which CC component]
 **Friction:** [what happened — 2-3 sentences max]
 **Suggestion:** [what might be better — optional, can be "not sure"]
 **Session context:** [one line about what the project was doing when this came up]
@@ -62,7 +62,7 @@ was relevant, adding 3 minutes of noise to every plan" is useful.
 
 Include the draft in the debrief report under a distinct heading:
 
-> **Upstream feedback for CoR:**
+> **Upstream feedback for CC:**
 > I noticed friction with [component]. Here's what I'd send:
 > [draft]
 >
@@ -77,11 +77,11 @@ friction points (rare), present each separately.
 If the user confirms, deliver the feedback. Detection and delivery
 follow the same pattern as `/extract`:
 
-**If linked** (the CoR package resolves to a local directory — check
+**If linked** (the CC package resolves to a local directory — check
 if `node -e "console.log(require.resolve('create-claude-cabinet'))"`
 points to a local path rather than a `node_modules` path):
 
-- Write the feedback as a markdown file in the CoR repo's `feedback/`
+- Write the feedback as a markdown file in the CC repo's `feedback/`
   directory (create it if needed)
 - Filename: `[source-project]-[date]-[short-title].md`
   (e.g., `flow-2026-04-04-plan-critique-noise.md`)
@@ -114,7 +114,7 @@ points to a local path rather than a `node_modules` path):
 
 **For either local save path:**
 
-- Append the feedback to `~/.claude/cor-feedback-outbox.json` as a
+- Append the feedback to `~/.claude/cc-feedback-outbox.json` as a
   JSON array entry with fields: `source` (project name), `date`,
   `component`, `title`, `body`, `status: "pending"`
 - Create the file if it doesn't exist (initialize with `[]`)

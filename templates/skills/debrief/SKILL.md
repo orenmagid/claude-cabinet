@@ -32,7 +32,7 @@ related:
     role: "Project-specific: non-project items to capture"
   - type: file
     path: .claude/skills/debrief/phases/upstream-feedback.md
-    role: "Instruction: surface CoR friction back to source repo"
+    role: "Instruction: surface CC friction back to source repo"
   - type: file
     path: .claude/skills/debrief/phases/report.md
     role: "Project-specific: how to present the summary"
@@ -156,7 +156,7 @@ conversation unless something needs updating):
   themselves this session that isn't in their profile? A new role,
   a new tool they use, a preference about how they work? If so,
   propose adding it. Keep it brief — this isn't an interview.
-- **`~/.claude/cor-registry.json`** — does this project's name or
+- **`~/.claude/cc-registry.json`** — does this project's name or
   description still match reality? If the project has evolved
   significantly, propose updating the registry entry.
 
@@ -201,19 +201,19 @@ them now while context is fresh.
 ### 8. Upstream Feedback (core)
 
 Read `phases/upstream-feedback.md`. This is an **instruction phase**
-shipped with CoR — it tells Claude to reflect on whether the session
-revealed friction with any CoR-provided skill, phase, or convention.
+shipped with CC — it tells Claude to reflect on whether the session
+revealed friction with any CC-provided skill, phase, or convention.
 
 If friction is found, Claude drafts a short feedback item and surfaces
 it in the report for the user to confirm, edit, or dismiss. If
-confirmed, the feedback is delivered to the CoR repo (via local link
+confirmed, the feedback is delivered to the CC repo (via local link
 or GitHub issue). If nothing — the phase is silent.
 
 This is different from `/extract` (which proposes generalizable
 artifacts for upstreaming). This captures field friction: what hurt,
 what was confusing, what needed a workaround.
 
-**This phase should not be skipped.** It's how CoR learns from use.
+**This phase should not be skipped.** It's how CC learns from use.
 
 ### 9. Skill Discovery (core)
 
@@ -243,7 +243,7 @@ If the user says no, move on.
 **Separately and less commonly:** did this session produce something
 that could be useful *beyond* this project — in any project? A
 generalizable pattern, cabinet member, or convention? If so, mention
-`/extract` as an option for proposing it upstream to CoR. This is
+`/extract` as an option for proposing it upstream to CC. This is
 rarer than project-specific skills.
 
 ### 10. Cabinet Check (core)
@@ -347,7 +347,7 @@ Read `phases/report.md` for how to present the debrief summary.
 | `update-state.md` | Default: check system-status.md | What state files to update |
 | `health-checks.md` | Skip | Session-end health checks |
 | `record-lessons.md` | Default: ask what was learned | How to capture learnings |
-| `upstream-feedback.md` | **Instruction: always runs** | Surface CoR friction to source repo |
+| `upstream-feedback.md` | **Instruction: always runs** | Surface CC friction to source repo |
 | `loose-ends.md` | Skip | Non-project items to capture |
 | `report.md` | Default: brief summary | How to present the report |
 
