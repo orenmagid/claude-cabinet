@@ -26,7 +26,7 @@
 
 ## What's Active
 
-- Published at v0.6.3 on npm as `create-claude-cabinet`
+- Published at v0.6.4 on npm as `create-claude-cabinet`
 - One downstream consumer: Flow (32 cabinet members, migrated to v0.6.2 structure)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
 - cc-upgrade has legacy migration step (2.5) and intelligent terminology pass
@@ -34,12 +34,14 @@
 - Write protection + drift detection active
 - Legacy manifest detection: installer now reads `.corrc.json` for v0.5.x upgrades
 - Data schema: `perspective` field renamed to `cabinet-member`/`cabinet_member` across all scripts
+- Two-file committee system: upstream `committees.yaml` + project `committees-project.yaml`
+- `resolve-committees.js` script for deterministic merge at runtime
 
 ## What's Planned
 
 ### Imminent
 
-- Re-run Flow installer with v0.6.3 to pick up schema rename (`perspective` → `cabinet-member`)
+- Split Flow's committees.yaml into upstream + committees-project.yaml
 
 ### Before Migration
 
