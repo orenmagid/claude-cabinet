@@ -30,7 +30,7 @@ curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/insta
 ```
 
 That's it. If you don't have git or Node.js, it installs them.
-No choices to make — it sets up everything.
+No choices to make — you get everything.
 
 Then open [Claude Code](https://claude.ai/code) in the same folder and
 say `/onboard`. It'll interview you about your project and set everything
@@ -41,8 +41,8 @@ step-by-step walkthrough.
 
 ### For developers
 
-If you have Node.js installed and want interactive module selection,
-database setup, or the full install:
+If you have Node.js installed and want to choose which modules to
+install, or want the lean option (skips work tracking and compliance):
 
 ```bash
 npx create-claude-cabinet
@@ -55,42 +55,93 @@ it's done, open Claude Code and run `/onboard`.
 ## What You Get
 
 ### The Session Loop (always installed)
-- **`/orient`** — session briefing. Reads project state, checks health,
-  surfaces what needs attention. Every session starts informed.
-- **`/debrief`** — session close. Marks work done, records lessons,
-  updates state. Every session closes the loop so the next one starts
-  clean.
 
-### The Cabinet (opt-in)
-20 expert cabinet members who audit your project from their domain:
-**speed-freak** watches performance, **boundary-man** catches edge cases,
-**record-keeper** flags when docs drift from code, **workflow-cop**
+This is the foundation. You run these commands — they don't happen
+automatically.
+
+- **`/orient`** — open every session with this. Claude reads project
+  state, checks health, surfaces what needs attention, and briefs you
+  so you never start blind. Think of it as the morning briefing before
+  the cabinet gets to work.
+- **`/debrief`** — close every session with this. Claude marks work
+  done, records lessons, updates state, and prepares the briefing for
+  next time. Without debrief, the next orient starts with stale
+  information. The loop is what gives Claude memory across sessions.
+
+**The habit matters.** Orient and debrief take 30 seconds each. Skip
+them and sessions start from zero — Claude forgets what happened,
+repeats mistakes, and you spend the first 10 minutes re-explaining
+context. Keep the loop and each session picks up where the last one
+left off.
+
+### The Cabinet (included in lean)
+
+20 expert cabinet members who each own a domain and stay in their lane.
+**Speed-freak** watches performance. **Boundary-man** catches edge cases.
+**Record-keeper** flags when docs drift from code. **Workflow-cop**
 evaluates whether your process actually works. Each member has a
-portfolio, stays in it, and produces structured findings you can
-triage. Convene the whole cabinet or just the committee you need.
+portfolio, produces structured findings, and knows when to speak up
+and when to stay quiet.
 
-### Planning + Execution (opt-in)
-- **`/plan`** — structured planning with cabinet critique. Before you
-  build, the relevant members weigh in on your approach.
-- **`/execute`** — step-through execution with checkpoints. Cabinet
-  members watch at each stage.
+You convene the cabinet with **`/audit`** — run it occasionally (every
+few sessions, or before a release) to get a full review from every
+relevant member. You don't need to audit every session. The cabinet
+waits until called.
 
-### Work Tracking (opt-in)
+Members are organized into **committees** — groups by concern, so you
+can convene just the experts you need. Security review? Convene the
+security committee. Performance concerns? Just the speed committee.
+
+### Planning + Execution (included in lean)
+
+Don't just start building — brief the cabinet first.
+
+- **`/plan`** — describe what you want to build. Claude drafts a plan,
+  then the relevant cabinet members critique it before a single line is
+  written. The security member notices the missing auth check. The
+  data integrity member catches the NULL handling gap. You approve the
+  plan, and it carries enough detail for any future session to execute
+  without re-exploring.
+- **`/execute`** — pick up an approved plan and build it step by step.
+  Cabinet members watch at each checkpoint. The plan tells Claude what
+  to do; execute makes sure it gets done right.
+
+### Work Tracking (full install)
+
 Local SQLite database for actions, projects, and status tracking. Claude
 reads and writes it directly — no external service needed. Skip this if
 you already use GitHub Issues, Linear, or something else.
 
-### Compliance Stack (opt-in)
+### Compliance Stack (full install)
+
 Scoped instructions in `.claude/rules/` that load by file path. An
 enforcement pipeline that promotes recurring feedback into deterministic
 hooks — things that keep going wrong become things that can't go wrong.
 
-### Lifecycle (opt-in)
-- **`/onboard`** — conversational project interview, re-runnable as the
-  project matures.
-- **`/seed`** — detects new tech in your project, recruits cabinet
-  members with the right expertise.
-- **`/cc-upgrade`** — conversational merge when Claude Cabinet updates.
+### Lifecycle (included in lean)
+
+- **`/onboard`** — the cabinet's first briefing. Claude interviews you
+  about your project and prepares everything the members need to do
+  their jobs. Re-run it as the project matures — the interview adapts.
+- **`/seed`** — recruit new members. Claude detects new tech in your
+  project and proposes expert members to cover it. Your cabinet grows
+  with your project.
+- **`/cc-upgrade`** — when Claude Cabinet publishes updates, this skill
+  runs the installer for the mechanical parts and walks you through
+  what changed conversationally. Intelligence is the merge strategy.
+
+## Your Workflow
+
+The day-to-day rhythm:
+
+1. **Start a session** → `/orient` (get briefed)
+2. **Do your work** → talk to Claude, use `/plan` for anything non-trivial
+3. **Build it** → `/execute` to implement approved plans with cabinet oversight
+4. **Check quality** → `/audit` occasionally for a full cabinet review
+5. **Close the session** → `/debrief` (close the loop)
+
+Steps 1 and 5 are the minimum. Everything in between is yours to use as
+needed. The more you use, the more the cabinet learns about your project.
 
 ## How It Works
 
