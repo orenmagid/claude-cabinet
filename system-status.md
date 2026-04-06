@@ -35,7 +35,7 @@
 - Legacy manifest detection: installer now reads `.corrc.json` for v0.5.x upgrades
 - Data schema: `perspective` field renamed to `cabinet-member`/`cabinet_member` across all scripts
 - Two-file committee system: upstream `committees.yaml` + project `committees-project.yaml`
-- `resolve-committees.js` script for deterministic merge at runtime
+- `resolve-committees.cjs` script for deterministic merge at runtime
 
 ## What's Planned
 

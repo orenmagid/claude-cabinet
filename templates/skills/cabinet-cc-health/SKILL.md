@@ -131,7 +131,7 @@ empty").
 
 ### 2. Cabinet Member Activation Patterns
 
-Run `node scripts/resolve-committees.js` to get the merged committee list
+Run `node scripts/resolve-committees.cjs` to get the merged committee list
 (upstream `committees.yaml` + project `committees-project.yaml`). Also
 validate that any members listed in `committees-project.yaml` actually
 exist as `cabinet-*` directories. Cross-reference against:

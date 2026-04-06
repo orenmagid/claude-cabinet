@@ -111,7 +111,7 @@ project. Adjust.
 Read `phases/member-selection.md` for which cabinet members to run.
 
 **Default (absent/empty):** Discover all cabinet members from
-`skills/cabinet-*/SKILL.md`. Run `node scripts/resolve-committees.js` to
+`skills/cabinet-*/SKILL.md`. Run `node scripts/resolve-committees.cjs` to
 get the merged committee list (upstream `cabinet/committees.yaml` merged
 with project `cabinet/committees-project.yaml`). Present the merged
 committees and let the user choose which to run. If neither committees

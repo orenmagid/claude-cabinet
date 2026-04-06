@@ -5,7 +5,7 @@ reads this file before spawning cabinet member agents.
 
 When this file is absent or empty, the default behavior is: discover all
 cabinet members from `skills/cabinet-*/SKILL.md`, run
-`node scripts/resolve-committees.js` to merge upstream `cabinet/committees.yaml`
+`node scripts/resolve-committees.cjs` to merge upstream `cabinet/committees.yaml`
 with project `cabinet/committees-project.yaml`, present merged committees,
 otherwise run all. Cross-portfolio members always run regardless of selection.
 To explicitly skip member selection (and run no audit), write only `skip: true`.
@@ -28,7 +28,7 @@ Discover all cabinet members in `skills/cabinet-*/SKILL.md`.
 Run every one. Good for small projects with few cabinet members.
 
 ### Committee-Based Selection
-Run `node scripts/resolve-committees.js` to merge upstream
+Run `node scripts/resolve-committees.cjs` to merge upstream
 `cabinet/committees.yaml` with project `cabinet/committees-project.yaml`.
 Present merged committees to the user.
 

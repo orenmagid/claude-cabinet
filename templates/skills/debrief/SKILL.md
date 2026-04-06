@@ -262,7 +262,7 @@ relevant expertise ever activates because nobody ran `/seed`.
 touched. Did the work involve a framework, library, data store, or
 infrastructure that isn't covered by any existing cabinet member? Compare
 against the cabinet members in `.claude/skills/cabinet-*/` and the
-merged committees (run `node scripts/resolve-committees.js`).
+merged committees (run `node scripts/resolve-committees.cjs`).
 
 Examples of what to catch:
 - Session used Mantine components but there's no framework-quality
@@ -273,7 +273,7 @@ Examples of what to catch:
 
 **Check B — Dormant cabinet member that should be active.** Are there
 cabinet members installed in the project that aren't in any committee
-(check merged output from `node scripts/resolve-committees.js`), but based on the last few sessions, probably should be? A
+(check merged output from `node scripts/resolve-committees.cjs`), but based on the last few sessions, probably should be? A
 cabinet member sitting dormant while the project does exactly the kind of
 work it's designed to review is a waste.
 

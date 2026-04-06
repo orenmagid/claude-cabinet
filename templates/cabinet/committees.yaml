@@ -5,7 +5,7 @@
 #
 # Consumed by:
 #   - /audit skill (committee selection menu)
-#   - scripts/resolve-committees.js (merges with committees-project.yaml)
+#   - scripts/resolve-committees.cjs (merges with committees-project.yaml)
 #
 # Cross-portfolio cabinet members are NOT in any committee. They activate via
 # standing-mandate in their SKILL.md frontmatter and run on every audit:

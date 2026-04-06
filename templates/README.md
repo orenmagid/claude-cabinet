@@ -297,7 +297,7 @@ when you outgrow them.
 5. **Customize committees** (optional):
    Create a `committees-project.yaml` in `.claude/cabinet/` to add custom
    members or committees. The upstream `committees.yaml` is installed
-   automatically. Run `node scripts/resolve-committees.js` to see the
+   automatically. Run `node scripts/resolve-committees.cjs` to see the
    merged result.
 
 6. **Run your first audit:** `/audit` — it discovers cabinet members, runs

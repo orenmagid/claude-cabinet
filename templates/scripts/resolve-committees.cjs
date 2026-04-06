@@ -2,10 +2,10 @@
 'use strict';
 
 /**
- * resolve-committees.js — Merge upstream committees.yaml with project committees-project.yaml
+ * resolve-committees.cjs — Merge upstream committees.yaml with project committees-project.yaml
  *
  * Usage:
- *   node scripts/resolve-committees.js [path-to-claude-dir]
+ *   node scripts/resolve-committees.cjs [path-to-claude-dir]
  *
  * Default path: .claude
  *

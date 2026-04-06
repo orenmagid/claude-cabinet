@@ -257,7 +257,7 @@ fi
 
 # Copy scripts
 mkdir -p "$PROJECT_DIR/scripts"
-for script in cc-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.js pib-db-schema.sql resolve-committees.js triage-server.mjs triage-ui.html; do
+for script in cc-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.js pib-db-schema.sql resolve-committees.cjs triage-server.mjs triage-ui.html; do
   if [ -f "$TEMPLATE_DIR/scripts/$script" ]; then
     cp "$TEMPLATE_DIR/scripts/$script" "$PROJECT_DIR/scripts/"
     copied=$((copied + 1))
