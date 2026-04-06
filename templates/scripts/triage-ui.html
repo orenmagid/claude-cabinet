@@ -30,13 +30,13 @@
     .run-info { color: #909296; font-size: 12px; }
 
     /* Perspective groups */
-    .perspective-group {
+    .member-group {
       margin-bottom: 16px;
       border: 1px solid #373a40;
       border-radius: 8px;
       overflow: hidden;
     }
-    .perspective-header {
+    .member-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -45,21 +45,21 @@
       cursor: pointer;
       user-select: none;
     }
-    .perspective-header:hover { background: #2c2e33; }
-    .perspective-name {
+    .member-header:hover { background: #2c2e33; }
+    .member-name {
       font-weight: 600;
       color: #e9ecef;
       font-size: 14px;
     }
-    .perspective-stats {
+    .member-stats {
       display: flex;
       gap: 8px;
       align-items: center;
       font-size: 12px;
       color: #909296;
     }
-    .perspective-body { padding: 0; }
-    .perspective-body.collapsed { display: none; }
+    .member-body { padding: 0; }
+    .member-body.collapsed { display: none; }
 
     /* Finding rows */
     .finding {
@@ -136,7 +136,7 @@
     .feedback-input::placeholder { color: #5c5f66; }
 
     /* Perspective-level controls */
-    .perspective-controls {
+    .member-controls {
       padding: 8px 14px;
       background: #2c2e33;
       border-top: 1px solid #373a40;
@@ -144,14 +144,14 @@
       flex-direction: column;
       gap: 6px;
     }
-    .perspective-controls-row {
+    .member-controls-row {
       display: flex;
       gap: 8px;
       align-items: center;
       font-size: 12px;
     }
-    .perspective-controls-row label { color: #909296; flex-shrink: 0; }
-    .perspective-input {
+    .member-controls-row label { color: #909296; flex-shrink: 0; }
+    .member-input {
       flex: 1;
       padding: 4px 8px;
       border: 1px solid #373a40;
@@ -160,8 +160,8 @@
       color: #c1c2c5;
       font-size: 12px;
     }
-    .perspective-input::placeholder { color: #5c5f66; }
-    .perspective-q-btn {
+    .member-input::placeholder { color: #5c5f66; }
+    .member-q-btn {
       padding: 3px 10px;
       border: 1px solid #1c7ed6;
       border-radius: 4px;
@@ -172,8 +172,8 @@
       font-weight: 500;
       flex-shrink: 0;
     }
-    .perspective-q-btn:hover { background: #1c7ed622; }
-    .perspective-q-btn.active { background: #1c7ed6; color: #fff; }
+    .member-q-btn:hover { background: #1c7ed622; }
+    .member-q-btn.active { background: #1c7ed6; color: #fff; }
 
     /* Bulk actions */
     .bulk-bar {
@@ -284,7 +284,7 @@
     // ── State ──
     let findings = [];
     const verdicts = {};  // { findingId: { verdict, feedback } }
-    const perspectiveNotes = {};  // { perspective: { comment, question } }
+    const memberNotes = {};  // { member: { comment, question } }
 
     // ── Public API for Claude (javascript_tool) ──
     window.loadFindings = function(data) {
@@ -304,12 +304,12 @@
         total: findings.length,
         triaged: Object.keys(verdicts).length,
         submitted: !!window._submitted,
-        perspectiveNotes: Object.fromEntries(
-          Object.entries(perspectiveNotes).filter(([_, v]) => v.comment || v.question)
+        memberNotes: Object.fromEntries(
+          Object.entries(memberNotes).filter(([_, v]) => v.comment || v.question)
         ),
         verdicts: findings.map(f => ({
           id: f.id,
-          perspective: f.perspective,
+          'cabinet-member': f['cabinet-member'],
           severity: f.severity,
           title: f.title,
           verdict: verdicts[f.id]?.verdict || null,
@@ -347,32 +347,33 @@
       document.getElementById('loading').style.display = 'none';
       document.getElementById('bottom-bar').style.display = 'flex';
 
-      // Group by perspective
+      // Group by cabinet member
       const groups = {};
       findings.forEach(f => {
-        if (!groups[f.perspective]) groups[f.perspective] = [];
-        groups[f.perspective].push(f);
+        const m = f['cabinet-member'];
+        if (!groups[m]) groups[m] = [];
+        groups[m].push(f);
       });
 
       const root = document.getElementById('findings-root');
       root.innerHTML = '';
 
-      // Sort perspectives alphabetically
-      const perspectives = Object.keys(groups).sort();
+      // Sort members alphabetically
+      const members = Object.keys(groups).sort();
 
-      perspectives.forEach(perspective => {
-        const items = groups[perspective];
+      members.forEach(member => {
+        const items = groups[member];
         const triaged = items.filter(f => verdicts[f.id]?.verdict).length;
 
         const group = document.createElement('div');
-        group.className = 'perspective-group';
+        group.className = 'member-group';
 
         // Header
         const header = document.createElement('div');
-        header.className = 'perspective-header';
+        header.className = 'member-header';
         header.innerHTML = `
-          <span class="perspective-name">${perspective} (${items.length})</span>
-          <span class="perspective-stats">
+          <span class="member-name">${member} (${items.length})</span>
+          <span class="member-stats">
             ${triaged}/${items.length} triaged
           </span>
         `;
@@ -383,7 +384,7 @@
 
         // Body
         const body = document.createElement('div');
-        body.className = 'perspective-body';
+        body.className = 'member-body';
 
         items.forEach(f => {
           const row = document.createElement('div');
@@ -413,21 +414,21 @@
         bulk.className = 'bulk-bar';
         bulk.innerHTML = `
           <label>Bulk:</label>
-          <button class="bulk-btn" data-p="${perspective}" data-v="fix">All Fix</button>
-          <button class="bulk-btn" data-p="${perspective}" data-v="defer">All Defer</button>
-          <button class="bulk-btn" data-p="${perspective}" data-v="reject">All Reject</button>
+          <button class="bulk-btn" data-p="${member}" data-v="fix">All Fix</button>
+          <button class="bulk-btn" data-p="${member}" data-v="defer">All Defer</button>
+          <button class="bulk-btn" data-p="${member}" data-v="reject">All Reject</button>
         `;
         body.appendChild(bulk);
 
-        // Perspective-level controls
-        const pn = perspectiveNotes[perspective] || { comment: '', question: false };
+        // Member-level controls
+        const pn = memberNotes[member] || { comment: '', question: false };
         const pControls = document.createElement('div');
-        pControls.className = 'perspective-controls';
+        pControls.className = 'member-controls';
         pControls.innerHTML = `
-          <div class="perspective-controls-row">
-            <button class="perspective-q-btn ${pn.question ? 'active' : ''}" data-perspective="${perspective}">?</button>
-            <input class="perspective-input" data-perspective="${perspective}"
-              placeholder="${pn.question ? 'your question about this perspective...' : 'comment on this perspective...'}"
+          <div class="member-controls-row">
+            <button class="member-q-btn ${pn.question ? 'active' : ''}" data-member="${member}">?</button>
+            <input class="member-input" data-member="${member}"
+              placeholder="${pn.question ? 'your question about this member...' : 'comment on this member...'}"
               value="${esc(pn.comment || '')}">
           </div>
         `;
@@ -479,9 +480,9 @@
       }
       // Bulk buttons
       if (e.target.classList.contains('bulk-btn')) {
-        const perspective = e.target.dataset.p;
+        const member = e.target.dataset.p;
         const v = e.target.dataset.v;
-        findings.filter(f => f.perspective === perspective).forEach(f => {
+        findings.filter(f => f['cabinet-member'] === member).forEach(f => {
           if (!verdicts[f.id]) verdicts[f.id] = { verdict: '', feedback: '' };
           verdicts[f.id].verdict = v;
         });
@@ -490,10 +491,10 @@
     });
 
     document.addEventListener('click', e => {
-      if (e.target.classList.contains('perspective-q-btn')) {
-        const p = e.target.dataset.perspective;
-        if (!perspectiveNotes[p]) perspectiveNotes[p] = { comment: '', question: false };
-        perspectiveNotes[p].question = !perspectiveNotes[p].question;
+      if (e.target.classList.contains('member-q-btn')) {
+        const p = e.target.dataset.member;
+        if (!memberNotes[p]) memberNotes[p] = { comment: '', question: false };
+        memberNotes[p].question = !memberNotes[p].question;
         render();
       }
     });
@@ -504,10 +505,10 @@
         if (!verdicts[id]) verdicts[id] = { verdict: '', feedback: '' };
         verdicts[id].feedback = e.target.value;
       }
-      if (e.target.classList.contains('perspective-input')) {
-        const p = e.target.dataset.perspective;
-        if (!perspectiveNotes[p]) perspectiveNotes[p] = { comment: '', question: false };
-        perspectiveNotes[p].comment = e.target.value;
+      if (e.target.classList.contains('member-input')) {
+        const p = e.target.dataset.member;
+        if (!memberNotes[p]) memberNotes[p] = { comment: '', question: false };
+        memberNotes[p].comment = e.target.value;
       }
     });
 

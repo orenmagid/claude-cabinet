@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS audit_runs (
 CREATE TABLE IF NOT EXISTS audit_findings (
   id                  TEXT PRIMARY KEY,
   run_id              TEXT NOT NULL REFERENCES audit_runs(id),
-  perspective         TEXT NOT NULL,
+  cabinet_member      TEXT NOT NULL,  -- renamed from 'perspective' in v0.7; migration: ALTER TABLE audit_findings RENAME COLUMN perspective TO cabinet_member
   severity            TEXT NOT NULL CHECK(severity IN ('critical','warn','info','idea')),
   title               TEXT NOT NULL,
   description         TEXT,

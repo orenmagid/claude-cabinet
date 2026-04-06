@@ -54,7 +54,7 @@ if (files.length === 0) {
 
 const allFindings = [];
 const seenIds = new Set();
-const perspectiveCounts = {};
+const memberCounts = {};
 const severityCounts = { critical: 0, warn: 0, info: 0, idea: 0 };
 let positiveCount = 0;
 
@@ -62,7 +62,7 @@ for (const file of files) {
   try {
     const data = JSON.parse(readFileSync(join(runDir, file), 'utf-8'));
     const findings = data.findings || [];
-    const perspective = data.meta?.perspective || basename(file, '.json');
+    const member = data.meta?.['cabinet-member'] || basename(file, '.json');
 
     for (const f of findings) {
       if (seenIds.has(f.id)) continue;
@@ -74,11 +74,11 @@ for (const file of files) {
         positiveCount++;
       } else {
         severityCounts[f.severity] = (severityCounts[f.severity] || 0) + 1;
-        perspectiveCounts[perspective] = (perspectiveCounts[perspective] || 0) + 1;
+        memberCounts[member] = (memberCounts[member] || 0) + 1;
       }
     }
 
-    console.log(`  ${perspective}: ${findings.length} findings`);
+    console.log(`  ${member}: ${findings.length} findings`);
   } catch (err) {
     console.error(`  Error reading ${file}: ${err.message}`);
   }
@@ -96,14 +96,14 @@ const summary = {
     runId,
     timestamp,
     trigger: 'manual',
-    perspectives: Object.keys(perspectiveCounts),
+    members: Object.keys(memberCounts),
     counts: {
       total: allFindings.length,
       findings: allFindings.length - positiveCount,
       positive: positiveCount,
       ...severityCounts,
     },
-    byPerspective: perspectiveCounts,
+    byMember: memberCounts,
   },
 };
 

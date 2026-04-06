@@ -47,12 +47,12 @@ function tryDatabase() {
     const db = new Database(DB_PATH, { readonly: true });
 
     const rejected = db.prepare(`
-      SELECT id, perspective, title FROM audit_findings
+      SELECT id, cabinet_member, title FROM audit_findings
       WHERE triage_status = 'rejected'
     `).all();
 
     const deferred = db.prepare(`
-      SELECT id, perspective, title FROM audit_findings
+      SELECT id, cabinet_member, title FROM audit_findings
       WHERE triage_status = 'deferred'
     `).all();
 
@@ -60,12 +60,12 @@ function tryDatabase() {
 
     result.rejectedIds = rejected.map(r => r.id);
     result.rejectedFingerprints = rejected.map(r => ({
-      perspective: r.perspective,
+      'cabinet-member': r.cabinet_member,
       title: r.title,
     }));
     result.deferredIds = deferred.map(r => r.id);
     result.deferredFingerprints = deferred.map(r => ({
-      perspective: r.perspective,
+      'cabinet-member': r.cabinet_member,
       title: r.title,
     }));
 
@@ -116,7 +116,7 @@ function tryFilesystem() {
           const verdicts = data.verdicts || data;
 
           for (const v of (Array.isArray(verdicts) ? verdicts : [])) {
-            const fp = { perspective: v.perspective, title: v.title };
+            const fp = { 'cabinet-member': v['cabinet-member'] || v.perspective, title: v.title };
 
             if (v.verdict === 'reject' || v.status === 'rejected') {
               if (v.id && !result.rejectedIds.includes(v.id)) {

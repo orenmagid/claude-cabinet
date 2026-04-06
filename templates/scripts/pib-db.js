@@ -227,7 +227,7 @@ function ingestFindings(runDir) {
 
   const insert = d.prepare(`
     INSERT OR REPLACE INTO audit_findings
-      (id, run_id, perspective, severity, title, description, assumption,
+      (id, run_id, cabinet_member, severity, title, description, assumption,
        evidence, question, file, line, suggested_fix, auto_fixable, type)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
@@ -235,7 +235,7 @@ function ingestFindings(runDir) {
   let count = 0;
   for (const f of (data.findings || [])) {
     insert.run(
-      f.id, runId, f.perspective, f.severity, f.title,
+      f.id, runId, f['cabinet-member'], f.severity, f.title,
       f.description || null, f.assumption || null, f.evidence || null,
       f.question || null, f.file || null, f.line || null,
       f.suggestedFix || null, f.autoFixable ? 1 : 0, f.type || 'finding'
@@ -262,20 +262,20 @@ function triageHistory() {
   const d = getDb();
 
   const rejected = d.prepare(`
-    SELECT id, perspective, title FROM audit_findings
+    SELECT id, cabinet_member, title FROM audit_findings
     WHERE triage_status = 'rejected'
   `).all();
 
   const deferred = d.prepare(`
-    SELECT id, perspective, title FROM audit_findings
+    SELECT id, cabinet_member, title FROM audit_findings
     WHERE triage_status = 'deferred'
   `).all();
 
   const result = {
     rejectedIds: rejected.map(r => r.id),
-    rejectedFingerprints: rejected.map(r => ({ perspective: r.perspective, title: r.title })),
+    rejectedFingerprints: rejected.map(r => ({ 'cabinet-member': r.cabinet_member, title: r.title })),
     deferredIds: deferred.map(r => r.id),
-    deferredFingerprints: deferred.map(r => ({ perspective: r.perspective, title: r.title })),
+    deferredFingerprints: deferred.map(r => ({ 'cabinet-member': r.cabinet_member, title: r.title })),
   };
   console.log(JSON.stringify(result, null, 2));
   return result;

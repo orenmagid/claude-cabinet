@@ -84,7 +84,7 @@ these with `"type": "positive"`:
 {
   "id": "{cabinet-member}-p{NNNN}",
   "type": "positive",
-  "perspective": "{cabinet-member-name}",
+  "cabinet-member": "{cabinet-member-name}",
   "severity": "info",
   "title": "Healthy subsystem confirmation",
   "description": "What was checked and found healthy",
@@ -127,7 +127,7 @@ Return valid JSON matching `scripts/finding-schema.json`.
     {
       "id": "{cabinet-member}-{NNNN}",
       "type": "finding",
-      "perspective": "{cabinet-member-name}",
+      "cabinet-member": "{cabinet-member-name}",
       "severity": "critical|warn|info|idea",
       "title": "Short description (max 120 chars)",
       "description": "Full explanation",
@@ -138,7 +138,7 @@ Return valid JSON matching `scripts/finding-schema.json`.
     }
   ],
   "meta": {
-    "perspective": "{cabinet-member-name}",
+    "cabinet-member": "{cabinet-member-name}",
     "timestamp": "ISO-8601"
   }
 }

@@ -7,14 +7,14 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "perspective", "severity", "title", "description", "autoFixable"],
+        "required": ["id", "cabinet-member", "severity", "title", "description", "autoFixable"],
         "properties": {
           "id": {
             "type": "string",
             "description": "Unique finding ID: {cabinet-member}-{NNNN}",
             "pattern": "^[a-z-]+-\\d{4}$"
           },
-          "perspective": {
+          "cabinet-member": {
             "type": "string",
             "description": "Cabinet member name matching the directory name in skills/cabinet-*/",
             "pattern": "^[a-z][a-z0-9-]+$"
@@ -81,9 +81,9 @@
     },
     "meta": {
       "type": "object",
-      "required": ["perspective", "timestamp"],
+      "required": ["cabinet-member", "timestamp"],
       "properties": {
-        "perspective": { "type": "string" },
+        "cabinet-member": { "type": "string" },
         "timestamp": { "type": "string", "format": "date-time" },
         "commitHash": { "type": "string" },
         "durationSeconds": { "type": "number" },
