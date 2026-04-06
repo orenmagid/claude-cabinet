@@ -40,7 +40,6 @@
 ### Imminent
 
 - Re-run Flow installer with v0.6.3 to pick up schema rename (`perspective` → `cabinet-member`)
-- Re-run lean install on CC source repo to dogfood v0.6.3
 
 ### Before Migration
 
