@@ -1,4 +1,4 @@
-# System Status — Claude on Rails
+# System Status — Claude on Rails (renaming to Claude Cabinet)
 
 ## What's Built
 
@@ -7,11 +7,14 @@
 - 3 install modes: Everything, Lean (`--lean`), Custom (interactive per-module)
 - Template copying with hash-based conflict detection and manifest tracking
 - Existing installs: add-only (no overwrite prompts), updates via `/cor-upgrade`
-- Conflict prompts show full paths (`.claude/skills/orient/SKILL.md` not `SKILL.md`)
 - Safe reset via `--reset` (manifest-aware, won't delete customized files)
 - Settings merge (hooks into `.claude/settings.json`)
 - Optional SQLite work tracker setup
-- 20 expert perspectives for audit system
+- 20 expert perspectives for audit system (renaming to "cabinet members")
+- Split context files: identity, architecture, scopes, cabinet, work-tracking, api (renaming to "briefings")
+- Perspective gap detection in debrief (anti-entropy)
+- Feedback outbox for non-developers (`~/.claude/cor-feedback-outbox.json`)
+- GitHub setup guide for non-developer feedback delivery
 - Conversational onboard, seed, and cor-upgrade skills
 - Link/unlink skills for local dev workflow
 - Publish skill with post-publish dogfood sync
@@ -19,21 +22,36 @@
 - Upstream feedback loop: debrief phase auto-surfaces CoR friction from consuming projects
 - Write protection: hook blocks edits to manifest-tracked files, prevents downstream drift
 - Drift detection: `cor-drift-check.cjs` compares file hashes against manifest
-- Dogfooded: CoR installed on itself via `--lean` with full context layer
+- Dogfooded: installed on itself via `--lean`
 
 ## What's Active
 
-- Published at v0.4.1 on npm
-- Upstream feedback loop: debrief phase auto-surfaces CoR friction from consuming projects
-- Write protection: hook blocks edits to manifest-tracked files, drift check detects modified upstream files
-- Flow perspectives synced to CoR templates (16 files), _context.md updated with missing sections
-- Flow pending `/cor-upgrade` for remaining 24 drifted skill/infrastructure files
+- Published at v0.5.8 on npm as `create-claude-rails`
+- One downstream consumer: Flow (32 perspectives, v0.5.1 installed)
+- Upstream feedback loop active
+- Write protection + drift detection active
 
 ## What's Planned
 
-- Onboard should ensure `_context.md` has all required `§` sections that generic templates reference
-- Run `/cor-upgrade` in Flow to update remaining 24 drifted skill/infrastructure files
-- Run `/extract` from Flow to test the proposal pipeline
-- Onboard interview testing across different project types
-- Perspective seeding from tech signals (`/seed`)
-- README update to document `--lean` flag and new skills
+### Imminent: Full Cabinet Restructure (PLAN-cabinet-restructure.md)
+
+- Rename project: Claude on Rails → **Claude Cabinet**
+- Rename package: `create-claude-rails` → **`create-claude-cabinet`**
+- Rename terminology: perspectives→cabinet members, groups→committees,
+  context→briefings, lanes→portfolios, activation signals→convening criteria
+- Rename 7 members: boundary-man, process-therapist, small-screen,
+  roster-check, record-keeper, workflow-cop, speed-freak
+- Restructure directories: members stay in `skills/cabinet-*/`,
+  infrastructure to `cabinet/`, briefings to `briefing/`
+- Version bump to 0.6.0
+- Flow migration after upstream lands
+
+### After Restructure
+
+- Build 7 new cabinet members: goal-alignment, information-design,
+  user-advocate, ui-experimentalist, vision, framework-quality, gtd
+- Build pre-built variant: mantine-quality (PAIR with framework-quality)
+- Build general-purpose migration into cor-upgrade
+- Rename GitHub repo
+- Set up npm redirect from old package name
+- Onboard interview testing across project types
