@@ -16,7 +16,7 @@ PROJECT_DIR="${1:-.}"
 PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)"
 
 CLAUDE_DIR="$PROJECT_DIR/.claude"
-VERSION="0.6.1"
+VERSION="0.6.2"
 TARBALL_URL="https://registry.npmjs.org/create-claude-cabinet/-/create-claude-cabinet-${VERSION}.tgz"
 
 echo ""
