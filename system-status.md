@@ -26,7 +26,7 @@
 
 ## What's Active
 
-- Published at v0.7.0 on npm as `create-claude-cabinet`
+- Published at v0.7.1 on npm as `create-claude-cabinet`
 - One downstream consumer: Flow (27 upstream + 5 project-specific cabinet members)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
