@@ -149,6 +149,21 @@ reality so the next orient reads accurate information.
 (or equivalent) needs updating to reflect what was built, fixed, or
 changed.
 
+Also check **briefing freshness** — did this session's work invalidate
+any claims in the briefing files? Common drift signals:
+- Session installed a new module or capability, but the briefing still
+  says it's not available
+- Session changed architecture (new data store, new framework, new
+  deployment), but the briefing describes the old state
+- Version numbers in `.ccrc.json` or briefing don't match `package.json`
+- Work tracking was set up or changed, but `_briefing-work-tracking.md`
+  doesn't reflect it
+
+If the briefing is stale, update the relevant split file (or the
+monolithic `_briefing.md` if the project hasn't split yet). Don't wait
+for `/audit` to catch this — stale briefings degrade every cabinet
+member's judgment until they're fixed.
+
 Also check the **user-level state** (silently — don't make this a
 conversation unless something needs updating):
 

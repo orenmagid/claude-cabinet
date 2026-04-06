@@ -22,7 +22,8 @@
 - Upstream feedback loop: debrief phase auto-surfaces CC friction from consuming projects
 - Write protection: hook blocks edits to manifest-tracked files, prevents downstream drift
 - Drift detection: `cc-drift-check.cjs` compares file hashes against manifest
-- Dogfooded: installed on itself via `--lean`
+- Dogfooded: installed on itself (full install, all 8 modules)
+- Split briefing files for dogfood install: identity, architecture, jurisdictions, cabinet, work-tracking
 
 ## What's Active
 
@@ -41,14 +42,5 @@
 
 ## What's Planned
 
-### Imminent
-
-- Flow cleanup: remove legacy `system-tutor` (replaced by upstream
-  `user-advocate`), verify `committees-project.yaml` includes new members
-
-### Later
-
-- Build general-purpose migration into cc-upgrade
-- Archive old GitHub repo `orenmagid/claude-on-rails`
-- Onboard interview testing across project types
-- install.sh manifest builder: add the `build_manifest` completion message
+Planned work is tracked in pib-db (`./pib.db`). Query with
+`node scripts/pib-db.js list-projects` and `node scripts/pib-db.js list-actions`.
