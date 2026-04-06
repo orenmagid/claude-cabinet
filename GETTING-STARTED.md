@@ -64,7 +64,7 @@ Replace `my-project` with whatever you want to call it.
 ### Step 2: Run the installer
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/install.sh | bash
 ```
 
 The installer handles everything:
@@ -165,7 +165,7 @@ When a new version comes out, run the installer again:
 
 ```bash
 cd ~/my-project
-curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/install.sh | bash
 ```
 
 It'll update the framework files without touching your project-specific
@@ -182,4 +182,4 @@ walk you through what changed.
   help, try `/onboard` again — it won't erase anything, just refresh
   the briefings.
 - **Need help:** Open an issue at
-  https://github.com/orenmagid/claude-on-rails/issues
+  https://github.com/orenmagid/claude-cabinet/issues

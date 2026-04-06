@@ -112,7 +112,7 @@ Run the installer via Bash to mechanically update all upstream files:
 
 ```
 # Shell installer (re-downloads latest from npm registry)
-curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/install.sh | bash
 
 # Or npm installer (if Node.js available)
 npx create-claude-cabinet

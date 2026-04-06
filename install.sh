@@ -3,7 +3,7 @@
 # Works without Node.js, npm, or git — installs them if needed.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/install.sh | bash
 #
 # Or download and run:
 #   bash install.sh

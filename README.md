@@ -26,7 +26,7 @@ and weigh in when their expertise matters:
 Open a terminal, `cd` into your project folder, and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/install.sh | bash
 ```
 
 That's it. If you don't have git or Node.js, it installs them.
@@ -144,7 +144,7 @@ Re-run the installer to pick up new versions:
 
 ```bash
 # Shell installer (re-downloads latest)
-curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-cabinet/main/install.sh | bash
 
 # npm installer (if using Node.js)
 npx create-claude-cabinet
