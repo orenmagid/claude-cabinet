@@ -945,25 +945,134 @@ standing-mandate: [committee1, committee2]
 | Monolithic _context.md content lost | Low | High | Direct copy to _briefing.md |
 | Frontmatter keys not updated | Medium | Medium | Grep for old keys after migration |
 
-### 5E: Flow Migration Timing
+### 5E: Package Name Transition
 
-1. ✅ Land the Claude Cabinet restructure in upstream repo
-2. ✅ Publish to npm as `create-claude-cabinet` v0.6.0
-3. Migrate Flow using Option A (clean reinstall + restore)
-4. Verify Flow works: run `/orient`, trigger a few cabinet members, run `/debrief`
-5. Later: build general-purpose migration into `cor-upgrade`
+The npm package changed from `create-claude-rails` to `create-claude-cabinet`.
+This is a **new package** on the registry, not a rename — npm doesn't support
+renames.
+
+**Impact on Flow migration:**
+- Flow's `.corrc.json` currently has `"upstreamPackage": "create-claude-rails"`
+- Step 3 (reinstall) regenerates `.corrc.json` with `"create-claude-cabinet"`
+- `cor-upstream-guard.sh` and `cor-upgrade` don't read `upstreamPackage`
+  at runtime — it's just metadata. No functional breakage.
+- The old `create-claude-rails` package stays on npm (can deprecate later)
+
+**Install command changes:**
+```bash
+# Old:
+npx create-claude-rails
+curl ... install.sh | bash  # install.sh downloads create-claude-rails
+
+# New:
+npx create-claude-cabinet
+curl ... install.sh | bash  # install.sh downloads create-claude-cabinet
+```
+
+No action needed in Flow beyond running the reinstall — the new installer
+writes the correct package name.
+
+### 5F: Remaining Steps (Ordered)
+
+The order matters. Some steps create redirects or break paths that later
+steps depend on. Do them in this sequence.
+
+#### Step 1: Publish to npm ⏳
+```bash
+npm login          # needs MFA
+npm publish --access public
+```
+This must happen before the GitHub repo rename because `install.sh`
+downloads from npm (not GitHub) for the tarball. The npm package name
+is already `create-claude-cabinet` — this just puts it on the registry.
+
+After publishing, deprecate the old package:
+```bash
+npm deprecate create-claude-rails "Renamed to create-claude-cabinet. Run: npx create-claude-cabinet"
+```
+
+#### Step 2: Create new GitHub repo `orenmagid/claude-cabinet`
+GitHub repo renames create redirects, but a fresh repo is cleaner:
+
+1. Create `orenmagid/claude-cabinet` on GitHub (empty, no README)
+2. In the local repo, add the new remote and push:
+   ```bash
+   cd ~/claude-on-rails
+   git remote set-url origin git@github.com:orenmagid/claude-cabinet.git
+   git push -u origin main
+   ```
+3. Update all `raw.githubusercontent.com` URLs in these files:
+   - `install.sh` line 6 (comment)
+   - `README.md` lines 29, 147
+   - `GETTING-STARTED.md` lines 67, 168
+   - `GETTING-STARTED.md` line 185 (issues URL)
+   - `templates/skills/cor-upgrade/SKILL.md` line 115
+   - `README.md` Philosophy section (Flow repo link — check if it exists)
+4. Commit, push to new repo
+5. Old repo `orenmagid/claude-on-rails`: add a README that says
+   "This project has moved to [claude-cabinet](https://github.com/orenmagid/claude-cabinet)"
+   and archive it. GitHub's redirect will handle any old `curl` commands
+   in the wild until people update.
+
+**Why new repo instead of rename:** Cleaner break. No ambiguity about
+which name is current. The old repo can be archived with a pointer.
+GitHub redirects from old→new work for clones and raw URLs, but having
+both is belt-and-suspenders.
+
+#### Step 3: Rename local directory
+```bash
+mv ~/claude-on-rails ~/claude-cabinet
+cd ~/claude-cabinet
+```
+
+**Claude Code project path impact:**
+- `~/.claude/projects/-Users-orenmagid-claude-on-rails/` contains
+  memory, settings, and conversation history for this project
+- After the rename, Claude Code will create a new project path
+  `-Users-orenmagid-claude-cabinet/`
+- Copy memory files to preserve continuity:
+  ```bash
+  cp -r ~/.claude/projects/-Users-orenmagid-claude-on-rails/memory \
+        ~/.claude/projects/-Users-orenmagid-claude-cabinet/memory
+  ```
+- The old project path can be left alone or deleted later
+
+**Other impacts:** None. No `npm link` set up. The git remote was
+already updated in Step 2. The directory name isn't referenced in
+any code or config.
+
+#### Step 4: Re-run lean install (dogfooding)
+```bash
+cd ~/claude-cabinet
+npx create-claude-cabinet --lean --yes
+```
+This updates the local `.claude/` files and regenerates `.corrc.json`
+with the correct package name and paths. Validates that the published
+package works.
+
+#### Step 5: Migrate Flow (separate session)
+See section 5C above. The full Option A walkthrough.
+
+#### Step 6: Cleanup (whenever)
+- Archive `orenmagid/claude-on-rails` on GitHub
+- `npm deprecate create-claude-rails` (done in Step 1)
+- Delete `~/.claude/projects/-Users-orenmagid-claude-on-rails/` if
+  no longer needed
+- Build general-purpose migration into `cor-upgrade` for future users
 
 ---
 
 ## Part 6: Commit Strategy
 
-**Single atomic commit** for the upstream restructure. Rationale: splitting
-would leave the codebase in an inconsistent state between commits (some files
-referencing old paths, others new). One commit, one `git bisect` target.
+**Two commits landed** for the upstream restructure:
+1. `91dffe5` — v0.6.0: Full restructure (directory moves, renames,
+   terminology, all 86+ files)
+2. `72d7a0c` — Metaphor language pass (docs, skills, install output,
+   audit fixes, this migration plan update)
+
+**Separate commit** for GitHub URL updates (after repo rename in Step 2).
 
 **Separate commit** for Flow migration (different repo).
-
-**Separate commit** for npm publish (after verification).
 
 ---
 
