@@ -8,7 +8,7 @@ description: >
 user-invocable: false
 briefing:
   - _briefing-identity.md
-  - _briefing-scopes.md
+  - _briefing-jurisdictions.md
 activation:
   standing-mandate: audit
   files:

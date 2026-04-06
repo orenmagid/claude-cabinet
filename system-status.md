@@ -10,8 +10,8 @@
 - Safe reset via `--reset` (manifest-aware, won't delete customized files)
 - Settings merge (hooks into `.claude/settings.json`)
 - Optional SQLite work tracker setup
-- 20 expert cabinet members for audit system
-- Split briefing files: identity, architecture, scopes, cabinet, work-tracking, api
+- 27 expert cabinet members for audit system
+- Split briefing files: identity, architecture, jurisdictions, cabinet, work-tracking, api
 - Cabinet member gap detection in debrief (anti-entropy)
 - Feedback outbox for non-developers (`~/.claude/cc-feedback-outbox.json`)
 - GitHub setup guide for non-developer feedback delivery
@@ -26,8 +26,8 @@
 
 ## What's Active
 
-- Published at v0.6.8 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (20 upstream + 11 project-specific cabinet members, fully migrated to v0.6.8)
+- Published at v0.7.0 on npm as `create-claude-cabinet`
+- One downstream consumer: Flow (27 upstream + 5 project-specific cabinet members)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
@@ -43,12 +43,14 @@
 
 ### Imminent
 
-- Extract 11 Flow cabinet members into upstream CC templates
-  (goal-alignment, gtd, information-design, life-optimization, life-tracker,
-   mantine-quality, philosophical-grounding, sync-health, system-tutor,
-   ui-experimentalist, vision)
-- Source: Flow git history at 209f9f4~1 under perspectives/
-- See memory: project_cabinet_extraction.md for full plan
+- Cabinet extraction published in v0.7.0: 7 new upstream members
+  (framework-quality, goal-alignment, information-design, mantine-quality,
+   ui-experimentalist, user-advocate, vision)
+- Briefing rename: scopes → jurisdictions (cabinet metaphor alignment)
+- Briefing template extensions: identity (design philosophy, principle
+  catalog, strategic direction), architecture (UI framework)
+- 5 members stay Flow-only: gtd, sync-health, life-optimization,
+  life-tracker, philosophical-grounding
 
 ### Later
 

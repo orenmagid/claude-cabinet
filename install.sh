@@ -193,7 +193,7 @@ fi
 echo "  Setting up..."
 
 # All skill directories
-SKILL_DIRS="orient orient-quick debrief debrief-quick menu plan execute investigate audit pulse triage-audit onboard seed cc-upgrade link unlink publish extract validate cabinet-accessibility cabinet-anti-confirmation cabinet-architecture cabinet-boundary-man cabinet-cc-health cabinet-data-integrity cabinet-debugger cabinet-historian cabinet-organized-mind cabinet-process-therapist cabinet-qa cabinet-record-keeper cabinet-roster-check cabinet-security cabinet-small-screen cabinet-speed-freak cabinet-system-advocate cabinet-technical-debt cabinet-usability cabinet-workflow-cop"
+SKILL_DIRS="orient orient-quick debrief debrief-quick menu plan execute investigate audit pulse triage-audit onboard seed cc-upgrade link unlink publish extract validate cabinet-accessibility cabinet-anti-confirmation cabinet-architecture cabinet-boundary-man cabinet-cc-health cabinet-data-integrity cabinet-debugger cabinet-framework-quality cabinet-goal-alignment cabinet-historian cabinet-information-design cabinet-mantine-quality cabinet-organized-mind cabinet-process-therapist cabinet-qa cabinet-record-keeper cabinet-roster-check cabinet-security cabinet-small-screen cabinet-speed-freak cabinet-system-advocate cabinet-technical-debt cabinet-ui-experimentalist cabinet-usability cabinet-user-advocate cabinet-vision cabinet-workflow-cop"
 
 # Copy skills
 copied=0
@@ -238,7 +238,7 @@ done
 
 # Copy briefing templates
 mkdir -p "$CLAUDE_DIR/briefing"
-for f in _briefing-template.md _briefing-identity-template.md _briefing-architecture-template.md _briefing-scopes-template.md _briefing-cabinet-template.md _briefing-work-tracking-template.md _briefing-api-template.md; do
+for f in _briefing-template.md _briefing-identity-template.md _briefing-architecture-template.md _briefing-jurisdictions-template.md _briefing-cabinet-template.md _briefing-work-tracking-template.md _briefing-api-template.md; do
   if [ -f "$TEMPLATE_DIR/briefing/$f" ]; then
     cp "$TEMPLATE_DIR/briefing/$f" "$CLAUDE_DIR/briefing/"
     copied=$((copied + 1))

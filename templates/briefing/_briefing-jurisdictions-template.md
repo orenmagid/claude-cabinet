@@ -1,4 +1,4 @@
-# Paths — [Your Project Name]
+# Jurisdictions — [Your Project Name]
 
 Cabinet members reference these sections by name to know where to look.
 Only fill in sections relevant to the cabinet members you adopt.

@@ -10,7 +10,7 @@ user-invocable: false
 briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
-  - _briefing-scopes.md
+  - _briefing-jurisdictions.md
 interactive-only: true
 ---
 

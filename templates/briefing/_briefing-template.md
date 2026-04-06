@@ -17,7 +17,7 @@ rather than parsing one large document.
 _briefing.md                  ← Hub/index (always exists)
 _briefing-identity.md         ← What the project is (always exists)
 _briefing-architecture.md     ← System structure, codebase layout
-_briefing-scopes.md           ← Where to look (paths)
+_briefing-jurisdictions.md           ← Where to look (paths)
 _briefing-cabinet.md          ← Active cabinet members, portfolio rules
 _briefing-work-tracking.md    ← Work item storage and interfaces
 _briefing-api.md              ← API config, entity types
@@ -41,11 +41,11 @@ System structure, codebase layout, technology stack. Needed by
 cabinet members that evaluate code structure or need to understand where
 things live. Template: `_briefing-architecture-template.md`.
 
-### `_briefing-scopes.md` — Paths
+### `_briefing-jurisdictions.md` — Paths
 Where to look for different kinds of code and configuration. Sections
 are referenced by name (e.g., "App Source", "Data Store"). Only fill in
 sections relevant to the cabinet members you adopt. Template:
-`_briefing-scopes-template.md`.
+`_briefing-jurisdictions-template.md`.
 
 ### `_briefing-cabinet.md` — Cabinet
 Which cabinet members are active, portfolio rules, invocation patterns.
@@ -65,7 +65,7 @@ API. Template: `_briefing-api-template.md`.
 
 Which cabinet members need which briefing files (identity is always loaded):
 
-| Cabinet Member        | architecture | scopes | cabinet | work-tracking | api |
+| Cabinet Member        | architecture | jurisdictions | cabinet | work-tracking | api |
 |-----------------------|:---:|:---:|:---:|:---:|:---:|
 | accessibility         |     |  x  |     |     |     |
 | anti-confirmation     |     |     |     |     |     |
@@ -107,7 +107,7 @@ cabinet member is adopted:
 ## Files Are Optional
 
 Only create briefing files relevant to your project. A CLI tool with no
-UI doesn't need `_briefing-scopes.md` App Source. A project without an
+UI doesn't need `_briefing-jurisdictions.md` App Source. A project without an
 API skips `_briefing-api.md` entirely. The hub `_briefing.md` lists what
 exists so cabinet members know what's available.
 

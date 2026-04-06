@@ -34,7 +34,7 @@ Populate from interview answers:
 
 ### Generate if interview covered it
 
-**`_briefing-scopes.md`** — Use `_briefing-scopes-template.md`. Only create
+**`_briefing-jurisdictions.md`** — Use `_briefing-jurisdictions-template.md`. Only create
 if the interview revealed specific paths and locations. Populate from
 architecture discussion (where does code live, where is the DB, where
 are deploy configs?). Only fill in sections that have real content.

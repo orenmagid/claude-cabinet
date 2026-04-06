@@ -9,7 +9,7 @@ user-invocable: false
 briefing:
   - _briefing-identity.md
   - _briefing-cabinet.md
-  - _briefing-scopes.md
+  - _briefing-jurisdictions.md
 standing-mandate: audit
 files:
   - .claude/skills/*/SKILL.md

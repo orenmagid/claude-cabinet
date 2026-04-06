@@ -14,3 +14,20 @@ important to read.*
 
 *Languages, frameworks, libraries, databases, infrastructure. Include
 versions when they matter (e.g., Mantine v8, not just "Mantine").*
+
+## UI Framework
+
+*Optional — fill this in if your project has a UI framework and you've
+adopted framework-quality or a tech-specific variant (e.g.,
+mantine-quality).*
+
+*Include:*
+- *Framework name and version (e.g., Mantine v8, Chakra UI v3)*
+- *Import conventions — does the project centralize framework imports
+  through a barrel file? If so, path and convention.*
+- *Framework reference docs — curated decision guides, component
+  inventories, or reference files the project maintains*
+- *Theme system — how theming works, what's configurable at runtime,
+  which files control it*
+- *App-specific conventions — framework-first rules, destructive action
+  patterns, etc.*
