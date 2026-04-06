@@ -26,8 +26,10 @@
 
 ## What's Active
 
-- Published at v0.6.0 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (32 cabinet members, v0.5.1 installed — needs migration)
+- Published at v0.6.1 on npm as `create-claude-cabinet`
+- One downstream consumer: Flow (32 cabinet members, v0.5.1 installed — migration ready)
+- cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
+- cc-upgrade has legacy migration step (2.5) and intelligent terminology pass
 - Upstream feedback loop active
 - Write protection + drift detection active
 
@@ -36,7 +38,8 @@
 ### Imminent: Flow Migration
 
 - Migrate Flow from old `perspectives/` structure to new `cabinet-*/` structure
-- Option A (recommended): clean reinstall + restore custom files
+- Migration tooling built: cc-upgrade Step 2.5 handles the full transition
+- Process: new branch → `npx create-claude-cabinet --yes` → `/cc-upgrade` → `/audit cc-health`
 - See PLAN-cabinet-restructure.md Part 5 for full migration plan
 
 ### Before Migration
