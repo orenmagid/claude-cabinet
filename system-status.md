@@ -26,14 +26,16 @@
 
 ## What's Active
 
-- Published at v0.6.6 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (32 cabinet members, migrated to v0.6.2 structure)
+- Published at v0.6.8 on npm as `create-claude-cabinet`
+- One downstream consumer: Flow (20 upstream + 12 project-specific cabinet members, fully migrated to v0.6.8)
+- install.sh fetches latest version dynamically from npm (no more hardcoded version)
+- install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
-- cc-upgrade has legacy migration step (2.5) and intelligent terminology pass
+- cc-upgrade has legacy migration step (2.5), intelligent terminology pass, and `upgrade/` cleanup
 - Upstream feedback loop active
 - Write protection + drift detection active
 - Legacy manifest detection: installer now reads `.corrc.json` for v0.5.x upgrades
-- Data schema: `perspective` field renamed to `cabinet-member`/`cabinet_member` across all scripts
+- Data schema: `cabinet-member`/`cabinet_member` across all scripts and templates
 - Two-file committee system: upstream `committees.yaml` + project `committees-project.yaml`
 - `resolve-committees.cjs` script for deterministic merge at runtime
 
@@ -41,27 +43,16 @@
 
 ### Imminent
 
-- Split Flow's committees.yaml into upstream + committees-project.yaml
+- Extract 11 Flow cabinet members into upstream CC templates
+  (goal-alignment, gtd, information-design, life-optimization, life-tracker,
+   mantine-quality, philosophical-grounding, sync-health, system-tutor,
+   ui-experimentalist, vision)
+- Source: Flow git history at 209f9f4~1 under perspectives/
+- See memory: project_cabinet_extraction.md for full plan
 
-### Before Migration
+### Later
 
-- ✅ Publish to npm as `create-claude-cabinet` (v0.6.0)
-- ✅ Deprecate old `create-claude-rails` package (all 21 versions)
-- ✅ Create new GitHub repo `orenmagid/claude-cabinet`, push, update URLs
-- ✅ Rename local directory `~/claude-on-rails` → `~/claude-cabinet`
-- ✅ Copy memory files to new Claude Code project path
-- ✅ Re-run lean install to dogfood published package (v0.6.0)
-- ✅ Fix `~/.claude/cc-registry.json` (updated path and version)
-- ✅ Migrate project briefing from `perspectives/_context.md` to `briefing/_briefing.md`
-- ✅ Remove stale `perspectives/` directory
-- ✅ Update orient `context.md` phase to reference new briefing path
-- See PLAN-cabinet-restructure.md Part 5F for ordered steps
-
-### After Migration
-
-- Build 7 new cabinet members: goal-alignment, information-design,
-  user-advocate, ui-experimentalist, vision, framework-quality, gtd
-- Build pre-built variant: mantine-quality (PAIR with framework-quality)
 - Build general-purpose migration into cc-upgrade
 - Archive old GitHub repo `orenmagid/claude-on-rails`
 - Onboard interview testing across project types
+- install.sh manifest builder: add the `build_manifest` completion message
