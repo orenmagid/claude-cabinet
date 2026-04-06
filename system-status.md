@@ -26,21 +26,21 @@
 
 ## What's Active
 
-- Published at v0.6.2 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (32 cabinet members, v0.5.1 installed — migration ready)
+- Published at v0.6.3 on npm as `create-claude-cabinet`
+- One downstream consumer: Flow (32 cabinet members, migrated to v0.6.2 structure)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
 - cc-upgrade has legacy migration step (2.5) and intelligent terminology pass
 - Upstream feedback loop active
 - Write protection + drift detection active
+- Legacy manifest detection: installer now reads `.corrc.json` for v0.5.x upgrades
+- Data schema: `perspective` field renamed to `cabinet-member`/`cabinet_member` across all scripts
 
 ## What's Planned
 
-### Imminent: Flow Migration
+### Imminent
 
-- Migrate Flow from old `perspectives/` structure to new `cabinet-*/` structure
-- Migration tooling built: cc-upgrade Step 2.5 handles the full transition
-- Process: new branch → `npx create-claude-cabinet --yes` → `/cc-upgrade` → `/audit cc-health`
-- See PLAN-cabinet-restructure.md Part 5 for full migration plan
+- Re-run Flow installer with v0.6.3 to pick up schema rename (`perspective` → `cabinet-member`)
+- Re-run lean install on CC source repo to dogfood v0.6.3
 
 ### Before Migration
 
