@@ -27,7 +27,7 @@
 ## What's Active
 
 - Published at v0.7.2 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (27 upstream + 7 project-specific cabinet members)
+- One downstream consumer: Flow (27 upstream + 6 project-specific cabinet members)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
