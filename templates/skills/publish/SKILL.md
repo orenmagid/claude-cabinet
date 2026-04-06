@@ -68,7 +68,14 @@ With user confirmation:
 
 ### 5. Post-Publish
 
-- Re-run the lean install (`node bin/create-claude-cabinet.js --lean`) to
-  update the local dogfood copy with the just-published templates
+- Re-run the installer to update the local dogfood copy with the
+  just-published templates. **Match the existing install type** — check
+  `.ccrc.json` to see which modules are installed. If all 8 modules are
+  present, run a full install (`node bin/create-claude-cabinet.js --yes`).
+  If only lean modules, run `--lean`. Never downgrade a full install to
+  lean.
+- After the install, verify `package.json` wasn't corrupted (the db-setup
+  module adds `"type": "module"` which may not be wanted — check if the
+  pre-install `package.json` had it and revert if not).
 - Update `system-status.md` if it exists
 - Report the published version and npm URL
