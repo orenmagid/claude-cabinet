@@ -2,7 +2,7 @@
 
 The heart of onboarding. This is a dialogue, not a form — ask questions,
 listen to answers, follow up on what's interesting or unclear. The quality
-of the context layer depends directly on the quality of this conversation.
+of the briefing layer depends directly on the quality of this conversation.
 
 When this file is absent or empty, the default behavior is: ask mode-
 adapted questions as described below, one at a time, with follow-ups.
@@ -14,13 +14,13 @@ existing documentation), write only `skip: true`.
 Before asking about the project, check: does the user know what Claude
 on Rails does? Ask once:
 
-> "Have you used Claude on Rails before, or is this your first time?"
+> "Have you used Claude Cabinet before, or is this your first time?"
 
 If **first time**, give a brief walkthrough before the interview:
 
 > "Let me explain how this works, then we'll set it up for your project.
 >
-> Claude on Rails gives your Claude Code sessions a **session loop** —
+> Claude Cabinet gives your Claude Code sessions a **session loop** —
 > a start and end routine that creates continuity between sessions.
 >
 > - **`/orient`** — you type this at the start of a session. It reads
@@ -35,7 +35,7 @@ If **first time**, give a brief walkthrough before the interview:
 >
 > Beyond the session loop, there are optional modules: **work tracking**
 > (a local task database), **planning** (structured plans with critique
-> before you build), **audit** (expert perspectives that review your
+> before you build), **audit** (expert cabinet members that review your
 > codebase), and more. We'll get to those after we talk about your project.
 >
 > The whole system is customizable through small files called phase files.
@@ -63,7 +63,7 @@ Before asking any questions, read two global files if they exist:
    Rails in [project X] — that's a separate project you've set up with
    the same session loop. Does this project connect to that one in any
    way? For example, does one feed data to the other, or do they share
-   code?" The answer goes into `_context.md` so orient and debrief can
+   code?" The answer goes into `_briefing.md` so orient and debrief can
    flag when work in one project might affect the other.
 
 If neither file exists, that's fine — the installer may not have created
@@ -152,13 +152,13 @@ have you learned."
 
 **Questions (ask one at a time, in order — skip or reorder based on
 what the conversation reveals):**
-1. What has the session loop taught you that the context files don't
+1. What has the session loop taught you that the briefing files don't
    currently capture?
 2. Does orient give you what you need at session start? What's missing?
 3. Does debrief close the right loops? What falls through?
 4. Where have you hit friction with the current setup?
 5. Are there things you keep having to tell Claude that should already be
-   in the context?
+   in the briefing?
 6. Any phase files that aren't pulling their weight?
 7. Has the project changed since the initial onboard?
 8. Are you ready for any of the modules you skipped last time?
@@ -201,7 +201,7 @@ your project so the session loop knows what to look for. What do you
 know so far about what you'll be building?"
 
 Record what they tell you about their intentions and tools — that goes
-into `_context.md`. But choosing those tools is their decision, not
+into `_briefing.md`. But choosing those tools is their decision, not
 onboard's job.
 
 ## Conversation Guidelines

@@ -27,7 +27,7 @@ related:
     path: scripts/pib-db.js
     role: "Reference data layer for finding persistence"
   - type: file
-    path: .claude/skills/perspectives/_context.md
+    path: cabinet/_briefing.md
     role: "Project identity and configuration"
 ---
 
@@ -96,7 +96,7 @@ clear sense of when. "Maybe someday" is a reject in disguise — push
 back gently.
 
 **Reject** means "this is noise for our project." A high rejection rate
-for a perspective is signal that the perspective's calibration is off.
+for a cabinet member is signal that the cabinet member's calibration is off.
 
 ## Workflow
 
@@ -110,7 +110,7 @@ has no findings, fall back to reading the most recent
 `reviews/*/run-summary.json` file.
 
 Present a summary before triage: how many findings, breakdown by
-severity and perspective, how many are new vs previously seen.
+severity and cabinet member, how many are new vs previously seen.
 
 ### 2. Present for Triage (core)
 
@@ -131,7 +131,7 @@ assumption, evidence, question, and your commentary. The user needs to
 see everything to make good decisions.
 
 **Fallback (no browser available):** Present findings in the conversation
-grouped by perspective, severity-ordered within each group. Ask for
+grouped by cabinet member, severity-ordered within each group. Ask for
 verdicts one group at a time to avoid overwhelming.
 
 ### 3. Apply Verdicts (core)
@@ -148,7 +148,7 @@ decisions.
 3. If not auto-fixable, create an action in pib-db with:
    - Text: the finding title
    - Notes: finding description, evidence, suggested fix
-   - Area: derived from perspective or finding metadata
+   - Area: derived from cabinet member or finding metadata
 
 **Defer verdicts:**
 1. Update finding's triage_status to 'deferred' in pib-db
@@ -197,9 +197,9 @@ debrief's close-work phase. The triage finding becomes a tracked work
 item through the standard work lifecycle.
 
 **Reject/defer verdicts feed back** into future audits via the triage
-suppression list. Perspectives learn what this project cares about by
-seeing what gets rejected — persistent rejections from a perspective
-signal calibration drift (see `skills/perspectives/_lifecycle.md`).
+suppression list. Cabinet members learn what this project cares about by
+seeing what gets rejected — persistent rejections from a cabinet member
+signal calibration drift (see `cabinet/_lifecycle.md`).
 
 **The enforcement pipeline** watches for recurring approved findings.
 If the same type of finding keeps getting approved across multiple
@@ -240,12 +240,12 @@ The system has a learning mechanism (audit) but no judgment mechanism
 ### With Skill (Good)
 
 An audit runs and produces 30 findings. Triage presents them in a
-browser UI, grouped by perspective, with commentary on each. The user
+browser UI, grouped by cabinet member, with commentary on each. The user
 works through them in 15 minutes: fixes 5 (2 auto-fixed, 3 become
 actions), defers 8, rejects 17. The next audit produces 12 new
 findings — the 17 rejected and 8 deferred are suppressed. The triage
 queue stays manageable.
 
-Over time, the system learns what matters to this project. Perspectives
+Over time, the system learns what matters to this project. Cabinet members
 that consistently produce rejected findings get retired or recalibrated.
 The audit becomes more precise with each cycle.

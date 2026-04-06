@@ -1,7 +1,7 @@
 # Post-Onboard Audit — Configuration Sanity Check
 
 After generating all files and presenting the summary, run a lightweight
-audit from the cor-health perspective to catch configuration issues before
+audit from the cor-health cabinet member to catch configuration issues before
 the user starts their first session.
 
 When this file is absent or empty, the default behavior is: run the audit
@@ -20,7 +20,7 @@ starts relying on the configuration.
 
 ## What to Check
 
-Run as the **cor-health perspective** but scoped to what onboard just
+Run as the **cor-health cabinet member** but scoped to what onboard just
 generated. This is NOT a full audit — it's a focused sanity check on
 the fresh configuration.
 
@@ -28,7 +28,7 @@ the fresh configuration.
 
 Compare what the interview revealed against what was generated:
 
-- **Technologies mentioned** → Are they reflected in `_context.md` scan
+- **Technologies mentioned** → Are they reflected in `_briefing.md` scan
   scopes and relevant phase files?
 - **Pain points described** → Did at least one phase file or health check
   address each significant pain point?
@@ -45,7 +45,7 @@ generated phase files:
 - **Skipped modules:** No phase file should reference a skipped module's
   infrastructure. If work-tracking was skipped, no phase should reference
   `pib.db` or `pib-db.js`. If audit was skipped, no phase should reference
-  `_groups.yaml` or perspective activation.
+  `committees.yaml` or cabinet member activation.
 - **Installed modules:** Each installed module should have at least a
   minimal presence in the generated configuration. A module that's installed
   but has zero phase file references is a configuration gap.
@@ -57,25 +57,25 @@ Quick filesystem checks:
 - Every generated file is valid markdown (no truncated content, no
   template placeholders left unfilled)
 - Phase files that reference other files point at files that exist
-- `_context.md` has non-empty project description, stack, and scan scopes
+- `_briefing.md` has non-empty project description, stack, and scan scopes
 - `system-status.md` exists and has initial content
 - Hook scripts in `.claude/hooks/` are executable (if hooks module adopted)
 
-### 4. Technology-Implied Perspectives
+### 4. Technology-Implied Cabinet Members
 
-Check whether the project's technology signals suggest perspectives that
+Check whether the project's technology signals suggest cabinet members that
 aren't activated. Cross-reference the interview answers and detected
-technologies against the perspective catalog:
+technologies against the cabinet member catalog:
 
-- **UI framework detected** → usability, accessibility, mobile-responsiveness
+- **UI framework detected** → usability, accessibility, small-screen
 - **Database detected** → data-integrity
-- **API server detected** → security, performance
+- **API server detected** → security, speed-freak
 - **Complex architecture (3+ layers/services)** → architecture
 - **Long-running project** → historian
-- **Many skills (5+)** → skills-coverage
+- **Many skills (5+)** → roster-check
 - **Features shipping regularly** → system-advocate
 
-If implied perspectives aren't in `_groups.yaml` (or equivalent), note
+If implied cabinet members aren't in `committees.yaml` (or equivalent), note
 it as a recommendation — not a blocker. The user may have good reasons
 to skip them, or may want to add them later via `/seed`.
 
@@ -101,7 +101,7 @@ Simulate what `/orient` will do on its first run:
 >
 > - data-sync.md references your PostgreSQL database, but no connection
 >   details are in the phase file. Orient will try to sync and fail.
-> - The security perspective is activated but _context.md doesn't include
+> - The security cabinet member is activated but _briefing.md doesn't include
 >   API routes in its scan scopes — it won't find anything to review.
 >
 > Want me to fix these now?"
@@ -114,7 +114,7 @@ finding — it's a pre-flight check.
 - **Not a full cor-health audit.** That runs periodically via /audit and
   covers telemetry, usage patterns, drift over time. This only checks
   what was just generated.
-- **Not a product quality review.** Whether the _context.md is well-written
+- **Not a product quality review.** Whether the _briefing.md is well-written
   or the health checks are comprehensive — that improves through use.
   This just checks that the configuration is structurally sound.
 - **Not blocking.** If the audit finds issues and the user wants to move

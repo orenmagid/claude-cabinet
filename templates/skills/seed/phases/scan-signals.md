@@ -50,24 +50,24 @@ For each signal source, provide:
 
 ## Default Signal-to-Expertise Mappings
 
-| Signal | Suggested Perspective |
+| Signal | Suggested Cabinet Member |
 |--------|----------------------|
-| React / Vue / Svelte in deps | usability, accessibility, mobile-responsiveness |
+| React / Vue / Svelte in deps | usability, accessibility, small-screen |
 | UI framework (Mantine, MUI, Chakra, etc.) | usability, framework-quality (project-specific) |
 | SQLite / PostgreSQL / MySQL | data-integrity |
 | Docker / Railway / Fly.io / Vercel | architecture, security |
-| Express / Fastify / Hono | security, performance |
+| Express / Fastify / Hono | security, speed-freak |
 | Test framework (jest, vitest, mocha) | qa |
-| TypeScript | boundary-conditions |
-| CI/CD configs (.github/workflows, etc.) | process |
+| TypeScript | boundary-man |
+| CI/CD configs (.github/workflows, etc.) | workflow-cop |
 | Complex architecture (3+ services, monorepo) | architecture |
 | Long-running project (6+ months of git history) | historian |
-| Many skills (5+ in .claude/skills/) | skills-coverage |
+| Many skills (5+ in .claude/skills/) | roster-check |
 | Features shipping regularly | system-advocate |
 
 These mappings are starting points, not prescriptions. A project may
-already cover a signal through an existing broader perspective (e.g.,
-a "code-quality" perspective that subsumes boundary-conditions). The
+already cover a signal through an existing broader cabinet member (e.g.,
+a "code-quality" cabinet member that subsumes boundary-man). The
 evaluate-existing phase handles that deduplication.
 
 ## Overriding This Phase
@@ -75,11 +75,11 @@ evaluate-existing phase handles that deduplication.
 Projects override this file to add domain-specific signals. Examples:
 
 - A healthcare project adds: HIPAA-related libraries map to a
-  compliance perspective
+  compliance cabinet member
 - A financial project adds: payment processing libraries (Stripe,
-  Square) map to a financial-integrity perspective
+  Square) map to a financial-integrity cabinet member
 - A data pipeline project adds: ETL tools (dbt, Airflow) map to a
-  data-quality perspective
+  data-quality cabinet member
 
 Keep the default mappings and add project-specific ones below them.
 The more signals the scan detects, the better the gap analysis in the

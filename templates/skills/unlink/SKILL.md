@@ -1,7 +1,7 @@
 ---
 name: unlink
 description: |
-  Remove local development linking for Claude on Rails. Returns the
+  Remove local development linking for Claude Cabinet. Returns the
   project to using the published npm version. Use when: "unlink",
   "stop using local CoR", "use published version", "/unlink".
 ---
@@ -10,21 +10,21 @@ description: |
 
 ## Purpose
 
-Disconnect from a local Claude on Rails checkout and return to using
+Disconnect from a local Claude Cabinet checkout and return to using
 the published npm version.
 
 ## Context Detection
 
-**CoR source repo** (`package.json` has `name: "create-claude-rails"`):
+**CoR source repo** (`package.json` has `name: "create-claude-cabinet"`):
 - Run `npm unlink` to remove the global registration
 - Warn: "This will break the link for all consuming projects that depend
-  on it. They'll need to `npm unlink create-claude-rails` too, or
+  on it. They'll need to `npm unlink create-claude-cabinet` too, or
   they'll get resolution errors."
 
 **Any other project**:
-- Run `npm unlink create-claude-rails`
+- Run `npm unlink create-claude-cabinet`
 - The project returns to using the published npm version
-- Tell the user: "Unlinked. `npx create-claude-rails` will now pull
+- Tell the user: "Unlinked. `npx create-claude-cabinet` will now pull
   from npm instead of your local checkout."
 
 ## When to Use

@@ -15,8 +15,8 @@ related:
     name: audit
     role: "Audit finds issues, /investigate explores them"
   - type: file
-    path: .claude/skills/perspectives/_context.md
-    role: "System context for investigation scope"
+    path: cabinet/_briefing.md
+    role: "System briefing for investigation scope"
 model: opus
 ---
 

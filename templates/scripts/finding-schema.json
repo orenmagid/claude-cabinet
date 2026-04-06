@@ -11,12 +11,12 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "Unique finding ID: {perspective}-{NNNN}",
+            "description": "Unique finding ID: {cabinet-member}-{NNNN}",
             "pattern": "^[a-z-]+-\\d{4}$"
           },
           "perspective": {
             "type": "string",
-            "description": "Perspective name matching the directory name in skills/perspectives/",
+            "description": "Cabinet member name matching the directory name in skills/cabinet-*/",
             "pattern": "^[a-z][a-z0-9-]+$"
           },
           "severity": {

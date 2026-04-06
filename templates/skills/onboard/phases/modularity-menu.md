@@ -1,6 +1,6 @@
 # Modularity Menu — Present Opt-In Modules
 
-Present the Claude on Rails module hierarchy so the user can decide what to adopt now
+Present the Claude Cabinet module hierarchy so the user can decide what to adopt now
 and what to defer. The session loop is mandatory; everything else is
 opt-in. Progressive adoption means starting with what you need and adding
 modules as the project matures.
@@ -70,14 +70,14 @@ always add it later by re-running `/onboard`.
 
 ### 3. Planning (plan + execute) — OPT-IN
 
-Structured implementation planning with perspective-based critique and
+Structured implementation planning with cabinet member-based critique and
 execution with checkpoints.
 
 **What you get:** Plans that carry enough detail for a future session to
-execute without re-exploring the codebase. Perspective agents that
+execute without re-exploring the codebase. Cabinet member agents that
 critique plans before execution. Execution with structured checkpoints.
 
-**Cost:** Plan and execute skill configuration. Perspective setup if you
+**Cost:** Plan and execute skill configuration. Cabinet member setup if you
 want critique. Adds deliberation time before building — this is the point.
 
 **Skip if:** Your project's work is mostly small, clear tasks that don't
@@ -99,16 +99,16 @@ every tool invocation — poorly written hooks add latency.
 **Skip if:** Your project doesn't yet have recurring mistakes worth
 encoding. Add rules as patterns emerge from debrief lessons.
 
-### 5. Audit Loop (audit + triage-audit + perspectives) — OPT-IN
+### 5. Audit Loop (audit + triage-audit + cabinet members) — OPT-IN
 
-Periodic expert-perspective analysis of the codebase with structured
+Periodic cabinet member analysis of the codebase with structured
 triage of findings.
 
-**What you get:** Semantic analysis by specialized perspectives (security,
+**What you get:** Semantic analysis by specialized cabinet members (security,
 accessibility, data integrity, etc.). Structured findings with severity
 levels. Triage workflow to accept, defer, or dismiss findings.
 
-**Cost:** Perspective configuration, audit runs (LLM-intensive), triage
+**Cost:** Cabinet member configuration, audit runs (LLM-intensive), triage
 time. This is the most expensive module in compute and attention.
 
 **Skip if:** Your project is small enough to review holistically, or
@@ -118,7 +118,7 @@ head.
 
 ### 6. Capability Seeding (seed) — OPT-IN
 
-Bootstrap new skills, perspectives, or process components from CoR
+Bootstrap new skills, cabinet members, or process components from CoR
 skeleton templates.
 
 **What you get:** Quick scaffolding of new capabilities with all required
@@ -127,7 +127,7 @@ files and wiring in place.
 **Cost:** Minimal. This is tooling for extending the system itself.
 
 **Skip if:** You're happy with the modules you have and aren't planning
-to build custom skills or perspectives. Come back to this when you want
+to build custom skills or cabinet members. Come back to this when you want
 to extend.
 
 ## Presentation Guidelines

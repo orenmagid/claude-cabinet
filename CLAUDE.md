@@ -1,6 +1,6 @@
-# Claude on Rails — Project Instructions
+# Claude Cabinet — Project Instructions
 
-Node CLI package (`create-claude-rails`) that scaffolds process infrastructure
+Node CLI package (`create-claude-cabinet`) that scaffolds process infrastructure
 for Claude Code projects. Small codebase: 6 files in `lib/`, templates in
 `templates/`. One dependency (`prompts`). No build step.
 
@@ -10,7 +10,9 @@ for Claude Code projects. Small codebase: 6 files in `lib/`, templates in
 - `lib/copy.js` — template copying with conflict detection
 - `templates/skills/` — skill definitions (SKILL.md) and phase files
 - `templates/skills/onboard/` — conversational onboarding skill
-- `templates/skills/perspectives/` — 20 expert analysis perspectives
+- `templates/skills/cabinet-*/` — 20 expert cabinet member definitions
+- `templates/cabinet/` — cabinet infrastructure (committees, lifecycle, etc.)
+- `templates/briefing/` — project briefing templates
 - `.corrc.json` — installation metadata and manifest (generated, gitignored)
 
 ## Conventions

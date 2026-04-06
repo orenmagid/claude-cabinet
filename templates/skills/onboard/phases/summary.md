@@ -19,14 +19,14 @@ it does and where it's read:
 
 ```
 Created:
-  .claude/skills/perspectives/_context.md
-    Project identity and configuration. Read by all perspectives.
+  cabinet/_briefing.md
+    Project identity and configuration. Read by all cabinet members.
 
   system-status.md
     Current state tracking. Read by orient, updated by debrief.
 
   .claude/skills/orient/phases/context.md
-    What orient reads at session start. Points at _context.md and
+    What orient reads at session start. Points at _briefing.md and
     system-status.md.
 
   .claude/skills/orient/phases/data-sync.md
@@ -52,9 +52,9 @@ Deferred:
 
 Concrete next steps, not abstract advice:
 - "Run `/orient` to start your first CoR session. It will read the
-  context files we just generated."
+  briefing files we just generated."
 - "After your first working session, run `/debrief` to close the loop."
-- "The context files are rough. After 3-5 sessions, run `/onboard` again
+- "The briefing files are rough. After 3-5 sessions, run `/onboard` again
   to refine based on what you've learned."
 
 Emphasize progressive refinement: these files are a starting point. The
@@ -70,7 +70,7 @@ For re-runs, present a before/after view:
 Show each file that was modified with a summary of what changed and why:
 ```
 Updated:
-  _context.md
+  _briefing.md
     Added scan scope for tests/ directory (orient wasn't checking tests).
     Updated architecture section to reflect new API layer.
 

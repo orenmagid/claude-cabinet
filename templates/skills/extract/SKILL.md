@@ -1,8 +1,8 @@
 ---
 name: extract
 description: |
-  Analyze non-CoR skills, perspectives, and other artifacts in a consuming
-  project and propose candidates for upstreaming into Claude on Rails as
+  Analyze non-CoR skills, cabinet members, and other artifacts in a consuming
+  project and propose candidates for upstreaming into Claude Cabinet as
   generic templates. Does not perform the extraction — files a proposal
   that surfaces during orient in the CoR repo. Use when: "extract",
   "upstream this", "should this be in CoR?", "/extract".
@@ -12,11 +12,11 @@ description: |
 
 ## Purpose
 
-Consuming projects grow custom skills, perspectives, phase files, and
+Consuming projects grow custom skills, cabinet members, phase files, and
 other artifacts that solve real problems. Some of those solutions are
 project-specific. Others solve problems that any project would have.
 This skill identifies the latter and proposes upstreaming them into
-Claude on Rails as generic templates.
+Claude Cabinet as generic templates.
 
 **This skill proposes. It does not extract.** The actual separation of
 generic orchestration from project-specific context happens in the CoR
@@ -26,7 +26,7 @@ project then adopts the CoR version via `/cor-upgrade`.
 ## Where This Runs
 
 **Consuming projects only.** If run from the CoR source repo
-(`package.json` name is `create-claude-rails`), say: "This skill runs
+(`package.json` name is `create-claude-cabinet`), say: "This skill runs
 from consuming projects. Here, use orient to review incoming proposals."
 
 ## Workflow
@@ -37,7 +37,7 @@ Compare the project's `.claude/` directory against `.corrc.json`'s
 manifest. Anything not in the manifest is project-specific:
 
 - **Custom skills** — `.claude/skills/*/SKILL.md` not in manifest
-- **Custom perspectives** — `.claude/skills/perspectives/*/SKILL.md`
+- **Custom cabinet members** — `.claude/skills/cabinet-*/SKILL.md`
   not in the standard set
 - **Custom phase files** — phase files in CoR skills that override
   defaults with substantial logic (not just `skip: true`)
@@ -65,7 +65,7 @@ For each non-CoR artifact, evaluate:
 
 **Category** — What kind of CoR artifact would this become?
 - A new skill template (SKILL.md + default phase behaviors)
-- A new perspective (SKILL.md with scan scope and finding format)
+- A new cabinet member (SKILL.md with scan scope and finding format)
 - A new phase file for an existing skill (e.g., a custom orient check)
 - A new hook or rule template
 - A new pattern worth promoting to the standard set
@@ -84,7 +84,7 @@ For each candidate, draft a proposal that includes:
 ## Source
 - Project: [project name/path]
 - Artifact: [path to the artifact]
-- Type: skill | perspective | phase | hook | rule | pattern
+- Type: skill | cabinet-member | phase | hook | rule | pattern
 
 ## What It Does
 [1-2 paragraphs describing the artifact's purpose and how it works
@@ -98,7 +98,7 @@ What other projects would use it for.]
 [How this would look as a CoR template. What becomes the skeleton,
 what becomes phase-file-configurable, what gets dropped as
 project-specific. Include a rough SKILL.md outline if it's a skill
-or perspective.]
+or cabinet member.]
 
 ## What Stays Project-Specific
 [What parts of the current implementation would remain as phase files
@@ -117,7 +117,7 @@ everything needed to evaluate without access to the source project]
 ### 4. File Proposals
 
 **If linked** (the CoR package resolves to a local directory — check
-if `node -e "console.log(require.resolve('create-claude-rails'))"`
+if `node -e "console.log(require.resolve('create-claude-cabinet'))"`
 points to a local path rather than a `node_modules` path):
 
 - Write each proposal as a markdown file in the CoR repo's
@@ -156,7 +156,7 @@ The user can target specific artifacts:
 
 - `/extract` — scan everything
 - `/extract skills/my-skill` — evaluate a specific skill
-- `/extract perspectives` — evaluate all custom perspectives
+- `/extract cabinet-members` — evaluate all custom cabinet members
 
 ## What This Does NOT Do
 

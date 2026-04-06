@@ -2,8 +2,8 @@
 model: opus
 name: execute
 description: |
-  Execute a single plan with perspective-based guardrails at structured
-  checkpoints. Reads the plan, activates relevant perspectives, implements
+  Execute a single plan with cabinet member-based guardrails at structured
+  checkpoints. Reads the plan, activates relevant cabinet members, implements
   file-group by file-group with checkpoint reviews. This is a skeleton skill
   using the phases/ directory pattern. Use when: "execute this plan",
   "implement this", "/execute".
@@ -14,8 +14,8 @@ related:
     path: .claude/skills/execute/phases/load-plan.md
     role: "Project-specific: where plans live and how to read them"
   - type: file
-    path: .claude/skills/execute/phases/perspectives.md
-    role: "Project-specific: which perspectives to activate for execution"
+    path: .claude/skills/execute/phases/cabinet.md
+    role: "Project-specific: which cabinet members to activate for execution"
   - type: file
     path: .claude/skills/execute/phases/verification-tools.md
     role: "Project-specific: tools for checking acceptance criteria"
@@ -26,17 +26,17 @@ related:
     path: .claude/skills/execute/phases/commit-and-deploy.md
     role: "Project-specific: how to persist and deploy changes"
   - type: file
-    path: .claude/skills/perspectives/_context.md
+    path: cabinet/_briefing.md
     role: "Project identity and configuration"
 ---
 
-# /execute — Plan Execution with Perspective Checkpoints
+# /execute — Plan Execution with Cabinet Member Checkpoints
 
 ## Purpose
 
 Execute a single implementation plan with structured checkpoints where
-expert perspectives provide feedback. This is the inner loop — it takes
-one plan and implements it with guardrails. The perspective checkpoints
+cabinet members provide feedback. This is the inner loop — it takes
+one plan and implements it with guardrails. The cabinet member checkpoints
 catch issues that code review alone would miss: security gaps, data
 integrity violations, boundary condition failures.
 
@@ -63,7 +63,7 @@ don't want a phase to run — not even the default.
 Without structured execution, the common failure mode is: implement,
 compile, commit, mark done. The feature looks complete but acceptance
 criteria were never verified, the pre-commit sweep never happened,
-and the edge case that a boundary-conditions perspective would have
+and the edge case that a boundary-man cabinet member would have
 flagged ships to production.
 
 The checkpoint protocol catches issues at three scales:
@@ -100,40 +100,40 @@ loop (Steps 4-5) and instead:
 3. Help troubleshoot if something doesn't work as expected
 4. Verify acceptance criteria as each step completes
 
-### 2. Activate Perspectives
+### 2. Activate Cabinet Members
 
-Read `phases/perspectives.md` for which perspectives to activate during
-execution, any always-on perspectives, and any project-specific rules.
+Read `phases/cabinet.md` for which cabinet members to activate during
+execution, any always-on cabinet members, and any project-specific rules.
 
-**Default (absent/empty):** Read `.claude/skills/perspectives/*/SKILL.md`
-and select perspectives whose activation signals match:
-- **always-on-for: execute** — always included
+**Default (absent/empty):** Read `.claude/skills/cabinet-*/SKILL.md`
+and select cabinet members whose convening criteria match:
+- **standing-mandate: execute** — always included
 - **File patterns** — any file in the plan's surface area matches
 - **Topic keywords** — any keyword in the plan description matches
 
-Err toward inclusion. A perspective that activates unnecessarily costs
+Err toward inclusion. A cabinet member that activates unnecessarily costs
 a few seconds; one that doesn't activate when needed costs rework.
 
-Prepare reusable context for agent prompts: read `_context.md` once and
+Prepare reusable briefing for agent prompts: read `_briefing.md` once and
 keep the essential facts ready to paste into each agent's prompt.
 
-If no perspectives exist in the project, skip all checkpoint steps
+If no cabinet members exist in the project, skip all checkpoint steps
 (3, 4b, 5) and execute the plan directly. Checkpoints add depth, not
 structure.
 
 ### 3. Checkpoint 1: Pre-Implementation Review (Parallel Agents)
 
-Before writing any code, **spawn one Agent per activated perspective**
+Before writing any code, **spawn one Agent per activated cabinet member**
 in a single message. Each receives:
-- The perspective's full SKILL.md content
-- Essential project context from `_context.md`
+- The cabinet member's full SKILL.md content
+- Essential project briefing from `_briefing.md`
 - The plan text and list of files that will change
 - Instructions to evaluate whether the plan is safe to start
 
 Each agent returns:
 ```json
 {
-  "perspective": "name",
+  "cabinet_member": "name",
   "verdict": "continue" | "pause" | "stop",
   "concerns": [
     { "description": "...", "evidence": "...", "severity": "blocking" | "advisory" }
@@ -154,19 +154,19 @@ Group the plan's implementation steps by logical file groups
 
 For each group:
 1. Make the changes
-2. **Checkpoint 2: File Group Review** — if perspectives are active,
-   spawn agents for ONLY perspectives matching the changed files. Each
+2. **Checkpoint 2: File Group Review** — if cabinet members are active,
+   spawn agents for ONLY cabinet members matching the changed files. Each
    receives the git diff for this file group + plan context. Same
    escalation rules as Checkpoint 1.
 3. If all continue, move to the next group
 
-File-group granularity keeps reviews focused. A perspective reviewing
+File-group granularity keeps reviews focused. A cabinet member reviewing
 3 changed files gives better feedback than one reviewing 30.
 
 ### 5. Checkpoint 3: Pre-Commit Sweep (Parallel Agents)
 
 After all implementation is complete, **spawn one Agent per activated
-perspective** in a single message. Each receives the full git diff of
+cabinet member** in a single message. Each receives the full git diff of
 all changes + plan context.
 
 Earlier "continue" concerns are re-checked — a concern that was minor
@@ -247,20 +247,20 @@ doesn't define. Execute them at their declared position.
 | Phase | Absent = | What it customizes |
 |-------|----------|-------------------|
 | `load-plan.md` | Default: plan from conversation | Where plans live, how to read them |
-| `perspectives.md` | Default: match by activation signals | Which perspectives, special rules |
+| `cabinet.md` | Default: match by convening criteria | Which cabinet members, special rules |
 | `verification-tools.md` | Default: use available env tools | Project-specific verification tools |
 | `validators.md` | Default: run validate skill or linter | What validation to run |
 | `commit-and-deploy.md` | Default: commit, don't push/deploy | How to persist and deploy changes |
 
 ## Principles
 
-- **Perspectives are guardrails, not gates.** The user always has the
+- **Cabinet members are guardrails, not gates.** The user always has the
   final say. Stop verdicts require explicit override, not automatic
   rejection.
-- **Err toward inclusion** when selecting perspectives. Better to have
-  a perspective say "looks fine" than to miss a concern.
+- **Err toward inclusion** when selecting cabinet members. Better to have
+  a cabinet member say "looks fine" than to miss a concern.
 - **File-group granularity** keeps checkpoint reviews focused. A
-  perspective reviewing 3 changed files gives better feedback than one
+  cabinet member reviewing 3 changed files gives better feedback than one
   reviewing 30.
 - **The pre-commit sweep catches emergent issues.** Individual file
   groups may look fine but create problems in combination (type

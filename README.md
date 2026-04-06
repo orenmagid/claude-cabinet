@@ -1,10 +1,10 @@
-# Claude on Rails
+# Claude Cabinet
 
 Process scaffolding for Claude Code projects, by a guy who'd rather
 talk to Claude than write code.
 
 One command gives you a session loop (orient/debrief), work tracking,
-structured planning, an audit system with expert perspectives, and
+structured planning, an audit system with expert cabinet members, and
 enforcement hooks — all configured through conversational onboarding.
 Most of it was built by Claude. I just complained until it worked.
 
@@ -32,7 +32,7 @@ If you have Node.js installed and want interactive module selection,
 database setup, or the full install:
 
 ```bash
-npx create-claude-rails
+npx create-claude-cabinet
 ```
 
 The CLI walks you through module selection, copies skill files,
@@ -53,14 +53,14 @@ reads and writes it directly — no external service needed. Skip this if
 you already use GitHub Issues, Linear, or something else.
 
 ### Planning + Execution (opt-in)
-- **`/plan`** — structured implementation planning with perspective
+- **`/plan`** — structured implementation planning with cabinet member
   critique before you build.
 - **`/execute`** — step-through execution with checkpoints and guardrails.
 
 ### Audit System (opt-in)
-20 expert perspectives (security, accessibility, data integrity,
-performance, architecture, process, etc.) that analyze your codebase and
-produce structured findings. Triage UI for reviewing results.
+20 expert cabinet members (security, accessibility, data integrity,
+speed-freak, architecture, workflow-cop, etc.) that analyze your codebase
+and produce structured findings. Triage UI for reviewing results.
 
 ### Compliance Stack (opt-in)
 Scoped instructions in `.claude/rules/` that load by file path. An
@@ -71,13 +71,13 @@ hooks.
 - **`/onboard`** — conversational project interview, re-runnable as the
   project matures.
 - **`/seed`** — detects new tech in your project, proposes expertise.
-- **`/cor-upgrade`** — conversational merge when Claude on Rails updates.
+- **`/cor-upgrade`** — conversational merge when Claude Cabinet updates.
 
 ## How It Works
 
 The CLI handles mechanical setup: copying files, merging settings,
 installing dependencies. `/onboard` handles intelligent configuration:
-it interviews you about your project and generates context files based
+it interviews you about your project and generates briefing files based
 on your answers.
 
 **For new projects:** CLI installs everything with defaults. `/onboard`
@@ -85,7 +85,7 @@ asks what you're building and sets up the session loop accordingly.
 
 **For existing projects:** CLI detects your project and offers to install
 alongside it. `/onboard` scans your tech stack, asks about pain points,
-and generates context that makes Claude effective from session one.
+and generates briefings that make Claude effective from session one.
 
 Everything is customizable through **phase files** — small markdown files
 that override default behavior for any skill. Write content in a phase
@@ -95,21 +95,24 @@ absent to use the default. No config files, no YAML, no DSL.
 ## CLI Options
 
 ```
-npx create-claude-rails                 # Interactive walkthrough
-npx create-claude-rails my-project      # Install in ./my-project/
-npx create-claude-rails --yes           # Accept all defaults
-npx create-claude-rails --yes --no-db   # All defaults, skip database
-npx create-claude-rails --dry-run       # Preview without writing files
+npx create-claude-cabinet                 # Interactive walkthrough
+npx create-claude-cabinet my-project      # Install in ./my-project/
+npx create-claude-cabinet --yes           # Accept all defaults
+npx create-claude-cabinet --yes --no-db   # All defaults, skip database
+npx create-claude-cabinet --dry-run       # Preview without writing files
 ```
 
 ## What Gets Installed
 
-Everything goes into `.claude/` (skills, hooks, rules, memory) or
-`scripts/` (database, triage tools). Nothing touches your source code.
+Everything goes into `.claude/` (skills, hooks, rules, memory, cabinet
+infrastructure, briefings) or `scripts/` (database, triage tools).
+Nothing touches your source code.
 
 ```
 .claude/
-├── skills/          # orient, debrief, plan, execute, audit, etc.
+├── skills/          # orient, debrief, plan, execute, audit, cabinet-*, etc.
+├── cabinet/         # cabinet infrastructure (committees, lifecycle, etc.)
+├── briefing/        # project briefing templates
 ├── hooks/           # git guardrails, telemetry
 ├── rules/           # enforcement pipeline
 ├── memory/          # pattern templates
@@ -131,7 +134,7 @@ Re-run the installer to pick up new versions:
 curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
 
 # npm installer (if using Node.js)
-npx create-claude-rails
+npx create-claude-cabinet
 ```
 
 In Claude Code, run `/cor-upgrade` for conversational merge of upstream
@@ -139,13 +142,13 @@ changes with your customizations.
 
 ## Works Across Projects
 
-Claude on Rails isn't just for one project — it manages how you work
+Claude Cabinet isn't just for one project — it manages how you work
 with Claude everywhere.
 
 - **Your identity** (`~/.claude/CLAUDE.md`) — set up once, carries to
   every project. Claude always knows who you are and what you do.
 - **Project registry** (`~/.claude/cor-registry.json`) — tracks all
-  your CoR projects. `/onboard` asks how they relate; `/orient` flags
+  your projects. `/onboard` asks how they relate; `/orient` flags
   when work in one might affect another.
 - **Debrief maintenance** — if you mention something new about yourself
   or your project evolves, `/debrief` proposes updating your profile
@@ -158,13 +161,13 @@ other.
 
 This started as the process layer of [Flow](https://github.com/orenmagid/flow),
 a cognitive workspace built on Claude Code over months of daily use. The
-patterns that emerged — session loops, perspective-based audits, feedback
+patterns that emerged — session loops, cabinet member audits, feedback
 enforcement pipelines — turned out to be transferable to any project.
 
 The core idea: Claude Code is powerful, but without process, each session
 starts from zero. Orient/debrief creates continuity. Planning with
-perspectives catches problems before they ship. The enforcement pipeline
-turns recurring mistakes into permanent fixes.
+cabinet critique catches problems before they ship. The enforcement
+pipeline turns recurring mistakes into permanent fixes.
 
 None of this requires you to be a developer. I'm barely one myself. The
 onboarding interview meets you where you are, and the system adapts

@@ -2,7 +2,7 @@
 model: opus
 name: plan
 description: |
-  Create a structured implementation plan with perspective-based critique and
+  Create a structured implementation plan with cabinet member-based critique and
   user approval. Plans are self-contained: a future session (or parallel agent)
   can execute them without re-exploring the codebase. This is a skeleton skill
   using the phases/ directory pattern. Use when: "plan this", "create a plan",
@@ -18,8 +18,8 @@ related:
     path: .claude/skills/plan/phases/plan-template.md
     role: "Project-specific: what sections your plans have"
   - type: file
-    path: .claude/skills/plan/phases/perspective-critique.md
-    role: "Project-specific: which perspectives to activate, special rules"
+    path: .claude/skills/plan/phases/cabinet-critique.md
+    role: "Project-specific: which cabinet members to activate, special rules"
   - type: file
     path: .claude/skills/plan/phases/composition-check.md
     role: "Project-specific: duplication check for reusable components"
@@ -36,7 +36,7 @@ related:
     path: .claude/skills/plan/phases/calibration-examples.md
     role: "Project-specific: detailed before/after plan examples"
   - type: file
-    path: .claude/skills/perspectives/_context.md
+    path: cabinet/_briefing.md
     role: "Project identity and configuration"
 ---
 
@@ -78,9 +78,9 @@ Planning before building prevents three failure modes:
 3. **Untestable acceptance** — "verify it works correctly" is not pass/fail.
    Structured AC force specificity.
 
-The perspective critique catches what the planner misses. A security
-perspective notices the new API endpoint lacks auth. A data integrity
-perspective notices the migration doesn't handle NULL values. These
+The cabinet critique catches what the planner misses. A security
+cabinet member notices the new API endpoint lacks auth. A data integrity
+cabinet member notices the migration doesn't handle NULL values. These
 concerns surface before a single line is written.
 
 ## Workflow
@@ -163,25 +163,25 @@ check against. But if your project has a library of reusable pieces,
 this step prevents building a second version of something that already
 exists.
 
-When this step fires, check before running perspective critique:
+When this step fires, check before running cabinet critique:
 - Does the new/modified component duplicate logic from an existing one?
   If so, compose with the existing component rather than duplicating.
 - Does the new component depend on others? If so, declare the
   relationships in the plan.
 
-### 5. Perspective Critique (Parallel Agents)
+### 5. Cabinet Critique (Parallel Agents)
 
-Read `phases/perspective-critique.md` for which perspectives to always
+Read `phases/cabinet-critique.md` for which cabinet members to always
 activate during planning, any special rules (e.g., "always include a
 design committee for UI plans"), and any project-specific critique
 workflow.
 
-**Default (absent/empty):** Read `.claude/skills/perspectives/*/SKILL.md`
-and identify perspectives whose activation signals match the plan's
-surface area or topic. Spawn each matching perspective as a parallel
+**Default (absent/empty):** Read `.claude/skills/cabinet-*/SKILL.md`
+and identify cabinet members whose convening criteria match the plan's
+surface area or topic. Spawn each matching cabinet member as a parallel
 agent. Each receives:
-- The perspective's full SKILL.md content
-- Essential project context from `_context.md`
+- The cabinet member's full SKILL.md content
+- Essential project briefing from `_briefing.md`
 - The draft plan (problem, implementation, surface area, AC)
 - Instructions to evaluate through their lens and return concerns + verdict
 
@@ -192,7 +192,7 @@ agent. Each receives:
 
 Include the synthesized critique alongside the plan when presenting.
 
-If no perspectives exist in the project, skip critique entirely. The
+If no cabinet members exist in the project, skip critique entirely. The
 plan is still valuable without it — critique adds depth, not structure.
 
 ### 6. Completeness Check
@@ -226,7 +226,7 @@ a formatted document.
 
 **Default (absent/empty):** Present the full plan inline in conversation:
 - The complete plan (all sections from your template)
-- The perspective critique summary (if perspectives were activated)
+- The cabinet critique summary (if cabinet members were activated)
 - Any design decisions or tradeoffs you made
 - Anything you're uncertain about
 
@@ -264,7 +264,7 @@ declared position.
 | `overlap-check.md` | Skip | How to search your work tracker |
 | `plan-template.md` | Default: standard template | Your plan's sections and format |
 | `composition-check.md` | Skip | Duplication check for reusable components |
-| `perspective-critique.md` | Default: match by activation signals | Which perspectives, special rules |
+| `cabinet-critique.md` | Default: match by convening criteria | Which cabinet members, special rules |
 | `completeness-check.md` | Default: three generic checks | Domain-specific completeness rules |
 | `present.md` | Default: inline in conversation | How and where to present |
 | `work-tracker.md` | Skip | How to file work items |
@@ -337,7 +337,7 @@ works.
 
 Same request. Claude explores, checks for existing work (finds a
 related but distinct plan, notes the relationship), drafts a plan with
-all files needed for a complete feature, runs it through perspectives
+all files needed for a complete feature, runs it through cabinet members
 (security flags a missing auth check, QA flags an untestable criterion),
 revises, presents to the user with the critique. User approves, the plan
 is filed as a work item. A future session can pick it up and execute

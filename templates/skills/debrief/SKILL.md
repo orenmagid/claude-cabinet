@@ -37,7 +37,7 @@ related:
     path: .claude/skills/debrief/phases/report.md
     role: "Project-specific: how to present the summary"
   - type: file
-    path: .claude/skills/perspectives/_context.md
+    path: cabinet/_briefing.md
     role: "Project identity and configuration"
 ---
 
@@ -193,7 +193,7 @@ them now while context is fresh.
 > **Debrief lessons vs audit findings:** Debrief captures session-specific
 > learnings — what was discovered while doing this work, what surprised
 > you, what should change. Audit captures systematic observations from
-> expert perspectives — what would a specialist notice looking at the
+> cabinet members — what would a specialist notice looking at the
 > whole codebase? Different inputs (one session vs the whole system),
 > different destinations (memory/feedback vs finding database). Both
 > feed the enforcement pipeline, but through different channels.
@@ -242,16 +242,16 @@ If the user says no, move on.
 
 **Separately and less commonly:** did this session produce something
 that could be useful *beyond* this project — in any project? A
-generalizable pattern, perspective, or convention? If so, mention
+generalizable pattern, cabinet member, or convention? If so, mention
 `/extract` as an option for proposing it upstream to CoR. This is
 rarer than project-specific skills.
 
-### 10. Perspective Check (core)
+### 10. Cabinet Check (core)
 
 Silently reflect: is this project's expertise coverage still right
 for what it's actually doing?
 
-This is the anti-entropy mechanism for the perspective cabinet. Without
+This is the anti-entropy mechanism for the cabinet. Without
 it, a project can adopt a framework, start handling sensitive data, or
 grow complex enough to need architectural review — and none of the
 relevant expertise ever activates because nobody ran `/seed`.
@@ -260,28 +260,28 @@ relevant expertise ever activates because nobody ran `/seed`.
 
 **Check A — Uncovered technology.** Quickly scan what this session
 touched. Did the work involve a framework, library, data store, or
-infrastructure that isn't covered by any existing perspective? Compare
-against the perspectives in `.claude/skills/perspectives/` and the
-groups in `_groups.yaml`.
+infrastructure that isn't covered by any existing cabinet member? Compare
+against the cabinet members in `.claude/skills/cabinet-*/` and the
+committees in `committees.yaml`.
 
 Examples of what to catch:
 - Session used Mantine components but there's no framework-quality
-  perspective
+  cabinet member
 - Session wrote database queries but there's no data-integrity
-  perspective
-- Session built UI but accessibility isn't in any active group
+  cabinet member
+- Session built UI but accessibility isn't in any active committee
 
-**Check B — Dormant perspective that should be active.** Are there
-perspectives installed in the project that aren't in any `_groups.yaml`
-group, but based on the last few sessions, probably should be? A
-perspective sitting dormant while the project does exactly the kind of
+**Check B — Dormant cabinet member that should be active.** Are there
+cabinet members installed in the project that aren't in any `committees.yaml`
+committee, but based on the last few sessions, probably should be? A
+cabinet member sitting dormant while the project does exactly the kind of
 work it's designed to review is a waste.
 
 **Most sessions: nothing.** These checks should be completely silent
-when nothing is off. Don't mention perspectives if everything is fine.
+when nothing is off. Don't mention cabinet members if everything is fine.
 
 **When there's a gap:** Explain it plainly — no jargon about
-"perspectives" or "cabinets." Talk about what the project is missing
+"cabinet members" or "committees." Talk about what the project is missing
 in terms of what it would DO for them:
 
 > "You've been building UI for the last few sessions, but nothing is
@@ -303,9 +303,9 @@ or:
 > sense as it grows. Want me to set that up?"
 
 If the user says yes, either:
-- Activate a dormant perspective (add it to `_groups.yaml`)
+- Activate a dormant cabinet member (add it to `committees.yaml`)
 - Run `/seed` to build a new one
-- Install a Tier 3 perspective that isn't in the project yet
+- Install a Tier 3 cabinet member that isn't in the project yet
 
 If the user says no, move on. Don't re-suggest the same gap next
 session. Track declined suggestions in system-status.md or equivalent
@@ -359,7 +359,7 @@ skip presentation phases. Core phases always run.
 
 - **Core phases** (always run): inventory, close-work, auto-maintenance,
   update-state, health-checks, record-lessons, upstream-feedback,
-  skill-discovery, perspective-check, loose-ends, persist work
+  skill-discovery, cabinet-check, loose-ends, persist work
 - **Presentation phases** (skippable): report
 
 A project that wants a quick debrief variant skips the report and

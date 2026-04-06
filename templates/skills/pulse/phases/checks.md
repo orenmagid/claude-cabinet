@@ -28,9 +28,9 @@ Uncomment and adapt for your project:
 - Actual: `ls skills/*/SKILL.md | wc -l`
 - Auto-fixable: yes (update the number)
 
-#### Perspective Count
-- Document: system-status.md says "N perspectives"
-- Actual: `ls skills/perspectives/*/SKILL.md | wc -l`
+#### Cabinet Member Count
+- Document: system-status.md says "N cabinet members"
+- Actual: `ls skills/cabinet-*/SKILL.md | wc -l`
 - Auto-fixable: yes (update the number)
 
 #### Hook Count

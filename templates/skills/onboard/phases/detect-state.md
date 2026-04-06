@@ -1,4 +1,4 @@
-# Detect State — Scan Claude on Rails Artifacts and Determine Mode
+# Detect State — Scan Claude Cabinet Artifacts and Determine Mode
 
 Scan the project for existing CoR artifacts to determine whether this is
 a first run, early re-run, or mature re-run. The mode determination
@@ -11,7 +11,7 @@ mode), write only `skip: true`.
 
 ## Fast Path
 
-Check for `_context.md` (or `.claude/skills/perspectives/_context.md`).
+Check for `_briefing.md` (or `cabinet/_briefing.md`).
 If it doesn't exist, the mode is **first-run** — skip the full scan and
 move to the interview immediately. No need to check 10 artifact types
 when the primary signal is absent.
@@ -35,7 +35,7 @@ Before scanning the project, check the user-level layer:
 
 ## Full Scan (re-runs only)
 
-Only when `_context.md` exists, scan these artifacts to distinguish
+Only when `_briefing.md` exists, scan these artifacts to distinguish
 early vs mature re-run:
 
 | Artifact | Path Pattern | Indicates |
@@ -44,7 +44,7 @@ early vs mature re-run:
 | Orient phases | `.claude/skills/orient/phases/*.md` | Session loop is wired |
 | Debrief phases | `.claude/skills/debrief/phases/*.md` | Session loop is wired |
 | Work tracking DB | `pib.db` | Work tracking is active |
-| Perspective groups | `_groups.yaml` or `.claude/skills/perspectives/_groups.yaml` | Audit system configured |
+| Cabinet committees | `committees.yaml` or `cabinet/committees.yaml` | Audit system configured |
 | Memory patterns | `memory/patterns/*.md` or `.claude/memory/patterns/*.md` | Feedback loop is active |
 | CLAUDE.md | Root `CLAUDE.md` | Project instructions exist |
 | Rules files | `.claude/rules/*.md` | Scoped instructions exist |

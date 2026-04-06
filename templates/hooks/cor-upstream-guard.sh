@@ -1,9 +1,9 @@
 #!/bin/bash
 # CoR Upstream Guard — PreToolUse hook for Edit and Write tool calls
 #
-# Blocks modifications to files managed by Claude on Rails. These files
+# Blocks modifications to files managed by Claude Cabinet. These files
 # are upstream-owned: updates come through /cor-upgrade, not direct edits.
-# Project-specific customization goes in _context.md and phase files.
+# Project-specific customization goes in briefing files and phase files.
 #
 # How it works:
 #   Reads .corrc.json manifest (list of CoR-installed files with hashes).
@@ -73,7 +73,7 @@ except:
 " 2>/dev/null)
 
 if [ "$IN_MANIFEST" = "yes" ]; then
-  echo "{\"decision\":\"block\",\"reason\":\"Blocked: $REL_PATH is managed by Claude on Rails. CoR-managed files are upstream-owned — edits come through /cor-upgrade, not direct modification. Put project-specific content in _context.md or phase files instead.\"}"
+  echo "{\"decision\":\"block\",\"reason\":\"Blocked: $REL_PATH is managed by Claude Cabinet. CoR-managed files are upstream-owned — edits come through /cor-upgrade, not direct modification. Put project-specific content in briefing files or phase files instead.\"}"
 else
   echo '{"decision":"allow"}'
 fi

@@ -4,7 +4,7 @@ Define how to present the plan for user approval. The /plan skill reads
 this file when presenting the finished plan.
 
 When this file is absent or empty, the default behavior is: present the
-full plan inline in conversation with perspective critique summary,
+full plan inline in conversation with cabinet critique summary,
 design decisions, and uncertainties. Wait for explicit approval.
 
 User approval is always required regardless of this file's content —
@@ -29,7 +29,7 @@ Uncomment and adapt these for your project:
 ### Standard Presentation
 Present inline in conversation with:
 1. The complete plan (all template sections)
-2. Perspective critique summary (concerns and verdicts)
+2. Cabinet critique summary (concerns and verdicts)
 3. Design decisions and alternatives considered
 4. Open questions or uncertainties
 5. Estimated effort (S/M/L)

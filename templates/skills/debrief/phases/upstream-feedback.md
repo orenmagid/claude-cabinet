@@ -55,7 +55,7 @@ For each friction point, draft a short feedback item:
 ```
 
 Keep it concrete. "The plan skill was confusing" is not useful.
-"The plan skill's critique phase activated 4 perspectives when only 1
+"The plan skill's critique phase activated 4 cabinet members when only 1
 was relevant, adding 3 minutes of noise to every plan" is useful.
 
 ### 3. Surface for Confirmation
@@ -78,7 +78,7 @@ If the user confirms, deliver the feedback. Detection and delivery
 follow the same pattern as `/extract`:
 
 **If linked** (the CoR package resolves to a local directory — check
-if `node -e "console.log(require.resolve('create-claude-rails'))"`
+if `node -e "console.log(require.resolve('create-claude-cabinet'))"`
 points to a local path rather than a `node_modules` path):
 
 - Write the feedback as a markdown file in the CoR repo's `feedback/`
@@ -99,7 +99,7 @@ points to a local path rather than a `node_modules` path):
   > 2. Save locally (I'll send it later or pass it along myself)
 
   If they choose GitHub:
-  - Open a GitHub issue on `orenmagid/claude-on-rails`
+  - Open a GitHub issue on `orenmagid/claude-cabinet`
   - Title: `Field feedback: [short title]`
   - Label: `field-feedback` (create if needed)
   - Body: the feedback markdown
@@ -109,7 +109,7 @@ points to a local path rather than a `node_modules` path):
   > pass it along to the developer yourself, or set up a free GitHub
   > account so future feedback goes directly to them. Here's a guide
   > if you're interested:
-  > https://github.com/orenmagid/claude-on-rails/blob/main/GITHUB-SETUP.md
+  > https://github.com/orenmagid/claude-cabinet/blob/main/GITHUB-SETUP.md
   > — totally optional. Your feedback is saved either way."
 
 **For either local save path:**

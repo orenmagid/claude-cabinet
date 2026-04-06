@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Merge perspective JSON outputs into a unified run-summary.json.
+// Merge cabinet member JSON outputs into a unified run-summary.json.
 //
 // Usage:
 //   node scripts/merge-findings.js <run-dir>            # Merge only
 //   node scripts/merge-findings.js <run-dir> --db       # Merge + ingest to pib-db
 //
-// Reads all *.json files in <run-dir> (one per perspective), validates
+// Reads all *.json files in <run-dir> (one per cabinet member), validates
 // against finding-schema.json, deduplicates by finding ID, and writes
 // run-summary.json with merged findings and metadata.
 //
@@ -30,7 +30,7 @@ const useDb = args.includes('--db');
 if (!runDir) {
   console.log(`Usage: merge-findings.js <run-dir> [--db]
 
-Merges per-perspective JSON files into run-summary.json.
+Merges per-cabinet-member JSON files into run-summary.json.
   --db    Also ingest findings into the pib-db database.`);
   process.exit(1);
 }
@@ -48,7 +48,7 @@ const files = readdirSync(runDir).filter(f =>
 );
 
 if (files.length === 0) {
-  console.error(`No perspective JSON files found in ${runDir}`);
+  console.error(`No cabinet member JSON files found in ${runDir}`);
   process.exit(1);
 }
 

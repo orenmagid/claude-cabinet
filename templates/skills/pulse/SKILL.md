@@ -18,7 +18,7 @@ related:
     path: .claude/skills/pulse/phases/output.md
     role: "Project-specific: how to present results"
   - type: file
-    path: .claude/skills/perspectives/_context.md
+    path: cabinet/_briefing.md
     role: "Project identity and configuration"
 ---
 
@@ -96,8 +96,8 @@ Read `phases/checks.md` for what to verify.
 **Category A — Count Freshness.** Enumerate actual items and compare
 to any documented counts. Examples:
 - Count files matching `skills/*/SKILL.md` vs any documented skill count
-- Count files matching `skills/perspectives/*/SKILL.md` vs documented
-  perspective count
+- Count files matching `skills/cabinet-*/SKILL.md` vs documented
+  cabinet member count
 - Count entries in configuration files vs documented totals
 - Count items in any enumerated list vs documented count
 
@@ -170,7 +170,7 @@ checks descriptive accuracy — does the documentation match reality?
 Orient runs first; pulse runs inside orient (embedded) to catch stale
 descriptions before they mislead.
 
-**Audit** examines quality through expert perspectives — is the code
+**Audit** examines quality through expert cabinet members — is the code
 good, is the architecture sound? **Pulse** examines accuracy through
 mechanical comparison — does the number match? Audit requires judgment;
 pulse requires counting. They complement each other: pulse catches the

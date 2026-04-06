@@ -28,10 +28,10 @@ related:
     path: .claude/skills/orient/phases/briefing.md
     role: "Project-specific: how to present the orientation"
   - type: file
-    path: .claude/skills/orient/phases/perspectives.md
-    role: "Project-specific: which perspectives to activate"
+    path: .claude/skills/orient/phases/cabinet.md
+    role: "Project-specific: which cabinet members to activate"
   - type: file
-    path: .claude/skills/perspectives/_context.md
+    path: cabinet/_briefing.md
     role: "Project identity and configuration"
 ---
 
@@ -134,7 +134,7 @@ remove it from the registry?").
 > state — is the system running, is data fresh, are processes alive?
 > Pulse (embedded in orient) verifies *descriptive* accuracy — do counts
 > match, do documented states match reality? Audit verifies *quality*
-> through expert perspectives — is the code sound, are conventions
+> through expert cabinet members — is the code sound, are conventions
 > holding? Orient runs every session; pulse runs inside it; audit runs
 > periodically. Each asks a different question about the same system.
 
@@ -148,10 +148,10 @@ to human memory — the anti-entropy principle in action.
 operations that need regular execution but aren't worth remembering to
 invoke manually.
 
-### 6. Activate Perspectives (core)
+### 6. Activate Cabinet Members (core)
 
-Read `phases/perspectives.md` for which expert perspectives or lenses
-should be active during this session. Perspectives watch for specific
+Read `phases/cabinet.md` for which expert cabinet members or lenses
+should be active during this session. Cabinet members watch for specific
 concerns (quality, security, process adherence, non-project items)
 without being explicitly invoked for each decision.
 
@@ -193,7 +193,7 @@ stated a focus, ask.
 | `work-scan.md` | Skip | What work items to check |
 | `health-checks.md` | Skip | System health checks |
 | `auto-maintenance.md` | Skip | Recurring session-start tasks |
-| `perspectives.md` | Skip | Which perspectives to activate |
+| `cabinet.md` | Skip | Which cabinet members to activate |
 | `briefing.md` | Default: simple summary | How to present orientation |
 
 ## Quick Mode
@@ -204,7 +204,7 @@ user already knows what they're doing, skip presentation phases. Core
 phases always run because they keep the system healthy.
 
 - **Core phases** (always run): context, data-sync, work-scan,
-  health-checks, auto-maintenance, perspectives
+  health-checks, auto-maintenance, cabinet
 - **Presentation phases** (skippable): briefing
 
 A project that wants a quick orient variant skips the briefing phase

@@ -1,7 +1,7 @@
 ---
 name: publish
 description: |
-  Publish a new version of Claude on Rails to npm. Analyzes changes since
+  Publish a new version of Claude Cabinet to npm. Analyzes changes since
   last release, suggests a version bump (patch/minor/major), updates
   package.json, commits, tags, and publishes. Use when: "publish",
   "release", "ship it", "/publish".
@@ -11,11 +11,11 @@ description: |
 
 ## Purpose
 
-Handle the full publish flow for the `create-claude-rails` package:
+Handle the full publish flow for the `create-claude-cabinet` package:
 analyze what changed, suggest a version, get confirmation, and ship.
 
 This skill only runs from the CoR source repo (`package.json` has
-`name: "create-claude-rails"`). If run elsewhere, say so and stop.
+`name: "create-claude-cabinet"`). If run elsewhere, say so and stop.
 
 ## Workflow
 
@@ -68,7 +68,7 @@ With user confirmation:
 
 ### 5. Post-Publish
 
-- Re-run the lean install (`node bin/create-claude-rails.js --lean`) to
+- Re-run the lean install (`node bin/create-claude-cabinet.js --lean`) to
   update the local dogfood copy with the just-published templates
 - Update `system-status.md` if it exists
 - Report the published version and npm URL

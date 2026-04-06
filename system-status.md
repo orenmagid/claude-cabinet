@@ -1,4 +1,4 @@
-# System Status — Claude on Rails (renaming to Claude Cabinet)
+# System Status — Claude Cabinet
 
 ## What's Built
 
@@ -10,9 +10,9 @@
 - Safe reset via `--reset` (manifest-aware, won't delete customized files)
 - Settings merge (hooks into `.claude/settings.json`)
 - Optional SQLite work tracker setup
-- 20 expert perspectives for audit system (renaming to "cabinet members")
-- Split context files: identity, architecture, scopes, cabinet, work-tracking, api (renaming to "briefings")
-- Perspective gap detection in debrief (anti-entropy)
+- 20 expert cabinet members for audit system
+- Split briefing files: identity, architecture, scopes, cabinet, work-tracking, api
+- Cabinet member gap detection in debrief (anti-entropy)
 - Feedback outbox for non-developers (`~/.claude/cor-feedback-outbox.json`)
 - GitHub setup guide for non-developer feedback delivery
 - Conversational onboard, seed, and cor-upgrade skills
@@ -26,27 +26,20 @@
 
 ## What's Active
 
-- Published at v0.5.8 on npm as `create-claude-rails`
-- One downstream consumer: Flow (32 perspectives, v0.5.1 installed)
+- Published at v0.6.0 on npm as `create-claude-cabinet`
+- One downstream consumer: Flow (32 cabinet members, v0.5.1 installed — needs migration)
 - Upstream feedback loop active
 - Write protection + drift detection active
 
 ## What's Planned
 
-### Imminent: Full Cabinet Restructure (PLAN-cabinet-restructure.md)
+### Imminent: Flow Migration
 
-- Rename project: Claude on Rails → **Claude Cabinet**
-- Rename package: `create-claude-rails` → **`create-claude-cabinet`**
-- Rename terminology: perspectives→cabinet members, groups→committees,
-  context→briefings, lanes→portfolios, activation signals→convening criteria
-- Rename 7 members: boundary-man, process-therapist, small-screen,
-  roster-check, record-keeper, workflow-cop, speed-freak
-- Restructure directories: members stay in `skills/cabinet-*/`,
-  infrastructure to `cabinet/`, briefings to `briefing/`
-- Version bump to 0.6.0
-- Flow migration after upstream lands
+- Migrate Flow from old `perspectives/` structure to new `cabinet-*/` structure
+- Option A (recommended): clean reinstall + restore custom files
+- See PLAN-cabinet-restructure.md Part 5 for full migration plan
 
-### After Restructure
+### After Migration
 
 - Build 7 new cabinet members: goal-alignment, information-design,
   user-advocate, ui-experimentalist, vision, framework-quality, gtd

@@ -202,8 +202,8 @@ Or if skipped:
 
 ## What Downstream Phases Do With This
 
-### generate-context.md
-Uses the choice to populate `_context.md`:
+### generate-briefing.md
+Uses the choice to populate `_briefing.md`:
 - pib-db: Documents CLI commands, DB location, query patterns
 - markdown: Documents file location, format conventions
 - external: Documents system name, access patterns

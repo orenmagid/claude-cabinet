@@ -1,0 +1,49 @@
+# Cabinet member committees — canonical mapping of committee slugs to cabinet member lists.
+#
+# Copy this file as committees.yaml and uncomment/customize the committees that
+# match your project. Technology choices imply expertise needs: if your
+# project has a UI, you need a UI committee. If it has an API, you need
+# a system health committee.
+#
+# Consumed by:
+#   - /audit skill (committee selection menu)
+#   - scripts (--committee flag, resolve-committees helpers)
+#
+# Cross-portfolio cabinet members are NOT in any committee. They activate via
+# standing-mandate in their SKILL.md frontmatter:
+#   anti-confirmation, qa, debugger, organized-mind
+
+committees:
+  # -- If your project has a user interface --
+  # ux:
+  #   name: "UX & Design"
+  #   members:
+  #     - accessibility
+  #     - small-screen
+  #     # Add framework-specific cabinet members (e.g., mantine-quality, tailwind-quality)
+
+  # -- If your project has code (most projects) --
+  # code:
+  #   name: "Code Quality"
+  #   members:
+  #     - technical-debt
+  #     - boundary-man
+  #     # Add: architecture (if multi-layer system)
+
+  # -- If your project has an API, database, or infrastructure --
+  # health:
+  #   name: "System Health"
+  #   members:
+  #     - security
+  #     - data-integrity
+  #     - speed-freak
+  #     # Add: sync-health (if remote sync), deployment (if CI/CD)
+
+  # -- If your project has established process/methodology --
+  # process:
+  #   name: "Process & Meta"
+  #   members:
+  #     - workflow-cop
+  #     - record-keeper
+  #     - process-therapist
+  #     - cor-health          # CoR adoption health, configuration drift, anti-bloat

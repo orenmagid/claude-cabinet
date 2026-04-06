@@ -2,9 +2,9 @@
 model: opus
 name: cor-upgrade
 description: |
-  Conversational upgrade when Claude on Rails updates. Runs the installer to
+  Conversational upgrade when Claude Cabinet updates. Runs the installer to
   mechanically update all upstream-owned files, then walks through what changed
-  conversationally — explaining improvements, handling _context.md updates,
+  conversationally — explaining improvements, handling _briefing.md updates,
   new phase file opportunities, and schema migrations. Intelligence is the
   merge strategy for the parts that need it. Use when: "cor-upgrade",
   "update CoR", "new skeletons", "/cor-upgrade".
@@ -17,10 +17,10 @@ related:
     role: "How to explain what changed"
   - type: file
     path: .claude/skills/cor-upgrade/phases/adapt.md
-    role: "Handle non-manifest concerns — _context.md, phase files, schema"
+    role: "Handle non-manifest concerns — _briefing.md, phase files, schema"
 ---
 
-# /cor-upgrade — Conversational Claude on Rails Upgrade
+# /cor-upgrade — Conversational Claude Cabinet Upgrade
 
 ## Purpose
 
@@ -36,7 +36,7 @@ CoR upgrades have two layers:
    boundary at runtime — Claude cannot accidentally modify these files.
 
 2. **Conversational layer.** Everything the installer can't handle:
-   explaining what changed and why, updating `_context.md` sections that
+   explaining what changed and why, updating `_briefing.md` sections that
    new features reference, identifying new phase file opportunities,
    running schema migrations, adapting project context to upstream
    improvements. This is where intelligence is the merge strategy.
@@ -76,14 +76,14 @@ upstream-owned and should only change through the installer.
   the hook because it doesn't use Claude's Edit/Write tools
 - After the installer runs, all manifest-tracked files are current
 - This skill then handles everything the installer doesn't touch:
-  _context.md, phase files, schema, and explanation
+  _briefing.md, phase files, schema, and explanation
 
 ### Skeleton/Extension Separation
 
 Skeleton files (SKILL.md, hooks, scripts) are upstream-owned, manifest-
 tracked, and write-protected. They evolve through the installer.
 
-Phase files and _context.md are project-owned. They are NEVER in the
+Phase files and _briefing.md are project-owned. They are NEVER in the
 manifest, NEVER write-protected, and NEVER overwritten by the installer.
 They evolve through conversation — this skill, /onboard, or direct
 editing.
@@ -100,7 +100,7 @@ Read `phases/pre-upgrade.md` for pre-upgrade checks.
 **Default (absent/empty):**
 - Read `.corrc.json` to capture the current version and module set
 - Note which phase files exist and have content (these won't be touched)
-- Note any `_context.md` sections that may need updating
+- Note any `_briefing.md` sections that may need updating
 - If the project has a work tracker DB, note the current schema
 
 Output: a snapshot of the project's current state, used to explain
@@ -115,12 +115,12 @@ Run the installer via Bash to mechanically update all upstream files:
 curl -fsSL https://raw.githubusercontent.com/orenmagid/claude-on-rails/main/install.sh | bash
 
 # Or npm installer (if Node.js available)
-npx create-claude-rails
+npx create-claude-cabinet
 ```
 
 The installer:
 - Overwrites all manifest-tracked files (skeletons, hooks, scripts)
-- Preserves files NOT in the manifest (phase files, _context.md)
+- Preserves files NOT in the manifest (phase files, _briefing.md)
 - Updates `.corrc.json` with new version, hashes, and any new files
 - Adds new skills/hooks/scripts that didn't exist in the old version
 
@@ -143,7 +143,7 @@ the new state:
    explain what changed and why — not line-by-line diffs, but semantic
    summaries. "The debrief skill now includes an upstream feedback phase
    that surfaces CoR friction during debrief sessions." "The plan skill's
-   critique step now pulls from more perspectives by default."
+   critique step now pulls from more cabinet members by default."
 
 3. **New files.** Any skills, hooks, or scripts that were added for the
    first time. Explain what they do and whether they need any setup.
@@ -166,12 +166,12 @@ Read `phases/adapt.md` for how to handle the conversational layer.
 **Default (absent/empty):** After explaining changes, handle anything
 the installer couldn't:
 
-#### _context.md Updates
-If new skeletons reference `_context.md § Section` names that the
-project's `_context.md` doesn't have, propose adding them. New features
-often depend on context sections — e.g., a new perspective might
+#### _briefing.md Updates
+If new skeletons reference `_briefing.md § Section` names that the
+project's `_briefing.md` doesn't have, propose adding them. New features
+often depend on briefing sections — e.g., a new cabinet member might
 reference `§ Friction Captures` which the project hasn't defined yet.
-Show the section template from `_context-template.md` and help the
+Show the section template from `_briefing-template.md` and help the
 user fill it in.
 
 #### Phase File Opportunities
@@ -201,11 +201,11 @@ project's `phases/` directory. There are three cases:
    the default — you'll get this automatically. If that's too noisy,
    create `phases/research.md` to scope it."
 
-4. **Default that won't fit the project.** Read `_context.md` and
+4. **Default that won't fit the project.** Read `_briefing.md` and
    compare against what the default actually does. If there's a
    mismatch, say so and offer to create the phase file now. "The
    orient skeleton added a `work-scan` phase. The default reads git
-   history — but your `_context.md` says you use Linear. The default
+   history — but your `_briefing.md` says you use Linear. The default
    won't see your tickets. Want to create `phases/work-scan.md` that
    checks Linear?" This isn't speculation — it's reading both sides
    and spotting the gap.
@@ -240,9 +240,9 @@ the workflow. Execute them at their declared position.
 
 | Phase | Absent = | What it customizes |
 |-------|----------|-------------------|
-| `pre-upgrade.md` | Default: read .corrc.json, note phase files, note _context.md | Pre-upgrade state capture |
+| `pre-upgrade.md` | Default: read .corrc.json, note phase files, note _briefing.md | Pre-upgrade state capture |
 | `explain-changes.md` | Default: semantic summary of version jump, changed skeletons, new files | How to present what changed |
-| `adapt.md` | Default: _context.md sections, phase implications, schema, new modules | How to handle non-manifest concerns |
+| `adapt.md` | Default: _briefing.md sections, phase implications, schema, new modules | How to handle non-manifest concerns |
 
 ## Proactive Trigger
 
@@ -283,7 +283,7 @@ New CoR version is out. The user re-runs the installer. Files update
 silently. The user has no idea what changed — was it just bug fixes?
 New features? Did a skill they rely on change its workflow? They also
 don't realize the new debrief skill references a `§ Friction Captures`
-section in _context.md that their project doesn't have, so the upstream
+section in _briefing.md that their project doesn't have, so the upstream
 feedback phase silently does nothing. Three weeks later they wonder
 why no friction is being captured.
 
@@ -293,9 +293,9 @@ New CoR version is out. The user runs `/cor-upgrade`. The installer
 updates all upstream files mechanically — fast, deterministic, safe
 (phase files untouched). Then Claude explains: "You went from v0.4.1
 to v0.5.0. The big change: debrief now has an upstream feedback phase
-that captures CoR friction. It references `_context.md § Friction
-Captures` — let's add that section to your context file." "The plan
-skill's critique step now uses three perspectives instead of one. Your
+that captures CoR friction. It references `_briefing.md § Friction
+Captures` — let's add that section to your briefing file." "The plan
+skill's critique step now uses three cabinet members instead of one. Your
 existing phase files are fine — this is a default behavior change."
 "There's a new `investigate` skill for deep-dive debugging. Want to
 try it?" Everything is explained. Non-manifest concerns are handled.

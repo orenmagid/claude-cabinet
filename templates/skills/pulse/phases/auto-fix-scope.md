@@ -30,7 +30,7 @@ Uncomment and adapt for your project:
 Update documented counts to match actual counts.
 
 ### Date Stamps
-Update "last verified" dates in perspective SKILL.md files after
+Update "last verified" dates in cabinet member SKILL.md files after
 a successful pulse check confirms they're still accurate.
 
 ### Known Renames

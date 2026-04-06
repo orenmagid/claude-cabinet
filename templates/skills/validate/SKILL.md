@@ -10,7 +10,7 @@ related:
     path: .claude/skills/validate/phases/validators.md
     role: "Project-specific validator definitions"
   - type: file
-    path: .claude/skills/perspectives/_context.md
+    path: cabinet/_briefing.md
     role: "Scan scopes for validation targets"
 ---
 

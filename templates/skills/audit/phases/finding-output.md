@@ -1,7 +1,7 @@
 # Finding Output — Persisting and Reporting Results
 
 Define how to persist audit findings and present the results. The /audit
-skill reads this file after all perspective agents complete.
+skill reads this file after all cabinet member agents have completed.
 
 When this file is absent or empty, the default behavior is: write JSON
 to a timestamped run directory, merge with `scripts/merge-findings.js`,
@@ -12,14 +12,14 @@ write only `skip: true`.
 
 Define your output strategy:
 - **Storage** — where findings go (filesystem, database, API, all three)
-- **Merge** — how per-perspective outputs are combined
+- **Merge** — how per-cabinet-member outputs are combined
 - **Reporting** — what to show the user and in what format
 - **Next steps** — what to do after findings are persisted
 
 ## Default Behavior
 
 1. **Create run directory:** `reviews/YYYY-MM-DD/HH-MM-SS/`
-2. **Write perspective JSON:** One file per perspective in the run directory
+2. **Write cabinet member JSON:** One file per cabinet member in the run directory
 3. **Merge findings:** Run `node scripts/merge-findings.js <run-dir>`
    to produce `run-summary.json` with deduplicated findings and metadata
 4. **Ingest to database:** Run `node scripts/merge-findings.js <run-dir> --db`
@@ -27,7 +27,7 @@ Define your output strategy:
    is not initialized, findings are still saved as JSON files.
 5. **Present summary:**
    - Total finding count and breakdown by severity
-   - Findings by perspective
+   - Findings by cabinet member
    - Any critical findings highlighted
    - Positive findings (healthy subsystems)
 6. **Prompt for triage:** Remind the user that findings need human judgment.

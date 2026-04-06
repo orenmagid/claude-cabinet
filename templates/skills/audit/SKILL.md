@@ -2,15 +2,15 @@
 model: opus
 name: audit
 description: |
-  Systematic quality audit. Selects perspectives, loads triage suppression,
-  spawns parallel perspective agents, merges findings, and persists results.
+  Systematic quality audit. Selects cabinet members, loads triage suppression,
+  spawns parallel cabinet member agents, merges findings, and persists results.
   The audit is the system's learning mechanism for drift and quality gaps
   that accumulate silently between sessions. Use when: "audit", "run an
   audit", "/audit", scheduled audit trigger, or significant milestone.
 related:
   - type: file
-    path: .claude/skills/audit/phases/perspective-selection.md
-    role: "Project-specific: which perspectives to run"
+    path: .claude/skills/audit/phases/member-selection.md
+    role: "Project-specific: which cabinet members to run"
   - type: file
     path: .claude/skills/audit/phases/structural-checks.md
     role: "Project-specific: fast structural checks before full audit"
@@ -18,23 +18,23 @@ related:
     path: .claude/skills/audit/phases/triage-history.md
     role: "Project-specific: how to load suppression lists"
   - type: file
-    path: .claude/skills/audit/phases/perspective-execution.md
-    role: "Project-specific: how to run perspective agents"
+    path: .claude/skills/audit/phases/member-execution.md
+    role: "Project-specific: how to run cabinet member agents"
   - type: file
     path: .claude/skills/audit/phases/finding-output.md
     role: "Project-specific: how to persist and report findings"
   - type: file
-    path: .claude/skills/perspectives/output-contract.md
-    role: "How perspectives produce structured findings"
+    path: cabinet/output-contract.md
+    role: "How cabinet members produce structured findings"
   - type: file
-    path: .claude/skills/perspectives/_context.md
+    path: cabinet/_briefing.md
     role: "Project identity and configuration"
   - type: file
     path: scripts/finding-schema.json
     role: "JSON Schema for finding validation"
   - type: file
     path: scripts/merge-findings.js
-    role: "Merges per-perspective JSON into run-summary.json"
+    role: "Merges per-member JSON into run-summary.json"
   - type: file
     path: scripts/load-triage-history.js
     role: "Builds suppression lists from triage history"
@@ -56,7 +56,7 @@ The audit catches what individual sessions miss.
 
 This is a **skeleton skill** using the `phases/` directory pattern. The
 orchestration (what to do and in what order) is generic. Your project
-defines the specifics — which perspectives to run, what fast checks to
+defines the specifics — which cabinet members to run, what fast checks to
 apply, how to persist findings — in phase files under `phases/`.
 
 ### Phase File Protocol
@@ -82,11 +82,11 @@ eyes, checking whether what the system claims to be matches what it
 actually is.
 
 You are not a linter. You don't flag style violations or enforce
-arbitrary standards. You use expert perspectives — named lenses that
-each bring domain knowledge and specific concerns. A perspective on
-accessibility looks at the UI differently than a perspective on data
+arbitrary standards. You use cabinet members — named lenses that
+each bring domain knowledge and specific concerns. A cabinet member on
+accessibility looks at the UI differently than a cabinet member on data
 integrity looks at the persistence layer. The combination of
-perspectives produces a holistic picture that no single viewpoint
+cabinet members produces a holistic picture that no single viewpoint
 could achieve.
 
 Your findings are suggestions. Every one goes through triage where the
@@ -99,28 +99,28 @@ project. Adjust.
 - On a schedule (weekly, after milestones, before releases)
 - When the user asks for an audit
 - After significant architectural changes
-- When a new perspective is adopted (run it once to establish baseline)
+- When a new cabinet member is adopted (run it once to establish baseline)
 
 ## Workflow
 
-### 1. Select Perspectives (core)
+### 1. Select Cabinet Members (core)
 
-Read `phases/perspective-selection.md` for which perspectives to run.
+Read `phases/member-selection.md` for which cabinet members to run.
 
-**Default (absent/empty):** Discover all perspectives from
-`skills/perspectives/*/SKILL.md`. If `skills/perspectives/_groups.yaml`
-exists (copied from `_groups-template.yaml`), present groups and let the
-user choose which to run. If no groups file exists, run all discovered
-perspectives.
+**Default (absent/empty):** Discover all cabinet members from
+`skills/cabinet-*/SKILL.md`. If `cabinet/committees.yaml`
+exists (copied from `committees-template.yaml`), present committees and let the
+user choose which to run. If no committees file exists, run all discovered
+cabinet members.
 
 The selection determines what the audit looks at. A full audit runs
-everything; a focused audit runs one group or a specific set of
-perspectives.
+everything; a focused audit runs one committee or a specific set of
+cabinet members.
 
 ### 2. Fast Structural Checks (core)
 
 Read `phases/structural-checks.md` for fast, deterministic checks to run before
-the full perspective-based audit. These are things like linters, type
+the full cabinet member-based audit. These are things like linters, type
 checkers, validation scripts — anything that gives immediate signal
 without AI interpretation.
 
@@ -139,30 +139,30 @@ build suppression lists. This script tries the reference data layer
 files. The result is a JSON object with rejected and deferred finding
 IDs and fingerprints.
 
-Pass the suppression list to each perspective agent so they skip
+Pass the suppression list to each cabinet member agent so they skip
 findings that were already rejected or deferred. Without suppression,
 every audit regenerates the same findings the user already dismissed,
 and the triage queue becomes useless.
 
-### 4. Execute Perspective Agents (core)
+### 4. Execute Cabinet Member Agents (core)
 
-Read `phases/perspective-execution.md` for how to spawn and manage
-perspective agents.
+Read `phases/member-execution.md` for how to spawn and manage
+cabinet member agents.
 
-**Default (absent/empty):** For each selected perspective:
-1. Read the perspective's `SKILL.md` for domain knowledge and concerns
-2. Read `skills/perspectives/_context.md` for project identity
-3. Read `skills/perspectives/output-contract.md` for output format
+**Default (absent/empty):** For each selected cabinet member:
+1. Read the cabinet member's `SKILL.md` for domain knowledge and concerns
+2. Read `cabinet/_briefing.md` for project identity
+3. Read `cabinet/output-contract.md` for output format
 4. Pass the suppression list from step 3
 5. Spawn as an agent (parallel when possible)
 
-Each perspective agent follows a two-phase protocol:
+Each cabinet member agent follows a two-phase protocol:
 - **Phase A — Explore:** Read broadly, examine the codebase through this
-  perspective's lens. Take notes on everything observed.
+  cabinet member's lens. Take notes on everything observed.
 - **Phase B — Rank and emit:** From everything observed, select the top
   5-8 findings that matter most. Apply the output contract. Emit JSON.
 
-The two-phase protocol prevents premature commitment — the perspective
+The two-phase protocol prevents premature commitment — the cabinet member
 sees everything before deciding what to report. Without it, the first
 interesting thing found dominates the output.
 
@@ -173,12 +173,12 @@ audit results.
 
 **Default (absent/empty):**
 1. Create a timestamped run directory: `reviews/YYYY-MM-DD/HH-MM-SS/`
-2. Write each perspective's JSON output to the run directory
+2. Write each cabinet member's JSON output to the run directory
 3. Run `scripts/merge-findings.js <run-dir>` to produce `run-summary.json`
 4. Run `scripts/merge-findings.js <run-dir> --db` to also ingest into
    the reference data layer (if pib-db is initialized)
 5. Present findings summary: total count, breakdown by severity, by
-   perspective, and highlight any critical findings
+   cabinet member, and highlight any critical findings
 
 After persisting, remind the user about triage: findings need human
 judgment before they drive action. Use `/triage-audit` to review and
@@ -195,10 +195,10 @@ the workflow. Execute them at their declared position.
 
 | Phase | Absent = | What it customizes |
 |-------|----------|-------------------|
-| `perspective-selection.md` | Default: discover all, present groups if available | Which perspectives to run |
+| `member-selection.md` | Default: discover all, present committees if available | Which cabinet members to run |
 | `structural-checks.md` | Skip | Fast structural checks before full audit |
 | `triage-history.md` | Default: run load-triage-history.js | How to load suppression lists |
-| `perspective-execution.md` | Default: parallel agents with two-phase protocol | How to run perspective agents |
+| `member-execution.md` | Default: parallel agents with two-phase protocol | How to run cabinet member agents |
 | `finding-output.md` | Default: timestamped dir + merge + pib-db ingest | How to persist and report findings |
 
 ## How Audit Connects to Other Skills
@@ -211,7 +211,7 @@ demand.
 
 **Debrief** captures session-specific lessons — what was learned during
 this work session. **Audit** captures systematic observations from
-expert perspectives — what would a specialist notice? Debrief lessons
+cabinet members — what would a specialist notice? Debrief lessons
 come from doing; audit findings come from looking.
 
 **Triage-audit** is the audit's partner. Audit generates findings;
@@ -221,7 +221,7 @@ to triage. They form a closed loop.
 
 **Pulse** watches self-description accuracy — do counts match, do
 documented states match reality? Audit watches quality through domain
-expert lenses. Pulse is fast and embedded; audit is thorough and
+cabinet member lenses. Pulse is fast and embedded; audit is thorough and
 standalone.
 
 ## Extending
@@ -236,7 +236,7 @@ Examples of phases mature projects add:
 - Auto-fix execution (attempt fixes for autoFixable findings after triage)
 - Trend analysis (compare this run to previous runs for improvement/regression)
 - Notification (alert external systems when critical findings appear)
-- Perspective evaluation (track which perspectives consistently produce
+- Cabinet member evaluation (track which cabinet members consistently produce
   useful findings vs noise)
 
 ## Calibration
@@ -259,10 +259,10 @@ them all at once is 10x what incremental fixes would have been.
 
 ### With Skill (Good)
 
-Every two weeks, the audit runs. Perspective agents examine the codebase
+Every two weeks, the audit runs. Cabinet member agents examine the codebase
 through different lenses — architecture, code quality, UX, security,
 process adherence. Findings go through triage: the user fixes what
-matters, defers what can wait, rejects what's noise. Each perspective
+matters, defers what can wait, rejects what's noise. Each cabinet member
 learns from rejections (calibration drift). Conventions stay enforced
 because someone is checking. Drift is caught at one commit, not ten.
 

@@ -52,7 +52,7 @@ Write verdicts to `reviews/<run-dir>/triage.json`:
   "verdicts": [
     {
       "id": "finding-id",
-      "perspective": "...",
+      "cabinet_member": "...",
       "title": "...",
       "verdict": "fix|defer|reject",
       "notes": "user's reason or question"

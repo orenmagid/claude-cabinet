@@ -2,7 +2,7 @@
 
 Check whether the planned work duplicates existing reusable components
 in your project. The /plan skill reads this file after drafting and
-before perspective critique.
+before cabinet critique.
 
 When this file is absent or empty, the default behavior is: skip this
 phase entirely. To explicitly opt out, write only `skip: true`.

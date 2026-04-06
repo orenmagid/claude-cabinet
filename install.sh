@@ -1,5 +1,5 @@
 #!/bin/bash
-# Claude on Rails — shell installer
+# Claude Cabinet — shell installer
 # Works without Node.js, npm, or git — installs them if needed.
 #
 # Usage:
@@ -16,11 +16,11 @@ PROJECT_DIR="${1:-.}"
 PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd)"
 
 CLAUDE_DIR="$PROJECT_DIR/.claude"
-VERSION="0.5.8"
-TARBALL_URL="https://registry.npmjs.org/create-claude-rails/-/create-claude-rails-${VERSION}.tgz"
+VERSION="0.6.0"
+TARBALL_URL="https://registry.npmjs.org/create-claude-cabinet/-/create-claude-cabinet-${VERSION}.tgz"
 
 echo ""
-echo "  🚂 Claude on Rails v${VERSION}"
+echo "  🗄️  Claude Cabinet v${VERSION}"
 echo ""
 
 # --- Install prerequisites ---
@@ -82,7 +82,7 @@ if [ ! -f "$CLAUDE_HOME/cor-registry.json" ]; then
 fi
 
 if [ "$FIRST_COR_INSTALL" = true ] && [ ! -s "$CLAUDE_HOME/CLAUDE.md" ]; then
-  echo "  This looks like your first time using Claude on Rails."
+  echo "  This looks like your first time using Claude Cabinet."
   echo "  Let's set up your profile so Claude knows who you are"
   echo "  across all your projects."
   echo ""
@@ -100,7 +100,7 @@ if [ "$FIRST_COR_INSTALL" = true ] && [ ! -s "$CLAUDE_HOME/CLAUDE.md" ]; then
       [ -n "$USER_NAME" ] && echo "Name: $USER_NAME"
       [ -n "$USER_ROLE" ] && echo "$USER_ROLE"
       echo ""
-      echo "<!-- Added by Claude on Rails. Claude sees this in every project. -->"
+      echo "<!-- Added by Claude Cabinet. Claude sees this in every project. -->"
       echo "<!-- Edit ~/.claude/CLAUDE.md to update. -->"
     } >> "$CLAUDE_HOME/CLAUDE.md"
     echo ""
@@ -188,7 +188,7 @@ fi
 echo "  Setting up..."
 
 # All skill directories
-SKILL_DIRS="orient orient-quick debrief debrief-quick menu plan execute investigate audit pulse triage-audit perspectives onboard seed cor-upgrade link unlink publish extract validate"
+SKILL_DIRS="orient orient-quick debrief debrief-quick menu plan execute investigate audit pulse triage-audit onboard seed cor-upgrade link unlink publish extract validate cabinet-accessibility cabinet-anti-confirmation cabinet-architecture cabinet-boundary-man cabinet-cor-health cabinet-data-integrity cabinet-debugger cabinet-historian cabinet-organized-mind cabinet-process-therapist cabinet-qa cabinet-record-keeper cabinet-roster-check cabinet-security cabinet-small-screen cabinet-speed-freak cabinet-system-advocate cabinet-technical-debt cabinet-usability cabinet-workflow-cop"
 
 # Copy skills
 copied=0
@@ -219,6 +219,24 @@ for skill in $SKILL_DIRS; do
       cp "$src/phases/upstream-feedback.md" "$dst/phases/"
       copied=$((copied + 1))
     fi
+  fi
+done
+
+# Copy cabinet infrastructure
+mkdir -p "$CLAUDE_DIR/cabinet"
+for f in committees-template.yaml lifecycle.md composition-patterns.md eval-protocol.md prompt-guide.md output-contract.md; do
+  if [ -f "$TEMPLATE_DIR/cabinet/$f" ]; then
+    cp "$TEMPLATE_DIR/cabinet/$f" "$CLAUDE_DIR/cabinet/"
+    copied=$((copied + 1))
+  fi
+done
+
+# Copy briefing templates
+mkdir -p "$CLAUDE_DIR/briefing"
+for f in _briefing-template.md _briefing-identity-template.md _briefing-architecture-template.md _briefing-scopes-template.md _briefing-cabinet-template.md _briefing-work-tracking-template.md _briefing-api-template.md; do
+  if [ -f "$TEMPLATE_DIR/briefing/$f" ]; then
+    cp "$TEMPLATE_DIR/briefing/$f" "$CLAUDE_DIR/briefing/"
+    copied=$((copied + 1))
   fi
 done
 
@@ -368,7 +386,7 @@ build_manifest() {
   echo "{"
   echo '  "version": "'"$VERSION"'",'
   echo '  "installedAt": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'",'
-  echo '  "upstreamPackage": "create-claude-rails",'
+  echo '  "upstreamPackage": "create-claude-cabinet",'
   echo '  "modules": {'
   echo '    "session-loop": true,'
   echo '    "hooks": true,'

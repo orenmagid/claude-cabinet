@@ -1,11 +1,11 @@
-# Getting Started with Claude on Rails
+# Getting Started with Claude Cabinet
 
 This guide assumes you have Claude Code installed (the desktop app or CLI)
 and a terminal. That's it. No programming experience needed.
 
 ## What is this?
 
-Claude on Rails gives Claude a workflow: a way to start sessions informed,
+Claude Cabinet gives Claude a workflow: a way to start sessions informed,
 plan work before doing it, review quality, and close sessions properly.
 Without it, every conversation with Claude starts from scratch. With it,
 Claude remembers what happened last time, knows what's on your plate, and
@@ -26,7 +26,7 @@ context. You end up re-explaining what you're doing, what you decided
 last time, what's left. The bigger the project gets, the more time
 you spend catching Claude up instead of making progress.
 
-Claude on Rails fixes that. It gives Claude a memory, a workflow, and
+Claude Cabinet fixes that. It gives Claude a memory, a workflow, and
 a habit of closing loops. You sit down, say `/orient`, and Claude
 already knows where things stand.
 
@@ -59,7 +59,7 @@ The installer handles everything:
 - If you don't have git or Node.js, it installs them (may ask for your
   Mac password — that's normal)
 - It sets up a git repository in your folder if there isn't one
-- It installs all the Claude on Rails features
+- It installs all the Claude Cabinet features
 - It creates a task database for tracking work between sessions
 
 The first time you run it, it'll ask two extra questions: **your name**
@@ -135,11 +135,11 @@ Type `/menu` to see everything available. Here are the highlights:
 
 ## Multiple related projects
 
-Each project folder gets its own Claude on Rails setup. Install it in
-each folder separately — each project gets its own context, work
+Each project folder gets its own Claude Cabinet setup. Install it in
+each folder separately — each project gets its own briefings, work
 tracking, and session history.
 
-But they're not isolated. Claude on Rails maintains a **project
+But they're not isolated. Claude Cabinet maintains a **project
 registry** (`~/.claude/cor-registry.json`) that lists all your projects.
 When you onboard a new project, Claude asks how it relates to your
 other ones. During `/orient`, Claude is aware of your other projects

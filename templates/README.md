@@ -12,17 +12,17 @@ the [methodology essay](../areas/flow-development/process-in-a-box-methodology.m
 
 This package contains **Waves 1-7** artifacts. Wave 1 is generic as-is.
 Wave 2 parameterizes mixed-extractable artifacts — replacing hardcoded
-paths with references to `_context.md` and environment variables. Wave 3
+paths with references to `_briefing.md` and environment variables. Wave 3
 skeletons the session loop — orient and debrief — using the `phases/`
 pattern established by validate in Wave 2. Wave 4 skeletons the
 compliance stack — enforcement pipeline, plan, and execute. Wave 5
 skeletons the audit loop — audit, pulse, triage-audit — with a reference
-data layer, perspective infrastructure, and scripts that make the
+data layer, cabinet member infrastructure, and scripts that make the
 whole system work out of the box. Wave 6 documents how Flow extends
 and will adopt the package — see [EXTENSIONS.md](EXTENSIONS.md) for
-annotated phase file overrides, reusable patterns, and perspective
+annotated phase file overrides, reusable patterns, and cabinet member
 writing examples. Wave 7 adds the lifecycle layer — onboarding,
-capability seeding, upgrades, and CoR health monitoring.
+capability seeding, upgrades, and Claude Cabinet health monitoring.
 
 Everything is organized to mirror the `.claude/` directory structure, so
 adoption is straightforward: copy what you need into your project's
@@ -52,14 +52,14 @@ adoption is straightforward: copy what you need into your project's
 | `skills/validate/SKILL.md` | 2 | **First `phases/` skeleton.** Orchestrates validators and presents a unified summary. Validators defined in `phases/validators.md`. |
 | `skills/orient/SKILL.md` | 3 | **Session start skeleton.** Loads context, syncs data, scans work, runs health checks and maintenance, presents briefing. 7 phase files. |
 | `skills/debrief/SKILL.md` | 3 | **Session close skeleton.** Inventories work, closes items, updates state, records lessons, captures loose ends. 8 phase files. |
-| `skills/plan/SKILL.md` | 4 | **Planning skeleton.** Research, overlap check, draft, perspective critique, completeness check, present, file work item. 7 phase files. |
-| `skills/execute/SKILL.md` | 4 | **Execution skeleton.** Load plan, activate perspectives, 3-checkpoint protocol (pre-implementation, per-file-group, pre-commit), validate, verify AC. 5 phase files. |
-| `skills/audit/SKILL.md` | 5 | **Audit skeleton.** Select perspectives, fast structural checks, load triage suppression, spawn parallel perspective agents with two-phase protocol, merge and persist findings. 5 phase files. |
+| `skills/plan/SKILL.md` | 4 | **Planning skeleton.** Research, overlap check, draft, cabinet member critique, completeness check, present, file work item. 7 phase files. |
+| `skills/execute/SKILL.md` | 4 | **Execution skeleton.** Load plan, activate cabinet members, 3-checkpoint protocol (pre-implementation, per-file-group, pre-commit), validate, verify AC. 5 phase files. |
+| `skills/audit/SKILL.md` | 5 | **Audit skeleton.** Select cabinet members, fast structural checks, load triage suppression, spawn parallel cabinet member agents with two-phase protocol, merge and persist findings. 5 phase files. |
 | `skills/pulse/SKILL.md` | 5 | **Pulse skeleton.** Self-description accuracy check: count freshness, dead reference spot-check, staleness detection. Two modes: embedded (silent in orient/debrief) and standalone. 3 phase files. |
 | `skills/triage-audit/SKILL.md` | 5 | **Triage skeleton.** Load findings, prepare commentary, present via local web UI or CLI, apply verdicts (fix/defer/reject), create actions for approved findings. 3 phase files. |
 | `skills/onboard/SKILL.md` | 7 | **Onboarding skeleton.** Conversational interview that generates the initial context layer. Re-runnable: first run generates, subsequent runs refine. 6 phase files. |
-| `skills/seed/SKILL.md` | 7 | **Capability seeding skeleton.** Detects technology adoption signals, proposes expertise conversations, builds and maintains perspectives collaboratively. 4 phase files. |
-| `skills/cor-upgrade/SKILL.md` | 7 | **Upgrade skeleton.** Conversational merge when new CoR skeletons arrive. Intelligence is the merge strategy — conversation, not mechanical copy. 4 phase files. |
+| `skills/seed/SKILL.md` | 7 | **Capability seeding skeleton.** Detects technology adoption signals, proposes expertise conversations, builds and maintains cabinet members collaboratively. 4 phase files. |
+| `skills/cor-upgrade/SKILL.md` | 7 | **Upgrade skeleton.** Conversational merge when new Claude Cabinet skeletons arrive. Intelligence is the merge strategy — conversation, not mechanical copy. 4 phase files. |
 
 ### Scripts (6)
 
@@ -67,58 +67,58 @@ adoption is straightforward: copy what you need into your project's
 |----------|------|-------------|
 | `scripts/pib-db.js` | 5 | Reference data layer CLI. SQLite database for work tracking (actions, projects) and audit findings. Commands: init, query, create-action, list-actions, create-project, ingest-findings, triage, triage-history. |
 | `scripts/pib-db-schema.sql` | 5 | Database schema: projects, actions, audit_runs, audit_findings (with triage status). |
-| `scripts/merge-findings.js` | 5 | Merges per-perspective JSON outputs into unified run-summary.json. Optional `--db` flag to ingest into pib-db. |
+| `scripts/merge-findings.js` | 5 | Merges per-cabinet-member JSON outputs into unified run-summary.json. Optional `--db` flag to ingest into pib-db. |
 | `scripts/load-triage-history.js` | 5 | Builds suppression lists from triage history. Tries pib-db first, falls back to filesystem scan. |
 | `scripts/triage-server.mjs` | 5 | Self-contained Node.js HTTP server for triage UI. Zero external dependencies. In-memory data shuttle. |
-| `scripts/triage-ui.html` | 5 | Browser-based triage interface. Dark-themed, findings grouped by perspective, severity badges, Fix/Defer/Reject/Question verdicts, bulk actions, progress bar. |
+| `scripts/triage-ui.html` | 5 | Browser-based triage interface. Dark-themed, findings grouped by cabinet member, severity badges, Fix/Defer/Reject/Question verdicts, bulk actions, progress bar. |
 | `scripts/finding-schema.json` | 5 | JSON Schema for audit finding validation. |
 
-### Perspectives (15 + 7 infrastructure)
+### Cabinet Members (15 + 7 infrastructure)
 
 Generic expert lenses that activate at structured checkpoints (planning,
 execution, audit). Each is a named domain expert encoded in markdown.
 
 **Wave 1 — generic as-is (8):**
 
-| Perspective | Domain | Activation |
+| Cabinet Member | Domain | Activation |
 |------------|--------|-----------|
 | `anti-confirmation` | Reasoning quality, cognitive bias detection | On high-stakes decisions |
-| `boundary-conditions` | Implicit guards, silent exclusions, ZOMBIES analysis | Always-on during execution |
+| `boundary-man` | Implicit guards, silent exclusions, ZOMBIES analysis | Always-on during execution |
 | `debugger` | Dependency chains, environment prereqs, pre-flight investigation | Always-on during execution |
-| `mobile-responsiveness` | Viewport adaptability, touch targets, responsive layout | During audits + layout code |
+| `small-screen` | Viewport adaptability, touch targets, responsive layout | During audits + layout code |
 | `organized-mind` | Levitin's cognitive neuroscience applied to system design | During audits + planning |
-| `performance` | Database queries, render efficiency, bundle size, perceived speed | During audits |
+| `speed-freak` | Database queries, render efficiency, bundle size, perceived speed | During audits |
 | `qa` | Active testing, acceptance criteria, regression verification | Always-on during plan + execute |
 | `technical-debt` | Fowler's debt quadrant, Beck's four rules, structural sustainability | During audits |
 
-**Wave 2 — parameterized via `_context.md` (6):**
+**Wave 2 — parameterized via `_briefing.md` (6):**
 
-| Perspective | Domain | What's Parameterized |
+| Cabinet Member | Domain | What's Parameterized |
 |------------|--------|---------------------|
 | `accessibility` | WCAG compliance, keyboard nav, screen reader, focus management | Scan scope paths, UI framework references |
 | `data-integrity` | Cross-store consistency, referential integrity, API contracts | Database paths, entity types, server paths |
-| `documentation` | Docs-code drift, convention compliance, CLAUDE.md coverage | File paths, validation scripts, entity types |
-| `meta-process` | Skill/perspective effectiveness, overlap/gap analysis | Audit infrastructure paths, prompt guide location |
-| `process` | Development lifecycle, human burden, guardrail effectiveness | Deployment platform, sync mechanisms, scheduled tasks |
+| `record-keeper` | Docs-code drift, convention compliance, CLAUDE.md coverage | File paths, validation scripts, entity types |
+| `process-therapist` | Skill/cabinet member effectiveness, overlap/gap analysis | Audit infrastructure paths, prompt guide location |
+| `workflow-cop` | Development lifecycle, human burden, guardrail effectiveness | Deployment platform, sync mechanisms, scheduled tasks |
 | `security` | Threat model, secrets management, API protection, deployment security | Server paths, deployment config, secret names |
 
 **Wave 7 — lifecycle (1):**
 
-| Perspective | Domain | Activation |
+| Cabinet Member | Domain | Activation |
 |------------|--------|-----------|
-| `cor-health` | CoR adoption health, phase file coverage, configuration drift, anti-bloat | Always-on during audit |
+| `cor-health` | Claude Cabinet adoption health, phase file coverage, configuration drift, anti-bloat | Always-on during audit |
 
 **Infrastructure files (7):**
 
 | File | Wave | Purpose |
 |------|------|---------|
-| `_eval-protocol.md` | 1 | Structured assessment framework for evaluating skill/perspective effectiveness |
-| `_composition-patterns.md` | 1 | Five patterns for combining perspectives: parallel, sequential, adversarial, nested, temporal |
-| `_context-template.md` | 1+2 | Template for the project-specific context file every perspective reads. Wave 2 added: Scan Scopes, API Configuration, Entity Types, User Context. |
-| `_prompt-guide.md` | 2 | Craft knowledge for writing perspective prompts. 17 principles including Levitin's cognitive architecture. |
-| `output-contract.md` | 5 | How perspectives produce structured findings for the audit system. Defines the assumption/evidence/question triad, severity calibration, positive findings, autoFixable field, JSON output format. |
-| `_groups-template.yaml` | 5 | Technology-implied starter groups for organizing perspectives (ux, code, health, process). Copy as `_groups.yaml` and customize. |
-| `_lifecycle.md` | 5 | When to adopt, retire, and assess perspectives. Cross-cutting vs grouped distinction. |
+| `_eval-protocol.md` | 1 | Structured assessment framework for evaluating skill/cabinet member effectiveness |
+| `_composition-patterns.md` | 1 | Five patterns for combining cabinet members: parallel, sequential, adversarial, nested, temporal |
+| `_briefing-template.md` | 1+2 | Template for the project-specific briefing every cabinet member reads. Wave 2 added: Scan Scopes, API Configuration, Entity Types, User Context. |
+| `_prompt-guide.md` | 2 | Craft knowledge for writing cabinet member prompts. 17 principles including Levitin's cognitive architecture. |
+| `output-contract.md` | 5 | How cabinet members produce structured findings for the audit system. Defines the assumption/evidence/question triad, severity calibration, positive findings, autoFixable field, JSON output format. |
+| `committees-template.yaml` | 5 | Technology-implied starter committees for organizing cabinet members (ux, code, health, process). Copy as `committees.yaml` and customize. |
+| `_lifecycle.md` | 5 | When to adopt, retire, and assess cabinet members. Cross-cutting vs grouped distinction. |
 
 ### Memory (1 pattern + 1 template)
 
@@ -172,14 +172,14 @@ You now have git safety and skill discovery.
 3. Optionally set `TELEMETRY_DIR` to control where JSONL records are written
    (defaults to `~/.claude/telemetry/`)
 
-### Adding perspectives
+### Adding cabinet members
 
-1. Copy `skills/perspectives/` to `.claude/skills/perspectives/`
-2. Create your own `_context.md` from `_context-template.md` — fill in
+1. Copy `skills/cabinet/` to `.claude/skills/cabinet/`
+2. Create your own `_briefing.md` from `_briefing-template.md` — fill in
    your project's specifics (scan scopes, data store, entity types, etc.)
-3. Wave 2 perspectives reference `_context.md` sections by name — fill in
-   the sections relevant to the perspectives you adopt
-4. Perspectives are now available for your planning, execution, and audit
+3. Wave 2 cabinet members reference `_briefing.md` sections by name — fill in
+   the sections relevant to the cabinet members you adopt
+4. Cabinet members are now available for your planning, execution, and audit
    skills to invoke
 
 ### Adding the validate skeleton
@@ -238,7 +238,7 @@ phases. Claude discovers them at runtime.
    - `phases/commit-and-deploy.md` — your commit and deploy workflow
    - `phases/validators.md` — what validation to run
    - `phases/verification-tools.md` — tools for checking manual AC
-4. Fill in the **Work Tracking** section of your `_context.md`
+4. Fill in the **Work Tracking** section of your `_briefing.md`
 
 Start with plan-template + work-tracker + commit-and-deploy. Other phase
 files have sensible defaults. To actively suppress a default phase, write
@@ -257,8 +257,8 @@ files have sensible defaults. To actively suppress a default phase, write
 ### Adding the audit loop
 
 The audit loop has three skills (audit, pulse, triage-audit), a reference
-data layer, and supporting scripts. The design philosophy is "Claude on
-Rails" — sensible defaults that work out of the box, easy to override
+data layer, and supporting scripts. The design philosophy is "Claude
+Cabinet" — sensible defaults that work out of the box, easy to override
 when you outgrow them.
 
 1. **Initialize the reference data layer:**
@@ -278,11 +278,11 @@ when you outgrow them.
    cp -r process-in-a-box/skills/triage-audit/ .claude/skills/triage-audit/
    ```
 
-3. **Copy perspective infrastructure:**
+3. **Copy cabinet member infrastructure:**
    ```bash
-   cp process-in-a-box/skills/perspectives/output-contract.md .claude/skills/perspectives/
-   cp process-in-a-box/skills/perspectives/_groups-template.yaml .claude/skills/perspectives/
-   cp process-in-a-box/skills/perspectives/_lifecycle.md .claude/skills/perspectives/
+   cp process-in-a-box/skills/cabinet/output-contract.md .claude/skills/cabinet/
+   cp process-in-a-box/skills/cabinet/committees-template.yaml .claude/skills/cabinet/
+   cp process-in-a-box/skills/cabinet/_lifecycle.md .claude/skills/cabinet/
    ```
 
 4. **Copy audit scripts:**
@@ -294,13 +294,13 @@ when you outgrow them.
    cp process-in-a-box/scripts/finding-schema.json your-project/scripts/
    ```
 
-5. **Set up perspective groups** (optional):
+5. **Set up committees** (optional):
    ```bash
-   cp .claude/skills/perspectives/_groups-template.yaml .claude/skills/perspectives/_groups.yaml
+   cp .claude/skills/cabinet/committees-template.yaml .claude/skills/cabinet/committees.yaml
    ```
-   Uncomment the groups relevant to your project.
+   Uncomment the committees relevant to your project.
 
-6. **Run your first audit:** `/audit` — it discovers perspectives, runs
+6. **Run your first audit:** `/audit` — it discovers cabinet members, runs
    them, and persists findings. Then `/triage-audit` to review results.
 
 The reference data layer is designed to be replaced. When your project
@@ -313,16 +313,16 @@ the skill orchestration.
 
 The package provides skeletons and infrastructure. You and Claude fill
 in the project-specific parts together — Claude helps you write the
-phase files, configure perspectives, and set up validators. This is
+phase files, configure cabinet members, and set up validators. This is
 the working relationship the methodology is built around: the human
 provides judgment and domain knowledge, Claude implements, evaluates,
 and proposes.
 
 These are the project-specific pieces to build as you adopt:
 
-- **`_context.md`** — Project-specific context that all perspectives read.
-  Start from `_context-template.md`. Claude helps you fill in the sections
-  relevant to the perspectives you adopt.
+- **`_briefing.md`** — Project-specific briefing that all cabinet members read.
+  Start from `_briefing-template.md`. Claude helps you fill in the sections
+  relevant to the cabinet members you adopt.
 - **Orient phase files** — Session startup specifics (what to read, what
   to sync, what work to scan). The skeletons have commented-out examples;
   Claude helps you adapt them for your project.
@@ -337,7 +337,7 @@ These are the project-specific pieces to build as you adopt:
 - **Execute phase files** — Execution specifics (where plans live, what
   verification tools to use, how to commit and deploy). Same pattern.
 
-- **Audit phase files** — Audit specifics (which perspectives to run,
+- **Audit phase files** — Audit specifics (which cabinet members to run,
   fast structural checks, how to persist findings). Defaults use pib-db
   and the included scripts; customize when your project needs external
   storage or different workflows.
@@ -346,8 +346,8 @@ These are the project-specific pieces to build as you adopt:
   checks as you discover what drifts.
 - **Triage phase files** — Where findings come from, how to present them,
   how to apply verdicts. Defaults use the local triage UI and pib-db.
-- **Perspective groups** — Copy `_groups-template.yaml` as `_groups.yaml`
-  and uncomment the groups relevant to your technology stack.
+- **Committees** — Copy `committees-template.yaml` as `committees.yaml`
+  and uncomment the committees relevant to your technology stack.
 
 None of this requires working alone. Claude is the constant companion
 throughout — the package provides the structure, and you build the
@@ -357,9 +357,9 @@ specifics together through use.
 
 There is no `box.yaml` or template engine. Configuration uses two mechanisms:
 
-1. **`_context.md`** — For perspectives. Fill in the sections relevant to
-   the perspectives you adopt. Perspectives reference sections by name
-   (e.g., `_context.md § Data Store`).
+1. **`_briefing.md`** — For cabinet members. Fill in the sections relevant to
+   the cabinet members you adopt. Cabinet members reference sections by name
+   (e.g., `_briefing.md § Data Store`).
 
 2. **`phases/` directories** — For skills. Skeleton SKILL.md defines the
    generic workflow. You write your implementations in phase files. Claude
@@ -390,10 +390,10 @@ There is no `box.yaml` or template engine. Configuration uses two mechanisms:
   pulse, triage-audit) are included as skeletons. See
   [EXTENSIONS.md](EXTENSIONS.md) for annotated descriptions of these
   skills and the reusable patterns they embody.
-- **Flow-specific perspectives** — system-advocate, life-tracker,
-  life-optimization, and 19 other perspectives tied to Flow's domain
+- **Flow-specific cabinet members** — system-advocate, life-tracker,
+  life-optimization, and 19 other cabinet members tied to Flow's domain
   (GTD expertise, Mantine quality, sync health, etc.). EXTENSIONS.md
-  includes examples showing how to write your own domain perspectives.
+  includes examples showing how to write your own domain cabinet members.
 - **Distribution mechanism** — No npm package, no installer. Copy files.
   The `/onboard` skill guides adoption. The `/cor-upgrade` skill handles updates.
 
@@ -413,25 +413,25 @@ This package includes all 7 waves of the extraction:
 
 1. **Package generic artifacts** — done (17 artifacts)
 2. **Parameterize paths** — done (14 artifacts: telemetry hooks, validate
-   skeleton, investigate, prompt guide, 6 parameterized perspectives,
-   `_context.md` contract)
+   skeleton, investigate, prompt guide, 6 parameterized cabinet members,
+   `_briefing.md` contract)
 3. **Skeleton the session loop** — done (orient + debrief skeletons with
    7 + 8 phase files, custom phase injection for project extensions)
 4. **Skeleton the compliance stack** — done (enforcement pipeline rules,
    plan skeleton with 7 phases, execute skeleton with 5 phases, three-state
-   phase protocol, `_context.md` Work Tracking section)
+   phase protocol, `_briefing.md` Work Tracking section)
 5. **Skeleton the audit loop** — done (audit + pulse + triage-audit
    skeletons with 5 + 3 + 3 phase files, reference data layer with SQLite
-   for work tracking and audit findings, perspective infrastructure with
-   output contract + groups + lifecycle, 7 scripts including triage UI,
+   for work tracking and audit findings, cabinet member infrastructure with
+   output contract + committees + lifecycle, 7 scripts including triage UI,
    interaction boundary documentation, default phase content using pib-db)
 6. **Document extension examples** — done (EXTENSIONS.md with annotated
    Flow phase file overrides, accidentally-generic scan documenting 8
-   reusable patterns, perspective writing guide with 3 examples)
+   reusable patterns, cabinet member writing guide with 3 examples)
 7. **Lifecycle layer** — done (onboard skeleton for project adoption with
    3-mode re-runnability, seed skeleton for capability seeding from tech
    signals, upgrade skeleton for conversational box updates, cor-health
-   perspective for adoption monitoring, pib-db enhancements: status
+   cabinet member for adoption monitoring, pib-db enhancements: status
    tracking, tags, update-action command, migration logic)
 
 ## Adopting Skeletons: Where Content Goes
@@ -462,7 +462,7 @@ placement rules.
 
 ### Your project's SKILL.md (starts as skeleton copy, then extends)
 
-- Project frontmatter (`always-on-for`, project-specific `related`
+- Project frontmatter (`standing-mandate`, project-specific `related`
   entries, `last-verified`)
 - Extended boundary tables: skeleton's generic rows PLUS rows for your
   project-specific skills

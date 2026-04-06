@@ -50,7 +50,7 @@ Uncomment and adapt for your project:
 
 <!--
 ### CLI-Only Triage
-Present findings in the conversation, grouped by perspective.
+Present findings in the conversation, grouped by cabinet member.
 For each group, show findings severity-ordered and ask for verdicts.
 Useful when browser access isn't available.
 

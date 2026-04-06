@@ -1,6 +1,6 @@
 # Options — Structured Decision Points Before Generation
 
-After the interview and before generating context files, surface the key
+After the interview and before generating briefing files, surface the key
 decisions that shape how the project and process layer get set up. Present
 options with trade-offs so the user makes informed choices — not Claude
 making choices for them.
@@ -18,7 +18,7 @@ Not every onboard needs this. Skip it when:
 - The project is already built and this is process-layer-only
 
 Run it when the interview revealed **open decisions** — things the user
-hasn't settled yet that will affect what context files contain:
+hasn't settled yet that will affect what briefing files contain:
 
 - "I'm not sure what database to use"
 - "I don't know if I need a backend"
@@ -28,16 +28,16 @@ hasn't settled yet that will affect what context files contain:
 ## How to Present Options
 
 For each open decision, present 2-3 concrete options with trade-offs.
-Use two expert perspectives internally (do not spawn agents — just
+Use two cabinet members internally (do not spawn agents — just
 reason from these viewpoints):
 
-### Architecture Perspective
+### Architecture Cabinet Member
 Evaluates each option for: complexity, maintenance burden, whether it
 matches the user's described skill level and project scope. Flags when
 an option is overkill for a weekend project or too lightweight for
 something ambitious.
 
-### Boundary Conditions Perspective
+### Boundary Man
 Evaluates each option for: what breaks first, what's hard to change
 later, what locks you in. Flags irreversible decisions that deserve
 extra thought.
@@ -89,10 +89,10 @@ What sounds right for your situation?
 
 ## Output
 
-The user's choices feed into generate-context. Each decision becomes
-concrete content in `_context.md` (architecture section), CLAUDE.md
+The user's choices feed into generate-briefing. Each decision becomes
+concrete content in `_briefing.md` (architecture section), CLAUDE.md
 (conventions), and potentially orient phase files (what to check).
 
 If the user defers a decision ("I'll figure that out later"), note it
-in `_context.md` as an open question — don't leave the section empty
+in `_briefing.md` as an open question — don't leave the section empty
 without explanation.

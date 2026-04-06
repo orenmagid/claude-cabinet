@@ -1,6 +1,6 @@
 # Setting Up GitHub for Feedback
 
-This is optional. Claude on Rails saves your feedback locally even
+This is optional. Claude Cabinet saves your feedback locally even
 without GitHub. But if you want your feedback to go directly to the
 developer who maintains the tools you're using, setting up GitHub
 lets that happen automatically.
@@ -29,7 +29,7 @@ brew install gh
 ```
 
 If you don't have Homebrew (the installer would have set it up for you
-if you used the Claude on Rails installer), run:
+if you used the Claude Cabinet installer), run:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
