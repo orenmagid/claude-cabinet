@@ -7,6 +7,9 @@ description: >
   spotlights. Catches when the user is doing manually what a feature already
   handles.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-cabinet.md
 always-on-for: orient, debrief
 topics:
   - feature

@@ -6,6 +6,11 @@ description: >
   personal tool: leaked secrets, unprotected endpoints, misconfigured deploys, and
   dependency vulnerabilities -- not sophisticated attacks or enterprise compliance.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
+  - _context-scopes.md
+  - _context-api.md
 ---
 
 # Security Perspective

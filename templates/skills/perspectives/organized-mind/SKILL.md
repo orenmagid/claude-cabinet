@@ -10,6 +10,9 @@ description: >
   it enables things the unaided mind can't do. Flexible: not a checklist but
   a way of seeing what cognitive work the system is creating or relieving.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
 ---
 
 # The Organized Mind

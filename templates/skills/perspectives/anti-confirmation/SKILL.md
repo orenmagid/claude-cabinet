@@ -8,6 +8,8 @@ description: >
   The ONE perspective exempted from the strict lane rule — its domain is
   reasoning quality, which necessarily touches other domains.
 user-invocable: false
+context:
+  - _context-identity.md
 topics:
   - decision
   - tradeoff

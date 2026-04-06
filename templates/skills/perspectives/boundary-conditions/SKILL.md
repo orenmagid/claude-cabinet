@@ -7,6 +7,10 @@ description: >
   static checklist. Catches the class of bug where a guard on an optional
   field silently excludes the most common case.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
+  - _context-scopes.md
 ---
 
 # Boundary Conditions Perspective

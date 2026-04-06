@@ -7,6 +7,11 @@ description: >
   integrity, and composite entity coherence. Notices orphaned references, dual
   existence risks, and validation gaps.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
+  - _context-scopes.md
+  - _context-api.md
 ---
 
 # Data Integrity Perspective

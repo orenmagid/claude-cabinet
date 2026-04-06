@@ -6,6 +6,9 @@ description: >
   widths, overflow on narrow viewports, undersized touch targets, and missing
   responsive layout switches. Activates during audits and when reviewing layout code.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-scopes.md
 activation:
   always-on-for: audit
   files:

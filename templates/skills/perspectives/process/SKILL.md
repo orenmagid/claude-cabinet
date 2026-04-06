@@ -6,6 +6,9 @@ description: >
   Focuses on the human-AI collaboration cycle: whether friction gets addressed, whether
   approved findings become fixes, and whether the human burden is calibrated correctly.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-scopes.md
 ---
 
 # Process Perspective

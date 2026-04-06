@@ -7,6 +7,10 @@ description: |
   perspectives, planning skills, execution skills, and their interaction patterns.
   This is the system's self-improvement loop.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-cabinet.md
+  - _context-scopes.md
 always-on-for: audit
 files:
   - skills/**/*.md

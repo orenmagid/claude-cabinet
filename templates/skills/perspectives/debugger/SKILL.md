@@ -6,6 +6,9 @@ description: >
   dependencies, gated resources, version incompatibilities, and platform
   gotchas that would otherwise surface as runtime surprises.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
 ---
 
 # Debugger Perspective

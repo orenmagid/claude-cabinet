@@ -6,6 +6,9 @@ description: >
   workflow tracing rather than heuristic checklists, noticing state confusion, dead ends,
   cognitive load, flow interruption, and consistency gaps.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-scopes.md
 interactive-only: true
 ---
 

@@ -7,6 +7,9 @@ description: >
   duplication hiding divergence, type safety gaps, dead code, and hack patterns
   where features were simplified instead of properly implemented.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
 ---
 
 # Technical Debt Perspective

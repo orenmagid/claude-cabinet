@@ -7,6 +7,10 @@ description: >
   lists), bundle size, network efficiency, and perceived performance. Uses preview tools
   to measure actual behavior rather than guessing from code alone.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
+  - _context-scopes.md
 interactive-only: true
 ---
 

@@ -11,26 +11,57 @@ generation, write only `skip: true`.
 
 ## First-Run Generation
 
-Create these files from interview answers:
+Create split context files from interview answers. The perspective system
+uses focused files instead of one monolith — see `_context-template.md`
+for the full architecture guide.
 
-### _context.md
+### Always generate
 
-Use `_context-template.md` (from `.claude/skills/perspectives/`) as the
-structural starting point. Populate each section from what the interview
-revealed:
+**`_context.md`** — The hub/index file. Lists which context files were
+created and a one-line summary of each. Always created first.
 
+**`_context-identity.md`** — Use `_context-identity-template.md` as the
+starting point. Populate from interview answers:
 - **What This Project Is** — from identity questions
-- **Core Principles** — from pain points and priorities (what matters most?)
-- **Architecture** — from tech stack discussion
-- **Scan Scopes** — from architecture (where does code live, where is the DB?)
-- **Work Tracking** — from how they currently track work
+- **Core Principles** — from pain points and priorities
 - **User Context** — from who works on the project
 
-Don't leave sections blank with placeholder text. If the interview didn't
-cover a section, either omit it with a comment noting it can be filled
-later, or ask a targeted follow-up question. A `_context.md` full of
-"TODO: fill in later" is worse than one with fewer sections that are
-actually populated.
+**`_context-architecture.md`** — Use `_context-architecture-template.md`.
+Populate from interview answers:
+- **System Structure** — from tech stack and architecture discussion
+- **Codebase Layout** — from where code lives
+- **Technology Stack** — from frameworks, libraries, databases discussed
+
+### Generate if interview covered it
+
+**`_context-scopes.md`** — Use `_context-scopes-template.md`. Only create
+if the interview revealed specific paths and locations. Populate from
+architecture discussion (where does code live, where is the DB, where
+are deploy configs?). Only fill in sections that have real content.
+
+**`_context-cabinet.md`** — Use `_context-cabinet-template.md`. Only
+create after perspective selection (during or after onboard). Lists which
+perspectives are active and how they're grouped.
+
+**`_context-work-tracking.md`** — Use `_context-work-tracking-template.md`.
+Only create if work tracking was discussed in the interview — where items
+live, how to query them, how to mutate them.
+
+**`_context-api.md`** — Use `_context-api-template.md`. Only create if
+the project has an API and the interview covered endpoints, auth, or
+entity types.
+
+### Rules
+
+- **Never generate empty files.** Only create a context file if the
+  interview produced real content for it. An absent file is better than
+  one full of placeholders.
+- **The hub lists what exists.** After creating individual files, update
+  `_context.md` to index them with one-line summaries.
+- **Old monolithic format still works.** If migrating from an existing
+  monolithic `_context.md`, `/cor-upgrade` handles the split. Don't
+  rewrite an existing monolith during onboard re-runs — propose the
+  migration instead.
 
 ### CLAUDE.md Additions
 

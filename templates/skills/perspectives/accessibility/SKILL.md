@@ -6,6 +6,9 @@ description: >
   management, insufficient contrast, unlabeled interactive elements, and semantic
   structure gaps. Activates during audits and when reviewing UI component code.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-scopes.md
 activation:
   always-on-for: audit
   files:

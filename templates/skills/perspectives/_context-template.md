@@ -1,141 +1,137 @@
-# Perspective Context — [Your Project Name]
+# Context File System — Guide
 
-This file provides shared context that all perspectives read. It is the
-primary injection point for project-specific knowledge into the generic
-perspective system. Every perspective references this file.
-
-**To adopt the perspective system:** Copy this template, fill in the
-sections below with your project's specifics, and save as `_context.md`
-in your `.claude/skills/perspectives/` directory.
-
----
-
-## What This Project Is
-
-*One paragraph: what the project does, who it's for, what technology
-stack it uses.*
-
-## Core Principles
-
-*3-5 principles that guide design decisions. These help perspectives
-calibrate their findings — a finding that violates a principle is more
-significant than one that doesn't.*
+The perspective system uses **split context files** instead of a single
+monolithic `_context.md`. Each file focuses on one domain of project
+knowledge, and perspectives declare which files they need in their
+frontmatter. This keeps context loading focused — a perspective that
+only needs identity and scopes doesn't load API configuration or work
+tracking details.
 
 ## Architecture
 
-*How the system is structured. Layers, data stores, deployment target,
-key files. Perspectives use this to know where to look.*
+A **hub file** (`_context.md`) indexes the focused context files that
+exist for this project. Perspectives read the specific files they need
+rather than parsing one large document.
 
-## Perspective Cabinet
+```
+_context.md                  ← Hub/index (always exists)
+_context-identity.md         ← What the project is (always exists)
+_context-architecture.md     ← System structure, codebase layout
+_context-scopes.md           ← Where to look (scan scopes)
+_context-cabinet.md          ← Active perspectives, lane rules
+_context-work-tracking.md    ← Work item storage and interfaces
+_context-api.md              ← API config, entity types
+_context-{domain}.md         ← Domain extensions (see below)
+```
 
-*Which perspectives are active in this project. Note any project-specific
-perspectives you've built beyond the generic set.*
+## File Descriptions
 
-### Lane Rules
+### `_context.md` — Hub/Index
+**Always created.** Lists which context files exist and a one-line
+summary of each. This is what perspectives fall back to if they don't
+declare specific context needs.
 
-Each perspective stays in its domain lane. When a perspective notices
-something outside its lane, it flags it for the relevant perspective
-rather than developing the observation itself. The one exception is
-anti-confirmation, which intentionally crosses lanes because its domain
-(reasoning quality) touches everything.
+### `_context-identity.md` — Project Identity
+**Always created.** What the project is, core principles, user context.
+Every perspective needs this — it calibrates all findings. Template:
+`_context-identity-template.md`.
 
-### How Perspectives Are Invoked
+### `_context-architecture.md` — Architecture
+System structure, codebase layout, technology stack. Needed by
+perspectives that evaluate code structure or need to understand where
+things live. Template: `_context-architecture-template.md`.
 
-*How your project invokes perspectives — during planning, execution,
-audit, or other checkpoints. Reference the composition patterns in
-`_composition-patterns.md` for the orchestration patterns.*
+### `_context-scopes.md` — Scan Scopes
+Where to look for different kinds of code and configuration. Sections
+are referenced by name (e.g., "App Source", "Data Store"). Only fill in
+sections relevant to the perspectives you adopt. Template:
+`_context-scopes-template.md`.
 
-## User Context
+### `_context-cabinet.md` — Perspective Cabinet
+Which perspectives are active, lane rules, invocation patterns.
+Needed by meta-perspectives that evaluate the perspective system itself.
+Template: `_context-cabinet-template.md`.
 
-*Who uses this system (name, role, relevant background). This replaces
-hardcoded user references in perspectives.*
+### `_context-work-tracking.md` — Work Tracking
+How the project tracks planned work — storage, query interface,
+mutation interface. Referenced by /plan, /execute, /orient, /debrief.
+Template: `_context-work-tracking-template.md`.
 
-*What life domains the system manages, if applicable (e.g., health,
-finances, hobbies, relationships). Only relevant for perspectives like
-life-tracker and life-optimization that analyze whole-life patterns.*
+### `_context-api.md` — API Configuration
+Endpoints, auth, entity types. Only create this if the project has an
+API. Template: `_context-api-template.md`.
 
-## Scan Scopes
+## Perspective-to-Context Mapping
 
-*Perspectives reference these sections by name to know where to look.
-Fill in the ones relevant to the perspectives you adopt.*
+Which perspectives need which context files (identity is always loaded):
 
-### App Source
-*Where the frontend/UI code lives (for accessibility, usability perspectives).*
-*Example: `src/components/**/*.tsx`, `src/pages/**/*.tsx`*
+| Perspective           | architecture | scopes | cabinet | work-tracking | api |
+|-----------------------|:---:|:---:|:---:|:---:|:---:|
+| accessibility         |     |  x  |     |     |     |
+| anti-confirmation     |     |     |     |     |     |
+| architecture          |  x  |  x  |     |     |     |
+| boundary-conditions   |  x  |  x  |     |     |     |
+| cor-health            |     |  x  |  x  |     |     |
+| data-integrity        |  x  |  x  |     |     |  x  |
+| debugger              |  x  |     |     |     |     |
+| documentation         |     |  x  |     |     |     |
+| historian             |  x  |     |     |     |     |
+| meta-process          |     |  x  |  x  |     |     |
+| mobile-responsiveness |     |  x  |     |     |     |
+| organized-mind        |  x  |     |     |     |     |
+| performance           |  x  |  x  |     |     |     |
+| process               |     |  x  |     |     |     |
+| qa                    |  x  |  x  |     |     |     |
+| security              |  x  |  x  |     |     |  x  |
+| skills-coverage       |     |     |  x  |     |     |
+| system-advocate        |     |     |  x  |     |     |
+| technical-debt        |  x  |     |     |     |     |
+| usability             |     |  x  |     |     |     |
 
-### API / Server
-*Where the backend/API code lives (for security, data-integrity perspectives).*
-*Example: `server.js`, `routes/*.js`*
+## Domain Extension Files
 
-### Data Store
-*Database type and location (for data-integrity, life-optimization perspectives).*
-*Example: SQLite at `./data/app.db`, or PostgreSQL at `$DATABASE_URL`*
+Specialized perspectives may need domain-specific context that doesn't
+fit the standard files. These are created by `/seed` when a specialized
+perspective is adopted:
 
-### Audit Infrastructure
-*Where audit scripts, finding schemas, and triage data live (for meta-process).*
-*Example: `scripts/audit/`, `reviews/*/triage.json`*
+- **`_context-methodology.md`** — For methodology-compliance or GTD
+  perspectives. Contains methodology rules, review cadences, horizon
+  definitions.
+- **`_context-design-system.md`** — For framework-quality or
+  information-design perspectives. Contains design tokens, component
+  conventions, layout patterns.
+- **Any `_context-{domain}.md`** — A perspective can declare any context
+  file it needs in its frontmatter. If the file doesn't exist, the
+  perspective falls back to the hub.
 
-### Deployment
-*Platform and config files (for security, process perspectives).*
-*Example: Railway + Dockerfile, Vercel + vercel.json, Fly.io + fly.toml*
+## Files Are Optional
 
-### Validation Scripts
-*Paths to structural validation scripts (for process, documentation perspectives).*
-*Example: `scripts/validate-*.sh`*
+Only create context files relevant to your project. A CLI tool with no
+UI doesn't need `_context-scopes.md` App Source. A project without an
+API skips `_context-api.md` entirely. The hub `_context.md` lists what
+exists so perspectives know what's available.
 
-### Documentation Files
-*Where CLAUDE.md files, memory, and system status live (for documentation perspective).*
-*Example: `CLAUDE.md` (root), `**/CLAUDE.md` (nested), `system-status.md`*
+## How These Files Get Created
 
-## API Configuration
+- **/onboard** generates the initial set from interview answers. It
+  always creates the hub and identity file. Other files are created
+  only if the interview produced content for them.
+- **/seed** adds domain extension files when specialized perspectives
+  are adopted.
+- **/cor-upgrade** can migrate a monolithic `_context.md` into the
+  split format.
 
-*For perspectives that make API calls (life-tracker, life-optimization).
-Skip this section if your system doesn't have an API.*
+## Backward Compatibility
 
-### Task Management API
-*Base URL, auth mechanism, auth env var name.*
-*Example: `https://my-app.up.railway.app/api`, header `x-api-secret`, `$API_SECRET`*
+The old monolithic `_context.md` format still works. If a perspective
+declares context files in its frontmatter but those files don't exist,
+or if no `context` field is present, the system falls back to reading
+`_context.md` directly. This means:
 
-### Calendar API
-*How to access calendar events, if applicable.*
-*Example: `GET /api/calendar/events?start=...&end=...`*
-
-## Entity Types
-
-*What structured entities your system manages. Perspectives like
-data-integrity and life-optimization need to know what exists and
-where it lives.*
-
-*Example:*
-*- actions (DB) — tasks with status, due dates, areas*
-*- projects (DB) — bounded deliverables containing actions*
-*- areas (filesystem) — ongoing responsibilities, one directory each*
-*- people (DB) — contacts with linked actions and context*
-
-## Work Tracking
-
-*How your project tracks planned work. The /plan skill needs this to
-check for overlap; /execute needs this to load plans and mark them done;
-/orient needs this to scan open work; /debrief needs this to close items.*
-
-### Work Item Storage
-*Where work items live (DB table, markdown files, GitHub Issues, Linear, etc.).*
-*Example: SQLite `tasks` table, or `backlog.md`, or GitHub Issues*
-
-### Query Interface
-*How to search open items — the command, API call, or query.*
-*Example: `sqlite3 project.db "SELECT * FROM tasks WHERE status != 'done'"`*
-*Example: `gh issue list --state open --json number,title`*
-
-### Mutation Interface
-*How to create, update, and close items.*
-*Example: `POST /api/tasks` with JSON body, `PATCH /api/tasks/:id`*
-*Example: `gh issue create --title "..." --body "..."`*
-
-## Codebase Layout
-
-*Key directories and files that perspectives should know about. What
-lives where. Which files are the most important to read.*
+- Existing projects with a monolithic `_context.md` continue to work
+  without changes.
+- Projects can migrate incrementally — split out one file at a time.
+- `/cor-upgrade` handles the full migration when the project is ready.
 
 ## Finding Format
 

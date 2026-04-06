@@ -7,6 +7,10 @@ description: >
   preview tools, and scripts to verify. Reports exactly where AC are met or
   failing. This is the test suite for a system without automated tests.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
+  - _context-scopes.md
 ---
 
 # QA Perspective

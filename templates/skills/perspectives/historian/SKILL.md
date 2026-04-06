@@ -7,6 +7,9 @@ description: >
   storing, cataloguing, and retrieving lessons — and for advocating when the
   memory infrastructure can't keep up with what needs to be remembered.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
 ---
 
 # Historian Perspective

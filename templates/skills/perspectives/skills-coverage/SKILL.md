@@ -7,6 +7,9 @@ description: |
   features, and opportunities for skill composition or migration to hooks/MCP.
   Activates during audits and when skill infrastructure is being discussed.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-cabinet.md
 always-on-for: audit
 files:
   - .claude/skills/**/*.md

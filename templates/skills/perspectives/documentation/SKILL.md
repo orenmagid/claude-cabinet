@@ -7,6 +7,9 @@ description: |
   actual codebase. Stale docs are a force multiplier for confusion because every
   Claude session bootstraps from them.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-scopes.md
 always-on-for: audit
 files:
   - CLAUDE.md

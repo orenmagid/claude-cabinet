@@ -6,6 +6,10 @@ description: |
   activation patterns, skill usage, configuration drift, anti-bloat.
   Different from meta-process (skill quality) — this checks adoption fitness.
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-cabinet.md
+  - _context-scopes.md
 always-on-for: audit
 files:
   - .claude/skills/*/SKILL.md

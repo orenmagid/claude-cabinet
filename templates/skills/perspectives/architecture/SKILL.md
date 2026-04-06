@@ -7,6 +7,10 @@ description: >
   (layering, separation of concerns, API design, data flow) and Claude Code ecosystem
   architecture (CLAUDE.md hierarchies, skills, hooks, MCP servers, memory, subagents).
 user-invocable: false
+context:
+  - _context-identity.md
+  - _context-architecture.md
+  - _context-scopes.md
 ---
 
 # Architecture Perspective

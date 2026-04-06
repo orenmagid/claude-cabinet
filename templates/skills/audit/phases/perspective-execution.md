@@ -17,11 +17,31 @@ Define your execution strategy:
   vs checklist vs other)
 - **Error handling** — what to do when an agent fails or times out
 
+## Context Loading
+
+Each perspective declares which context files it needs via a `context`
+list in its SKILL.md frontmatter. The loading protocol:
+
+1. **Read the perspective's `context` frontmatter field** to get the list
+   of context files it needs (e.g., `_context-identity.md`,
+   `_context-architecture.md`).
+2. **Always load `_context-identity.md`** regardless of whether it's
+   declared — every perspective needs project identity.
+3. **Load each declared file** from `skills/perspectives/`.
+4. **Fallback:** If declared files don't exist, or if the perspective has
+   no `context` field in its frontmatter, fall back to reading
+   `_context.md` directly. This works for both the hub format (which
+   indexes split files) and the old monolithic format (which contains
+   everything inline).
+
+This means existing projects with a single monolithic `_context.md`
+continue to work without changes.
+
 ## Default Protocol
 
 Each perspective agent receives:
 1. The perspective's `SKILL.md` — domain knowledge and specific concerns
-2. `skills/perspectives/_context.md` — project identity and configuration
+2. Context files — loaded per the context loading protocol above
 3. `skills/perspectives/output-contract.md` — structured output format
 4. The suppression list — previously-triaged finding IDs and fingerprints
 
