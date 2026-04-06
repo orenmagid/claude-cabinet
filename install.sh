@@ -225,7 +225,7 @@ done
 
 # Copy cabinet infrastructure
 mkdir -p "$CLAUDE_DIR/cabinet"
-for f in committees-template.yaml lifecycle.md composition-patterns.md eval-protocol.md prompt-guide.md output-contract.md; do
+for f in committees.yaml lifecycle.md composition-patterns.md eval-protocol.md prompt-guide.md output-contract.md; do
   if [ -f "$TEMPLATE_DIR/cabinet/$f" ]; then
     cp "$TEMPLATE_DIR/cabinet/$f" "$CLAUDE_DIR/cabinet/"
     copied=$((copied + 1))
@@ -257,7 +257,7 @@ fi
 
 # Copy scripts
 mkdir -p "$PROJECT_DIR/scripts"
-for script in cc-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.js pib-db-schema.sql triage-server.mjs triage-ui.html; do
+for script in cc-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.js pib-db-schema.sql resolve-committees.js triage-server.mjs triage-ui.html; do
   if [ -f "$TEMPLATE_DIR/scripts/$script" ]; then
     cp "$TEMPLATE_DIR/scripts/$script" "$PROJECT_DIR/scripts/"
     copied=$((copied + 1))

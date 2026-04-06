@@ -3,7 +3,9 @@
 ## Active Cabinet Members
 
 *Which cabinet members are active in this project and how they're organized into committees.
-Reference `committees.yaml` for the canonical grouping.*
+Reference `committees.yaml` (upstream) and `committees-project.yaml` (project
+customizations) for the canonical grouping. Run `node scripts/resolve-committees.js`
+to see the merged result.*
 
 ## Portfolio Rules
 

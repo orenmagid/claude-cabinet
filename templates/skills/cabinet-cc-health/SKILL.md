@@ -15,7 +15,8 @@ files:
   - .claude/skills/*/SKILL.md
   - .claude/skills/*/phases/*.md
   - .claude/skills/cabinet-*/SKILL.md
-  - .claude/skills/cabinet-*/committees.yaml
+  - .claude/cabinet/committees.yaml
+  - .claude/cabinet/committees-project.yaml
   - .claude/hooks/*.sh
 topics:
   - cc health
@@ -30,8 +31,11 @@ related:
     path: .claude/skills/cabinet-*/_lifecycle.md
     role: "Cabinet member lifecycle — when to adopt, when to retire"
   - type: file
-    path: .claude/skills/cabinet-*/committees-template.yaml
-    role: "Committee structure template"
+    path: .claude/cabinet/committees.yaml
+    role: "Upstream committee definitions (installer-owned)"
+  - type: file
+    path: .claude/cabinet/committees-project.yaml
+    role: "Project committee customizations (user-owned)"
   - type: file
     path: .claude/skills/cabinet-process-therapist/SKILL.md
     role: "Adjacent cabinet member — skill quality (not adoption health)"
@@ -90,7 +94,7 @@ Also activates when:
 - New skills or cabinet members are added (adoption decision to evaluate)
 - Phase files are modified (customization to assess)
 - Hook scripts are changed (enforcement layer shift)
-- `committees.yaml` is updated (committee composition change)
+- `committees.yaml` or `committees-project.yaml` is updated (committee composition change)
 
 ## Research Method
 
@@ -127,8 +131,10 @@ empty").
 
 ### 2. Cabinet Member Activation Patterns
 
-Read `committees.yaml` to understand which cabinet members are active and how they're
-grouped. Cross-reference against:
+Run `node scripts/resolve-committees.js` to get the merged committee list
+(upstream `committees.yaml` + project `committees-project.yaml`). Also
+validate that any members listed in `committees-project.yaml` actually
+exist as `cabinet-*` directories. Cross-reference against:
 
 - **Technology signals.** Does the project's stack imply cabinet members that
   aren't activated? (React app without accessibility? API without security?
@@ -387,8 +393,9 @@ entropy.
 ### Scan Scope
 
 - `.claude/skills/` — all skill definitions and phase files
-- `.claude/skills/cabinet-*/` — all cabinet member definitions, `committees.yaml`,
-  `_briefing.md`, `_lifecycle.md`, `committees.yaml`
+- `.claude/skills/cabinet-*/` — all cabinet member definitions
+- `.claude/cabinet/` — `committees.yaml`, `committees-project.yaml`,
+  `_lifecycle.md`, and other infrastructure
 - `.claude/hooks/` — hook scripts
 - `.claude/settings.json` — hook configuration
 - `memory/patterns/` — enforcement pipeline state
@@ -409,7 +416,7 @@ Do not cross into adjacent cabinet members' territory:
   That's process-therapist. You care whether the skill is *installed and used*,
   not whether its output is good.
 - **One-time setup** — initial CC installation, first-time skeleton
-  adoption, bootstrapping `committees.yaml`. That's the onboard skill. You
+  adoption, bootstrapping `committees-project.yaml`. That's the onboard skill. You
   evaluate the ongoing health of an already-adopted configuration, not the
   initial adoption process.
 - **Specific technology expertise** — you don't know whether React components

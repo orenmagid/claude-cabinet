@@ -117,7 +117,7 @@ execution, audit). Each is a named domain expert encoded in markdown.
 | `_briefing-template.md` | 1+2 | Template for the project-specific briefing every cabinet member reads. Wave 2 added: Scan Scopes, API Configuration, Entity Types, User Context. |
 | `_prompt-guide.md` | 2 | Craft knowledge for writing cabinet member prompts. 17 principles including Levitin's cognitive architecture. |
 | `output-contract.md` | 5 | How cabinet members produce structured findings for the audit system. Defines the assumption/evidence/question triad, severity calibration, positive findings, autoFixable field, JSON output format. |
-| `committees-template.yaml` | 5 | Technology-implied starter committees for organizing cabinet members (ux, code, health, process). Copy as `committees.yaml` and customize. |
+| `committees.yaml` | 5 | Upstream committee definitions for organizing cabinet members (ux, code, health, process, strategic). Upstream-owned; project customizations go in `committees-project.yaml`. |
 | `_lifecycle.md` | 5 | When to adopt, retire, and assess cabinet members. Cross-cutting vs grouped distinction. |
 
 ### Memory (1 pattern + 1 template)
@@ -281,7 +281,7 @@ when you outgrow them.
 3. **Copy cabinet member infrastructure:**
    ```bash
    cp process-in-a-box/skills/cabinet/output-contract.md .claude/skills/cabinet/
-   cp process-in-a-box/skills/cabinet/committees-template.yaml .claude/skills/cabinet/
+   cp process-in-a-box/skills/cabinet/committees.yaml .claude/skills/cabinet/
    cp process-in-a-box/skills/cabinet/_lifecycle.md .claude/skills/cabinet/
    ```
 
@@ -294,11 +294,11 @@ when you outgrow them.
    cp process-in-a-box/scripts/finding-schema.json your-project/scripts/
    ```
 
-5. **Set up committees** (optional):
-   ```bash
-   cp .claude/skills/cabinet/committees-template.yaml .claude/skills/cabinet/committees.yaml
-   ```
-   Uncomment the committees relevant to your project.
+5. **Customize committees** (optional):
+   Create a `committees-project.yaml` in `.claude/cabinet/` to add custom
+   members or committees. The upstream `committees.yaml` is installed
+   automatically. Run `node scripts/resolve-committees.js` to see the
+   merged result.
 
 6. **Run your first audit:** `/audit` — it discovers cabinet members, runs
    them, and persists findings. Then `/triage-audit` to review results.
@@ -346,8 +346,9 @@ These are the project-specific pieces to build as you adopt:
   checks as you discover what drifts.
 - **Triage phase files** — Where findings come from, how to present them,
   how to apply verdicts. Defaults use the local triage UI and pib-db.
-- **Committees** — Copy `committees-template.yaml` as `committees.yaml`
-  and uncomment the committees relevant to your technology stack.
+- **Committees** — The upstream `committees.yaml` is installed automatically.
+  Create `committees-project.yaml` to add custom members to upstream
+  committees or define new project-specific committees.
 
 None of this requires working alone. Claude is the constant companion
 throughout — the package provides the structure, and you build the

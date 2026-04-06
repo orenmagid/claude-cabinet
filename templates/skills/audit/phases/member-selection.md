@@ -4,9 +4,11 @@ Define how the audit selects which cabinet members to run. The /audit skill
 reads this file before spawning cabinet member agents.
 
 When this file is absent or empty, the default behavior is: discover all
-cabinet members from `skills/cabinet-*/SKILL.md`, present committees if
-`committees.yaml` exists, otherwise run all. To explicitly skip member
-selection (and run no audit), write only `skip: true`.
+cabinet members from `skills/cabinet-*/SKILL.md`, run
+`node scripts/resolve-committees.js` to merge upstream `cabinet/committees.yaml`
+with project `cabinet/committees-project.yaml`, present merged committees,
+otherwise run all. Cross-portfolio members always run regardless of selection.
+To explicitly skip member selection (and run no audit), write only `skip: true`.
 
 ## What to Include
 
@@ -26,14 +28,11 @@ Discover all cabinet members in `skills/cabinet-*/SKILL.md`.
 Run every one. Good for small projects with few cabinet members.
 
 ### Committee-Based Selection
-Read `cabinet/committees.yaml` for committee definitions.
-Present committees to the user:
-  1. ux — accessibility, small-screen
-  2. code — technical-debt, architecture
-  3. health — security, data-integrity, speed-freak
-  4. process — workflow-cop, record-keeper
+Run `node scripts/resolve-committees.js` to merge upstream
+`cabinet/committees.yaml` with project `cabinet/committees-project.yaml`.
+Present merged committees to the user.
 
-Cross-portfolio cabinet members (marked in committees.yaml) always run
+Cross-portfolio cabinet members (standing-mandate in SKILL.md) always run
 regardless of committee selection.
 
 ### Targeted Audit

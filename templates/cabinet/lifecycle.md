@@ -60,7 +60,9 @@ of calibration quality.
 
 ## Cross-Portfolio vs Committee-Assigned
 
-Most cabinet members belong in exactly one committee (see `committees-template.yaml`).
+Most cabinet members belong in exactly one committee (see `committees.yaml`
+for upstream committees and `committees-project.yaml` for project-specific
+additions).
 They cover a specific domain and stay in their portfolio.
 
 **Cross-portfolio cabinet members** intentionally span domains. Their expertise
@@ -85,7 +87,9 @@ A cabinet member is a skill with `user-invocable: false`. Create it in
 5. **Calibration Examples** — good findings, wrong-portfolio findings, severity
    anchors
 
-Add the cabinet member to your `committees.yaml` under the appropriate committee.
+Add the cabinet member to your `committees-project.yaml` under the appropriate
+committee (using `additional_members` to append to an upstream committee, or
+a new committee definition).
 It's automatically discovered by the audit skill.
 
 The best cabinet members emerge from real incidents and real audit findings.

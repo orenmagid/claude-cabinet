@@ -111,10 +111,15 @@ project. Adjust.
 Read `phases/member-selection.md` for which cabinet members to run.
 
 **Default (absent/empty):** Discover all cabinet members from
-`skills/cabinet-*/SKILL.md`. If `cabinet/committees.yaml`
-exists (copied from `committees-template.yaml`), present committees and let the
-user choose which to run. If no committees file exists, run all discovered
-cabinet members.
+`skills/cabinet-*/SKILL.md`. Run `node scripts/resolve-committees.js` to
+get the merged committee list (upstream `cabinet/committees.yaml` merged
+with project `cabinet/committees-project.yaml`). Present the merged
+committees and let the user choose which to run. If neither committees
+file exists, run all discovered cabinet members.
+
+Cross-portfolio cabinet members (anti-confirmation, qa, debugger,
+organized-mind) always run regardless of committee selection — they
+activate via `standing-mandate` in their SKILL.md frontmatter.
 
 The selection determines what the audit looks at. A full audit runs
 everything; a focused audit runs one committee or a specific set of

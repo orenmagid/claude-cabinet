@@ -137,7 +137,10 @@ collaborative expertise-building conversation:
 4. Walk through Identity, Research Method, Boundaries, and Calibration
    with the user
 5. Create the file in `cabinet-{name}/SKILL.md`
-6. Update `committees.yaml` if the cabinet member belongs in a committee
+6. Update `committees-project.yaml` if the cabinet member belongs in a committee
+   (add to `additional_members` of an existing upstream committee, or create
+   a new committee definition). Create `committees-project.yaml` if it
+   doesn't exist yet.
 
 This is co-authoring, not auto-generating. The user's domain knowledge
 is what makes a cabinet member useful for their specific project. A generic

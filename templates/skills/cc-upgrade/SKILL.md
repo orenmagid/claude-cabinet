@@ -305,6 +305,22 @@ The upgrade skill only surfaces phase opportunities that are *relevant
 to what changed* in this upgrade — including cases where the project's
 context makes a default obviously insufficient.
 
+#### Committees Split Migration
+If the project has a project-owned `committees.yaml` that contains custom
+content (members not in the new upstream `committees.yaml`), split it:
+1. Compare the project's existing `committees.yaml` against the new upstream
+   version to identify which members are upstream and which are custom
+2. Generate `committees-project.yaml` with only the custom additions
+   (using `additional_members` for appending to upstream committees, or
+   new committee definitions for entirely custom committees)
+3. Present the split to the user — show what goes in `committees-project.yaml`
+   and explain that the installer's `committees.yaml` is now upstream-owned
+4. After approval, let the installer overwrite `committees.yaml` with the
+   upstream version, and write the custom content to `committees-project.yaml`
+
+If the project's `committees.yaml` matches the upstream version exactly
+(no custom content), no migration is needed.
+
 #### Schema Migrations
 If the upstream schema has new columns or tables:
 - Detect the difference between the shipped schema and the project's DB

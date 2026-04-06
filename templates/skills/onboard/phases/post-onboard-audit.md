@@ -45,7 +45,7 @@ generated phase files:
 - **Skipped modules:** No phase file should reference a skipped module's
   infrastructure. If work-tracking was skipped, no phase should reference
   `pib.db` or `pib-db.js`. If audit was skipped, no phase should reference
-  `committees.yaml` or cabinet member activation.
+  `committees.yaml`, `committees-project.yaml`, or cabinet member activation.
 - **Installed modules:** Each installed module should have at least a
   minimal presence in the generated configuration. A module that's installed
   but has zero phase file references is a configuration gap.
@@ -75,7 +75,8 @@ technologies against the cabinet member catalog:
 - **Many skills (5+)** → roster-check
 - **Features shipping regularly** → system-advocate
 
-If implied cabinet members aren't in `committees.yaml` (or equivalent), note
+If implied cabinet members aren't in the merged committees (upstream
+`committees.yaml` + project `committees-project.yaml`), note
 it as a recommendation — not a blocker. The user may have good reasons
 to skip them, or may want to add them later via `/seed`.
 

@@ -69,8 +69,11 @@ Write the cabinet member's `SKILL.md` following `_lifecycle.md` guidance:
 
 ### Step 4: Wire It Up
 
-- Add to `committees.yaml` under the appropriate committee (unless it's
-  cross-portfolio, in which case it activates via `standing-mandate` signals)
+- Add to `committees-project.yaml` under the appropriate committee — use
+  `additional_members` to append to an existing upstream committee, or create
+  a new committee definition. Create `committees-project.yaml` if it doesn't
+  exist yet. (Unless the cabinet member is cross-portfolio, in which case it
+  activates via `standing-mandate` signals and needs no committee entry.)
 - Verify the cabinet member is discoverable by the audit skill
 
 ### Emphasis
