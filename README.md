@@ -1,7 +1,7 @@
 # Claude Cabinet
 
 A cabinet of expert advisors for your Claude Code project. One command
-gives Claude a memory, 20 domain experts, a planning process, and the
+gives Claude a memory, 27 domain experts, a planning process, and the
 habit of starting sessions informed and ending them properly.
 
 Built by a guy who'd rather talk to Claude than write code. Most of it
@@ -12,7 +12,7 @@ was built by Claude. I just complained until it worked.
 Your project gets a cabinet — specialist advisors who each own a domain
 and weigh in when their expertise matters:
 
-- **Cabinet members** — 20 domain experts (security, accessibility,
+- **Cabinet members** — 27 domain experts (security, accessibility,
   architecture, QA, etc.) who review your project and surface what
   you'd miss alone
 - **Briefings** — project context members read before weighing in

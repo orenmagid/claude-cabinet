@@ -32,11 +32,18 @@
 - Historian memory health measurement: growth, connectivity, contradictions, retrieval quality
 - Dogfooded: installed on itself (full install, all 9 modules)
 - Split briefing files for dogfood install: identity, architecture, jurisdictions, cabinet, work-tracking
+- Skill index (`_index.json`): generated at install time, caches metadata for all 49 skills
+- `/cabinet` skill: front door to browse and consult expert cabinet members
+- `/work-tracker` skill: opens work tracking UI interactively
+- Standing mandates in frontmatter: 23 cabinet members declare which contexts they activate in
+- Scoped directives: 12 cabinet members declare per-context focused tasks (plan, execute, orient, debrief, investigate, seed)
+- Cabinet consultations wired into orient, debrief, investigate, and seed skeletons
+- Block scalar YAML parsing: parseFrontmatter handles `description: >` and `description: |` correctly
 
 ## What's Active
 
-- Published at v0.10.0 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (v0.8.5, 27 upstream + 6 project-specific cabinet members)
+- Published at v0.11.1 on npm as `create-claude-cabinet`
+- One downstream consumer: Flow (v0.11.1, 27 upstream + project-specific cabinet members)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
