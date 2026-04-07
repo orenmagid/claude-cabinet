@@ -230,7 +230,36 @@ without being explicitly invoked for each decision.
 
 **Skip (absent/empty).**
 
-### 7. Present Briefing (presentation)
+### 7. Cabinet Consultations (core)
+
+Spawn cabinet members with `standing-mandate` that includes `orient`.
+Check `.claude/skills/_index.json` for members with `orient` in their
+`standingMandate` array. If the index is missing, fall back to reading
+`cabinet-*/SKILL.md` frontmatter.
+
+Each member gets a **scoped directive** — a focused task, not their
+full audit protocol. Spawn them as agents in parallel where possible.
+Pass each agent:
+- The member's full SKILL.md (their expertise and methodology)
+- The context loaded in step 1 (project state, recent work)
+- The scoped directive below
+
+**Scoped directives by member:**
+
+| Member | Orient directive |
+|--------|------------------|
+| **historian** | "Review the loaded context. Surface 1-3 prior decisions or lessons most relevant to today's likely work. Keep it brief — facts only, no analysis." |
+| **system-advocate** | "Review the installed skills and recent session activity. Spotlight one underused capability that's relevant to today's context. One sentence." |
+| **user-advocate** | "Review what happened recently. If the system has grown in complexity since the user last got an explanation, flag one thing worth explaining. Otherwise, stay silent." |
+
+If a member listed above isn't installed in this project (no matching
+`cabinet-*/SKILL.md`), skip it silently.
+
+**Cost control:** These are lightweight passes. Each agent should
+complete in under 1 minute. Include their output in the briefing only
+when they have something to contribute. Silent is fine.
+
+### 8. Present Briefing (presentation)
 
 Read `phases/briefing.md` for how to present the orientation results.
 This phase controls format, sections, tone, and any time-aware or
@@ -240,7 +269,7 @@ context-aware presentation modes.
 in steps 1-6: project state, work items needing attention, any health
 issues found, maintenance results.
 
-### 8. Show Available Skills (core)
+### 9. Show Available Skills (core)
 
 After the briefing, show the user what skills are available. This
 serves the same purpose as a menu at a restaurant — you can't order
@@ -256,7 +285,7 @@ Read `phases/skills-menu.md` for project-specific overrides (e.g.,
 highlighting certain skills, suppressing others, or changing the
 presentation format).
 
-### 9. Discover Custom Phases
+### 10. Discover Custom Phases
 
 After running the core phases above, check for any additional phase
 files in `phases/` that the skeleton doesn't define. These are project-
@@ -264,7 +293,7 @@ specific extensions. Each custom phase file declares its position in the
 workflow (e.g., "runs after work scan, before briefing"). Execute them
 at their declared position.
 
-### 10. Name the Session
+### 11. Name the Session
 
 Rename the session so the sidebar is scannable. Every session that starts
 with `/orient` looks identical in the history — naming fixes this.
@@ -294,7 +323,8 @@ user already knows what they're doing, skip presentation phases. Core
 phases always run because they keep the system healthy.
 
 - **Core phases** (always run): context, data-sync, work-scan,
-  health-checks, auto-maintenance, cabinet
+  health-checks, auto-maintenance, cabinet, cabinet-consultations,
+  skills-menu
 - **Presentation phases** (skippable): briefing
 
 A project that wants a quick orient variant skips the briefing phase

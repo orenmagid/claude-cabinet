@@ -10,7 +10,7 @@ user-invocable: false
 briefing:
   - _briefing-identity.md
   - _briefing-jurisdictions.md
-standing-mandate: audit
+standing-mandate: audit, debrief
 files:
   - CLAUDE.md
   - "**/CLAUDE.md"

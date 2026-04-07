@@ -180,65 +180,9 @@ Read `phases/update-state.md` for what state files and documentation
 to update. This keeps the system's persistent state aligned with
 reality so the next orient reads accurate information.
 
-**Default (absent/empty):** Run the session-scoped doc check below,
-then apply the user-level state check.
-
-#### Session-Scoped Doc Check
-
-This is the per-session version of what the record-keeper does during
-audit. It's not a full doc audit — it's scoped to what THIS session
-changed. The goal: no session ends with docs that contradict what was
-just built.
-
-**Step A — Identify the blast radius.** From the session inventory
-(step 1), get the list of files changed. These are the session's
-"blast radius" — anything that references these files or describes
-their behavior might now be stale.
-
-**Step B — Check CLAUDE.md files against the blast radius.**
-
-For each CLAUDE.md file in the project (root and nested):
-- Does it reference any file that was modified, moved, or deleted
-  this session? If so, verify the reference is still accurate.
-- Does it describe behavior, conventions, or directory structure
-  that this session changed? If so, update it.
-- Does it list scripts, commands, or workflows that were modified?
-  If so, verify they still work as described.
-
-Don't read every CLAUDE.md for every session — only check the ones
-whose scope overlaps with the session's blast radius. If the session
-only touched `lib/cli.js`, check root CLAUDE.md (which describes the
-project) but skip nested CLAUDE.md files in unrelated directories.
-
-**Step C — Check system-status.md.** Does it need updating to reflect
-what was built, fixed, or changed? Are there items marked "planned"
-that are now built? Items marked "built" that were removed?
-
-**Step D — Check briefing freshness.** Did this session's work
-invalidate any claims in the briefing files? Common drift signals:
-- Session installed a new module or capability, but the briefing still
-  says it's not available
-- Session changed architecture (new data store, new framework, new
-  deployment), but the briefing describes the old state
-- Version numbers in `.ccrc.json` or briefing don't match `package.json`
-- Work tracking was set up or changed, but `_briefing-work-tracking.md`
-  doesn't reflect it
-
-If the briefing is stale, update the relevant split file (or the
-monolithic `_briefing.md` if the project hasn't split yet). Don't wait
-for `/audit` to catch this — stale briefings degrade every cabinet
-member's judgment until they're fixed.
-
-**Step E — Check memory files.** If the session changed something that
-a memory file references (a decision that was reversed, a constraint
-that was lifted, a pattern that was replaced), update or delete the
-stale memory. Stale memories are worse than no memories — they actively
-mislead future sessions.
-
-**Step F — Fix, don't flag.** This is debrief, not audit. When you
-find stale docs, update them now. Don't create findings or defer to
-a future audit. The whole point is that docs are accurate by the time
-this session ends.
+**Default (absent/empty):** Check whether `system-status.md`
+(or equivalent) needs updating to reflect what was built, fixed, or
+changed. Also check the user-level state below.
 
 #### User-Level State
 
@@ -433,14 +377,44 @@ these aren't captured somewhere, they rely on human memory.
 
 **Skip (absent/empty).**
 
-### 12. Discover Custom Phases
+### 12. Cabinet Consultations (core)
+
+Spawn cabinet members with `standing-mandate` that includes `debrief`.
+Check `.claude/skills/_index.json` for members with `debrief` in their
+`standingMandate` array. If the index is missing, fall back to reading
+`cabinet-*/SKILL.md` frontmatter.
+
+Each member gets a **scoped directive** — a focused task, not their
+full audit protocol. Spawn them as agents in parallel where possible.
+Pass each agent:
+- The member's full SKILL.md (their expertise and methodology)
+- The session inventory from step 1 (what changed)
+- The scoped directive below
+
+**Scoped directives by member:**
+
+| Member | Debrief directive |
+|--------|-------------------|
+| **record-keeper** | "Review this session's changed files. Check if any CLAUDE.md, system-status, briefing, or memory files now contain stale claims. Fix what you find — don't create findings." |
+| **historian** | "Review this session's decisions and lessons. Verify they were captured to memory. Flag any significant decision that wasn't recorded." |
+| **system-advocate** | "Review what was built this session. Update the feature adoption ledger if new capabilities were added. Note any that need discoverability work." |
+
+If a member listed above isn't installed in this project (no matching
+`cabinet-*/SKILL.md`), skip it silently.
+
+**Cost control:** These are lightweight passes, not full audits. Each
+agent should complete in under 2 minutes. If a member's directive
+produces no findings or changes, it returns silently. Include their
+results in the report only when they surfaced or changed something.
+
+### 13. Discover Custom Phases
 
 After running the core phases above, check for any additional phase
 files in `phases/` that the skeleton doesn't define. These are project-
 specific extensions. Each custom phase file declares its position in
 the workflow. Execute them at their declared position.
 
-### 13. Present Report (presentation)
+### 14. Present Report (presentation)
 
 Read `phases/report.md` for how to present the debrief summary.
 
@@ -472,7 +446,8 @@ skip presentation phases. Core phases always run.
 
 - **Core phases** (always run): inventory, close-work, auto-maintenance,
   update-state, health-checks, record-lessons, upstream-feedback,
-  skill-discovery, cabinet-check, loose-ends, persist work
+  skill-discovery, cabinet-check, loose-ends, cabinet-consultations,
+  persist work
 - **Presentation phases** (skippable): report
 
 A project that wants a quick debrief variant skips the report and
