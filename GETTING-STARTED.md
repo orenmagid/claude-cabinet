@@ -130,7 +130,10 @@ When you're done working, type `/debrief`. Claude:
 
 ### That's the core habit
 
-`/orient` → do work → `/debrief`. Repeat. Everything else is optional.
+`/orient` → do work → `/debrief`. Repeat. Everything else is optional
+but powerful. See [WORKFLOW-GUIDE.md](WORKFLOW-GUIDE.md) for when to use
+what — planning, audits, investigations, and how the cabinet works for
+you behind the scenes.
 
 ## Other useful commands
 

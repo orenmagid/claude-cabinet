@@ -37,7 +37,9 @@ say `/onboard`. It'll interview you about your project and set everything
 up based on your answers.
 
 **New to this?** See [GETTING-STARTED.md](GETTING-STARTED.md) for a
-step-by-step walkthrough.
+step-by-step walkthrough. Then [WORKFLOW-GUIDE.md](WORKFLOW-GUIDE.md)
+for how to use everything — when to plan, when to audit, what the
+cabinet does for you, and how the system grows with your project.
 
 ### For developers
 
