@@ -1,0 +1,9 @@
+# Project directive overlay — Claude Cabinet (dogfood)
+
+cabinet-record-keeper:
+  standing-mandate: [publish]
+  directives:
+    publish: >
+      Check all docs for staleness and missing additions before the
+      version is published. README counts, EXTENSIONS.md counts,
+      system-status version, briefing claims, CLAUDE.md key files.
