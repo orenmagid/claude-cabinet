@@ -194,7 +194,7 @@
       position: fixed;
       top: 0;
       right: 0;
-      width: 480px;
+      width: min(560px, 50vw);
       height: 100vh;
       background: #25262b;
       border-left: 1px solid #373a40;
@@ -231,14 +231,60 @@
     }
     .notes-body {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       padding: 14px 16px;
       font-size: 13px;
       line-height: 1.7;
-      white-space: pre-wrap;
       word-break: break-word;
       color: #c1c2c5;
     }
+    .notes-body h1, .notes-body h2, .notes-body h3, .notes-body h4 {
+      color: #fff;
+      margin: 16px 0 8px 0;
+      line-height: 1.3;
+    }
+    .notes-body h1 { font-size: 18px; }
+    .notes-body h2 { font-size: 15px; border-bottom: 1px solid #373a40; padding-bottom: 4px; }
+    .notes-body h3 { font-size: 14px; }
+    .notes-body h4 { font-size: 13px; color: #e9ecef; }
+    .notes-body p { margin: 6px 0; }
+    .notes-body ul, .notes-body ol { margin: 6px 0; padding-left: 20px; }
+    .notes-body li { margin: 3px 0; }
+    .notes-body code {
+      background: #1a1b1e;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .notes-body pre {
+      background: #1a1b1e;
+      border: 1px solid #373a40;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .notes-body pre code { background: none; padding: 0; }
+    .notes-body blockquote {
+      border-left: 3px solid #7048e8;
+      padding-left: 12px;
+      color: #909296;
+      margin: 8px 0;
+    }
+    .notes-body strong { color: #e9ecef; }
+    .notes-body hr { border: none; border-top: 1px solid #373a40; margin: 12px 0; }
+    .notes-body table { border-collapse: collapse; margin: 8px 0; width: 100%; }
+    .notes-body th, .notes-body td {
+      border: 1px solid #373a40;
+      padding: 4px 8px;
+      text-align: left;
+      font-size: 12px;
+    }
+    .notes-body th { background: #2c2e33; color: #e9ecef; }
 
     /* Orphan actions (no project) */
     .orphan-section {
@@ -507,6 +553,68 @@
       return d.innerHTML;
     }
 
+    // Simple markdown → HTML renderer
+    function renderMarkdown(text) {
+      if (!text) return '<em style="color:#5c5f66">(no notes)</em>';
+      let html = esc(text);
+
+      // Code blocks (``` ... ```)
+      html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+        return `<pre><code>${code.trim()}</code></pre>`;
+      });
+
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // Headers
+      html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+      // Bold and italic
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+      // Horizontal rules
+      html = html.replace(/^---+$/gm, '<hr>');
+
+      // Blockquotes
+      html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+
+      // Unordered lists — group consecutive lines
+      html = html.replace(/((?:^- .+$\n?)+)/gm, (block) => {
+        const items = block.trim().split('\n').map(l => `<li>${l.replace(/^- /, '')}</li>`).join('');
+        return `<ul>${items}</ul>`;
+      });
+
+      // Ordered lists
+      html = html.replace(/((?:^\d+\. .+$\n?)+)/gm, (block) => {
+        const items = block.trim().split('\n').map(l => `<li>${l.replace(/^\d+\. /, '')}</li>`).join('');
+        return `<ol>${items}</ol>`;
+      });
+
+      // Checkbox lists
+      html = html.replace(/<li>\[x\] /g, '<li>&#9745; ');
+      html = html.replace(/<li>\[ \] /g, '<li>&#9744; ');
+
+      // Paragraphs — double newlines
+      html = html.replace(/\n\n+/g, '</p><p>');
+      // Single newlines inside paragraphs
+      html = html.replace(/\n/g, '<br>');
+
+      // Wrap in paragraph if not starting with block element
+      if (!/^<(h[1-4]|pre|ul|ol|blockquote|hr)/.test(html)) {
+        html = '<p>' + html + '</p>';
+      }
+
+      // Clean up empty paragraphs around block elements
+      html = html.replace(/<p><(h[1-4]|pre|ul|ol|blockquote|hr)/g, '<$1');
+      html = html.replace(/<\/(h[1-4]|pre|ul|ol|blockquote)><\/p>/g, '</$1>');
+
+      return html;
+    }
+
     // Notes panel
     function showNotes(fid) {
       const a = actions.find(x => x.fid === fid);
@@ -519,7 +627,7 @@
         a.due ? `<span>Due: ${esc(a.due)}</span>` : '',
         a.created ? `<span>Created: ${esc(a.created)}</span>` : '',
       ].filter(Boolean).join('');
-      document.getElementById('notes-body').textContent = a.notes || '(no notes)';
+      document.getElementById('notes-body').innerHTML = renderMarkdown(a.notes);
       document.getElementById('notes-panel').classList.add('open');
     }
 
