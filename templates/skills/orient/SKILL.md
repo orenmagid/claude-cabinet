@@ -232,32 +232,26 @@ without being explicitly invoked for each decision.
 
 ### 7. Cabinet Consultations (core)
 
-Spawn cabinet members with `standing-mandate` that includes `orient`.
-Check `.claude/skills/_index.json` for members with `orient` in their
-`standingMandate` array. If the index is missing, fall back to reading
-`cabinet-*/SKILL.md` frontmatter.
+Spawn cabinet members whose `standing-mandate` includes `orient`.
 
-Each member gets a **scoped directive** — a focused task, not their
-full audit protocol. Spawn them as agents in parallel where possible.
-Pass each agent:
-- The member's full SKILL.md (their expertise and methodology)
+**Discovery:** Read `.claude/skills/_index.json` and filter to entries
+where `standingMandate` includes `"orient"`. Each matching entry has
+a `directives.orient` field — this is the scoped task for that member.
+If the index is missing, fall back to reading `cabinet-*/SKILL.md`
+frontmatter for `standing-mandate` and `directives`.
+
+**For each matching member**, spawn an agent with:
+- The member's full SKILL.md (read from the `path` in the index)
 - The context loaded in step 1 (project state, recent work)
-- The scoped directive below
+- The member's `directives.orient` as the task
 
-**Scoped directives by member:**
+Spawn in parallel where possible. If a member has no directive for
+`orient`, skip it — a standing mandate without a directive is a data
+error, not a reason to give the member an open-ended task.
 
-| Member | Orient directive |
-|--------|------------------|
-| **historian** | "Review the loaded context. Surface 1-3 prior decisions or lessons most relevant to today's likely work. Keep it brief — facts only, no analysis." |
-| **system-advocate** | "Review the installed skills and recent session activity. Spotlight one underused capability that's relevant to today's context. One sentence." |
-| **user-advocate** | "Review what happened recently. If the system has grown in complexity since the user last got an explanation, flag one thing worth explaining. Otherwise, stay silent." |
-
-If a member listed above isn't installed in this project (no matching
-`cabinet-*/SKILL.md`), skip it silently.
-
-**Cost control:** These are lightweight passes. Each agent should
-complete in under 1 minute. Include their output in the briefing only
-when they have something to contribute. Silent is fine.
+**Cost control:** These are lightweight passes, not full audits. Each
+agent should complete in under 1 minute. Include their output in the
+briefing only when they have something to contribute. Silent is fine.
 
 ### 8. Present Briefing (presentation)
 

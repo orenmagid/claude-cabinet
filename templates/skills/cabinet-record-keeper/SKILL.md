@@ -11,6 +11,11 @@ briefing:
   - _briefing-identity.md
   - _briefing-jurisdictions.md
 standing-mandate: audit, debrief
+directives:
+  debrief: >
+    Review this session's changed files. Check if any CLAUDE.md,
+    system-status, briefing, or memory files now contain stale claims.
+    Fix what you find — don't create findings.
 files:
   - CLAUDE.md
   - "**/CLAUDE.md"

@@ -11,6 +11,14 @@ briefing:
   - _briefing-identity.md
   - _briefing-cabinet.md
 standing-mandate: orient, debrief
+directives:
+  orient: >
+    Review installed skills and recent session activity. Spotlight one
+    underused capability relevant to today's context. One sentence.
+  debrief: >
+    Review what was built this session. Update the feature adoption
+    ledger if new capabilities were added. Note any that need
+    discoverability work.
 topics:
   - feature
   - adoption

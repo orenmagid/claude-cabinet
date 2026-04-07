@@ -379,28 +379,22 @@ these aren't captured somewhere, they rely on human memory.
 
 ### 12. Cabinet Consultations (core)
 
-Spawn cabinet members with `standing-mandate` that includes `debrief`.
-Check `.claude/skills/_index.json` for members with `debrief` in their
-`standingMandate` array. If the index is missing, fall back to reading
-`cabinet-*/SKILL.md` frontmatter.
+Spawn cabinet members whose `standing-mandate` includes `debrief`.
 
-Each member gets a **scoped directive** — a focused task, not their
-full audit protocol. Spawn them as agents in parallel where possible.
-Pass each agent:
-- The member's full SKILL.md (their expertise and methodology)
+**Discovery:** Read `.claude/skills/_index.json` and filter to entries
+where `standingMandate` includes `"debrief"`. Each matching entry has
+a `directives.debrief` field — this is the scoped task for that member.
+If the index is missing, fall back to reading `cabinet-*/SKILL.md`
+frontmatter for `standing-mandate` and `directives`.
+
+**For each matching member**, spawn an agent with:
+- The member's full SKILL.md (read from the `path` in the index)
 - The session inventory from step 1 (what changed)
-- The scoped directive below
+- The member's `directives.debrief` as the task
 
-**Scoped directives by member:**
-
-| Member | Debrief directive |
-|--------|-------------------|
-| **record-keeper** | "Review this session's changed files. Check if any CLAUDE.md, system-status, briefing, or memory files now contain stale claims. Fix what you find — don't create findings." |
-| **historian** | "Review this session's decisions and lessons. Verify they were captured to memory. Flag any significant decision that wasn't recorded." |
-| **system-advocate** | "Review what was built this session. Update the feature adoption ledger if new capabilities were added. Note any that need discoverability work." |
-
-If a member listed above isn't installed in this project (no matching
-`cabinet-*/SKILL.md`), skip it silently.
+Spawn in parallel where possible. If a member has no directive for
+`debrief`, skip it — a standing mandate without a directive is a data
+error, not a reason to give the member an open-ended task.
 
 **Cost control:** These are lightweight passes, not full audits. Each
 agent should complete in under 2 minutes. If a member's directive

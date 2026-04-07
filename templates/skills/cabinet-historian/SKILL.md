@@ -11,6 +11,14 @@ briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
 standing-mandate: plan, execute, orient, debrief
+directives:
+  orient: >
+    Review the loaded context. Surface 1-3 prior decisions or lessons
+    most relevant to today's likely work. Keep it brief — facts only,
+    no analysis.
+  debrief: >
+    Review this session's decisions and lessons. Verify they were
+    captured to memory. Flag any significant decision that wasn't recorded.
 ---
 
 # Historian Cabinet Member

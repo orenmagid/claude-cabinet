@@ -16,6 +16,11 @@ briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
 standing-mandate: orient
+directives:
+  orient: >
+    Review what happened recently. If the system has grown in complexity
+    since the user last got an explanation, flag one thing worth
+    explaining. Otherwise, stay silent.
 topics:
   - why does
   - how does
