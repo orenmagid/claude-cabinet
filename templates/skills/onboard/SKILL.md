@@ -171,7 +171,7 @@ Read `phases/work-tracking.md` for how to present work tracking options.
 tasks.md, GitHub Issues, custom phase files). Present two built-in
 options — SQLite database (pib-db) or markdown file (tasks.md) — plus
 bring-your-own for external systems. User picks one, the other, or
-neither. The choice is recorded in `.corrc.json` under `workTracking`
+neither. The choice is recorded in `.ccrc.json` under `workTracking`
 and feeds into generate-briefing and generate-session-loop.
 
 ### 4. Options

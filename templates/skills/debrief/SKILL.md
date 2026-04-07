@@ -116,9 +116,44 @@ Read `phases/close-work.md` for how to match session work against open
 items and close them. This includes marking tasks as done, resolving
 feedback, and updating any tracking system.
 
-**Skip (absent/empty).** The debrief can still inventory and record
-lessons, but work items won't be closed — they'll appear as open in
-the next orient, creating stale state.
+**Default (absent/empty):** Match the session's work against open items
+in pib-db and propose closing what was completed. If pib-db is not
+initialized, skip gracefully.
+
+1. **Get session work:** `git log --oneline` for this session's commits
+   (since session start or last 2 hours)
+2. **Get open actions:**
+   ```bash
+   sqlite3 pib.db "SELECT fid, text, project_fid FROM actions WHERE completed = 0 AND deleted_at IS NULL ORDER BY flagged DESC, sort_order ASC"
+   ```
+3. **Match:** For each open action, check if the session's commits
+   address it (compare action text/notes against commit messages and
+   changed files)
+4. **Propose:** Present matched actions and ask the user to confirm
+   which to close
+5. **Close confirmed:**
+   ```bash
+   sqlite3 pib.db "UPDATE actions SET completed = 1, completed_at = date('now') WHERE fid = '<fid>'"
+   ```
+
+**Project completion scan:** After closing actions, check for projects
+where all actions are now done:
+
+```bash
+sqlite3 pib.db "
+  SELECT p.fid, p.name,
+    (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid) as total,
+    (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 1) as done
+  FROM projects p
+  WHERE p.status = 'active'
+    AND p.deleted_at IS NULL
+    AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid) > 0
+    AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) = 0
+"
+```
+
+For each result, propose completing the project (show name + action
+count, confirm before closing).
 
 For each open item, determine:
 - **Clearly complete** — mark it done with a reference to what was built
@@ -377,7 +412,7 @@ Read `phases/report.md` for how to present the debrief summary.
 | Phase | Absent = | What it customizes |
 |-------|----------|-------------------|
 | `inventory.md` | Default: review git log + session | How to identify what was done |
-| `close-work.md` | Skip | How to close work items |
+| `close-work.md` | Default: match pib-db actions against git log | How to close work items |
 | `auto-maintenance.md` | Skip | Recurring session-end tasks |
 | `update-state.md` | Default: check system-status.md | What state files to update |
 | `health-checks.md` | Skip | Session-end health checks |
