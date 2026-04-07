@@ -17,12 +17,15 @@ different lens. This skill is the front door.
 
 ## Workflow
 
-1. **Discover members:** Glob for `.claude/skills/cabinet-*/SKILL.md`.
+1. **Read the skill index:** Read `.claude/skills/_index.json` and filter
+   to entries where `type === "cabinet"`. This gives you every cabinet
+   member's name and description in one read.
 
-2. **Read each member's frontmatter:** Extract `name` and the first
-   sentence of `description` (before "Use when:"). Strip the `cabinet-`
-   prefix for display — the architect is "architect", not
-   "cabinet-architecture".
+   If the index file doesn't exist (older install), fall back to
+   Glob for `.claude/skills/cabinet-*/SKILL.md` and read frontmatter.
+
+2. **Strip the `cabinet-` prefix** for friendly display — the architect
+   is "architect", not "cabinet-architecture".
 
 3. **Present the roster:**
 
