@@ -129,6 +129,35 @@ the upstream guard hook because it runs as a separate process using
 the filesystem directly. This is by design — the installer is the
 authorized update path for manifest-tracked files.
 
+### 2.4. Memory Hook Migration (v0.9.x → v0.10+)
+
+**This step runs when upgrading from v0.9.x or earlier** (detected by
+the presence of `memory-session-start.sh` or `memory-post-compact.sh`
+in `.claude/settings.json`).
+
+Starting in v0.10, omega's native hooks handle memory capture/recall
+directly (configured in global `~/.claude/settings.json`). The old
+project-level CC memory hooks are now redundant and cause double
+context injection if left in place.
+
+**Check and clean:**
+1. Read `.claude/settings.json` — look for `memory-session-start.sh`
+   in `SessionStart` hooks and `memory-post-compact.sh` in `PostCompact`
+2. If found, remove those entries. Keep other hooks (git-guardrails,
+   cc-upstream-guard, telemetry) untouched.
+3. Verify omega native hooks are configured: run `omega hooks doctor`.
+   If not configured, the installer's omega-setup already ran
+   `omega hooks setup` — verify by checking `~/.claude/settings.json`
+   for `fast_hook.py` entries.
+4. The old shell scripts (`hooks/memory-session-start.sh`,
+   `hooks/memory-post-compact.sh`) can be deleted from the project's
+   `.claude/hooks/` directory — they're no longer called.
+
+**Tell the user:** "Memory hooks have been upgraded to omega native.
+You now get 3 additional capabilities: real-time decision capture,
+assistant insight extraction, and relevant memory surfacing before
+file edits."
+
 ### 2.5. Legacy Detection and Migration
 
 **This step runs ONLY when upgrading from v0.5.x or earlier** (detected
