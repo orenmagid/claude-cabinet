@@ -12,19 +12,34 @@ Lessons are perishable. A lesson captured while context is fresh is worth
 ten captured from memory next week. This is why recording happens during
 debrief, not "sometime later."
 
-## What to Include
+## Where to Record — Omega Primary
 
-- **What to look for** — types of lessons worth capturing
-- **Where to record them** — memory files, logs, documentation
-- **How to organize** — categories, patterns, cross-references
-- **What NOT to record** — ephemeral details, things derivable from code
+Check whether omega memory is available:
+- `~/.claude-cabinet/omega-venv/bin/python3` exists AND
+- `scripts/cabinet-memory-adapter.py` exists
 
-## Example Lesson Recording
+**When omega is available (primary path):** Write lessons to omega via
+the adapter. This is the durable, semantic memory store that persists
+across sessions and supports retrieval by meaning, not just keyword.
 
-Uncomment and adapt these for your project:
+```bash
+echo '{"text": "the lesson", "type": "lesson", "tags": ["tag1"]}' | \
+  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
+```
 
-<!--
-### What to Look For
+Memory types to use:
+- `decision` — architectural choices, tradeoff resolutions
+- `lesson` — gotchas, discoveries, things that surprised
+- `preference` — user corrections, style choices, workflow preferences
+- `constraint` — limitations discovered, prerequisites found
+- `pattern` — conventions established, recurring solutions
+
+**When omega is NOT available (fallback):** Use the flat markdown memory
+system (auto-memory in `~/.claude/projects/` memory directory). This is
+the same system Claude Code uses natively. It works, but lacks semantic
+retrieval.
+
+## What to Look For
 
 Review the session and ask:
 - Did we learn something future sessions need to know?
@@ -36,32 +51,16 @@ Review the session and ask:
   of problem keeps recurring, the lesson is "create a prevention mechanism"
   not just "remember this."
 - Did the session's work contradict any existing recorded knowledge?
-  If so, update or remove the stale record.
+  If so, update or remove the stale record (in omega: use `query` to
+  find it, then note the contradiction in the new memory).
 
-### Where to Record
-
-**Feedback patterns** (corrections, confirmations):
-Write to memory/patterns/ if it matches an existing pattern; write to
-memory/archive/ as a raw observation if it's new. If 3+ raw observations
-accumulate around a theme, consolidate into a pattern.
-
-**Project state** (decisions, milestones, architecture changes):
-Update the relevant project memory file or create one.
-
-**User context** (preferences, role changes, domain knowledge):
-Update the user context memory file.
-
-**References** (external resources, tool URLs, account details):
-Create or update a reference memory file.
-
-### What NOT to Record
+## What NOT to Record
 - Code patterns derivable by reading current files
 - Git history (use git log)
 - Debugging solutions (the fix is in the code)
 - Anything already in CLAUDE.md files
 - Ephemeral task details only relevant to this session
 
-### Report What Was Recorded
+## Report What Was Recorded
 Tell the user what memories were created or updated so they know what
-the system will remember next time.
--->
+the system will remember next time. Include the count and types.

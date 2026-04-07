@@ -61,6 +61,20 @@ to help you do your job.
 
 ### Sources of Institutional Memory (check in this order)
 
+0. **Omega semantic memory** — if `~/.claude-cabinet/omega-venv/bin/python3`
+   and `scripts/cabinet-memory-adapter.py` both exist, query omega FIRST.
+   It stores decisions, lessons, preferences, and constraints with semantic
+   retrieval — meaning you can search by concept, not just keyword.
+
+   ```bash
+   echo '{"text": "your query here", "limit": 10}' | \
+     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
+   ```
+
+   Omega returns memories ranked by relevance. This is the richest source
+   of institutional memory when available. If omega is not available, skip
+   to source 1.
+
 1. **Memory files** — `.claude/memory/*.md` and any project-level memory
    index (e.g., `MEMORY.md`). These are the distilled, catalogued lessons.
    Check here first. Read the index for orientation, then read relevant
@@ -141,6 +155,18 @@ what was about to happen next. This is the historian's moment.
    more resilient to future compactions. The goal: every lesson learned
    in a session should survive compaction because it's been written
    down *during* the session, not just summarized after truncation.
+
+**Omega and compaction:** If omega memory is active, the PostCompact
+hook (`memory-post-compact.sh`) automatically captures key context from
+the compaction summary. After compaction, query omega to see what was
+preserved:
+
+```bash
+echo '{"text": "session context before compaction", "limit": 5}' | \
+  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
+```
+
+This supplements (not replaces) the manual recovery protocol above.
 
 **The meta-lesson:** Compaction is an entropy event. The historian's
 job is to ensure the memory system is robust enough that compaction

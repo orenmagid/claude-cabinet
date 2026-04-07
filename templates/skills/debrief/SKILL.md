@@ -205,6 +205,26 @@ anything that future sessions need to know? A new pattern, a gotcha,
 a process gap, a user preference? Lessons are perishable — capture
 them now while context is fresh.
 
+**Omega-primary:** If `~/.claude-cabinet/omega-venv/bin/python3` and
+`scripts/cabinet-memory-adapter.py` both exist, write lessons to omega
+as the primary destination — not flat markdown. Use the adapter:
+
+```bash
+echo '{"text": "the lesson", "type": "lesson"}' | \
+  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
+```
+
+Types: `decision`, `lesson`, `preference`, `constraint`, `pattern`.
+Fall back to flat markdown memory only if omega is unavailable.
+
+**Omega broken:** If the memory module is installed (check `.ccrc.json`
+for `"memory": true`) but the venv or adapter is missing, surface this
+in the debrief report:
+
+> **⚠ Memory module is installed but omega is not working.**
+> Lessons from this session were saved to flat markdown instead of omega.
+> Run `npx create-claude-cabinet` to rebuild the omega venv.
+
 > **Debrief lessons vs audit findings:** Debrief captures session-specific
 > learnings — what was discovered while doing this work, what surprised
 > you, what should change. Audit captures systematic observations from

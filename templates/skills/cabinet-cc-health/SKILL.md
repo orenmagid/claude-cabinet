@@ -384,7 +384,52 @@ directory structure:
 and the expected state. These are typically easy fixes but indicate an
 incomplete migration.
 
-### 8. Anti-Bloat
+### 8. Memory System Health
+
+If the memory module is installed (check `.ccrc.json` modules list for
+`"memory"`), verify the omega memory infrastructure:
+
+- **Venv integrity.** Does `~/.claude-cabinet/omega-venv/bin/python3`
+  exist? Can it import omega? Run:
+  ```bash
+  ~/.claude-cabinet/omega-venv/bin/python3 -c "import omega; print('ok')"
+  ```
+  A broken venv means all memory hooks silently degrade.
+
+- **Adapter availability.** Does `scripts/cabinet-memory-adapter.py`
+  exist in the project? Without it, hooks have nothing to call.
+
+- **Hook registration.** Check `.claude/settings.json` for:
+  - `memory-session-start.sh` in `SessionStart` hooks
+  - `memory-post-compact.sh` in `PostCompact` hooks
+  Missing hooks mean omega was installed but never wired in.
+
+- **Omega database.** Run the adapter's `status` command:
+  ```bash
+  echo '{}' | ~/.claude-cabinet/omega-venv/bin/python3 \
+    scripts/cabinet-memory-adapter.py status
+  ```
+  Check: is the database growing? Zero memories after multiple sessions
+  suggests capture isn't working.
+
+- **ONNX model presence.** Check `~/.cache/omega/models/` for the
+  embedding model directory. Missing model means semantic search falls
+  back to hash-based pseudo-embeddings (much lower quality).
+
+- **Rules file.** Does `.claude/rules/memory-capture.md` exist? Without
+  it, in-session capture guidance is missing.
+
+**What to report:** Infrastructure gaps (broken venv, missing hooks,
+missing model), capture failures (zero memories after active sessions),
+configuration mismatches (module installed but hooks not registered).
+
+**Severity guidance:**
+- Broken venv or missing adapter → **warn** (all memory silently disabled)
+- Missing hooks → **warn** (capture not happening)
+- Missing ONNX model → **info** (degraded but functional)
+- Zero memories after 3+ sessions → **warn** (capture failing silently)
+
+### 9. Anti-Bloat
 
 Apply `_lifecycle.md` retirement criteria proactively. A lean cabinet is
 better than a comprehensive one with dead weight:
