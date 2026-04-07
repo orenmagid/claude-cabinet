@@ -89,16 +89,17 @@ sessions, and project-specific context.
 - `.claude/memory/patterns/` — enforcement patterns from prior sessions.
   Scan the directory, read each pattern file. These are project-level
   feedback that guides behavior (what to avoid, what to keep doing).
-- **Omega semantic memory** — if `~/.claude-cabinet/omega-venv/bin/python3`
-  and `scripts/cabinet-memory-adapter.py` both exist, query omega for
-  relevant context:
+- **Omega semantic memory** — omega's native SessionStart hook
+  automatically surfaces recalled memories. During orient, query for
+  additional project-scoped context via the adapter:
   ```bash
   echo '{"text": "session context project status recent decisions", "limit": 10}' | \
     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
   ```
   Surface any relevant memories (decisions, lessons, constraints) that
-  inform the current session. If the venv is missing but `.ccrc.json`
-  lists the memory module as installed, warn the user:
+  inform the current session. If omega is unavailable, run `omega hooks
+  doctor` to diagnose. If the venv is missing but `.ccrc.json` lists
+  the memory module as installed, warn the user:
   > ⚠ Memory module is installed but omega venv is missing.
   > Run `npx create-claude-cabinet` to restore it.
 
@@ -211,9 +212,11 @@ Read `phases/auto-maintenance.md` for recurring automated tasks that
 should run every session. These are operations that would decay if left
 to human memory — the anti-entropy principle in action.
 
-**Skip (absent/empty).** Projects add maintenance tasks as they discover
-operations that need regular execution but aren't worth remembering to
-invoke manually.
+**Default (absent/empty):** If omega is active (`~/.claude-cabinet/omega-venv/bin/omega`
+exists), run memory hygiene: `omega consolidate` every session (prune stale,
+dedup), `omega compact` weekly (cluster similar memories), `omega backup`
+weekly. Projects add additional maintenance tasks as they discover operations
+that need regular execution.
 
 ### 6. Activate Cabinet Members (core)
 
@@ -259,7 +262,7 @@ stated a focus, ask.
 | `data-sync.md` | Skip | How to sync remote data |
 | `work-scan.md` | Default: pib-db scan + staleness detection | What work items to check |
 | `health-checks.md` | Skip | System health checks |
-| `auto-maintenance.md` | Skip | Recurring session-start tasks |
+| `auto-maintenance.md` | Default: omega memory hygiene | Recurring session-start tasks |
 | `cabinet.md` | Skip | Which cabinet members to activate |
 | `briefing.md` | Default: simple summary | How to present orientation |
 

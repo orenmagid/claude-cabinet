@@ -397,17 +397,16 @@ If the memory module is installed (check `.ccrc.json` modules list for
   A broken venv means all memory hooks silently degrade.
 
 - **Adapter availability.** Does `scripts/cabinet-memory-adapter.py`
-  exist in the project? Without it, hooks have nothing to call.
+  exist in the project? Skills use it for project-scoped queries.
 
-- **Hook registration.** Check `.claude/settings.json` for:
-  - `memory-session-start.sh` in `SessionStart` hooks
-  - `memory-post-compact.sh` in `PostCompact` hooks
-  Missing hooks mean omega was installed but never wired in.
+- **Hook registration.** Check `~/.claude/settings.json` (global) for
+  omega native hooks (`fast_hook.py session_start`, etc.). Run
+  `omega hooks doctor` to verify. Missing hooks mean omega was installed
+  but `omega hooks setup` was never run.
 
-- **Omega database.** Run the adapter's `status` command:
+- **Omega database.** Run `omega status` to check health:
   ```bash
-  echo '{}' | ~/.claude-cabinet/omega-venv/bin/python3 \
-    scripts/cabinet-memory-adapter.py status
+  ~/.claude-cabinet/omega-venv/bin/omega status
   ```
   Check: is the database growing? Zero memories after multiple sessions
   suggests capture isn't working.

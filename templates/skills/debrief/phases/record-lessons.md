@@ -61,6 +61,35 @@ Review the session and ask:
 - Anything already in CLAUDE.md files
 - Ephemeral task details only relevant to this session
 
+## After Storing — Link and Check
+
+After storing each memory, omega auto-relates it to similar existing
+memories. Surface this to the user:
+
+```bash
+~/.claude-cabinet/omega-venv/bin/python3 -c "
+from omega import find_similar_memories
+result = find_similar_memories('THE_NEW_MEMORY_ID')
+print(result)
+"
+```
+
+If the new memory is similar to existing ones, mention it:
+"This connects to your earlier memory about [topic]."
+
+Also check for contradictions — if the new memory conflicts with an
+existing one, ask the user which is correct:
+
+```bash
+~/.claude-cabinet/omega-venv/bin/python3 -c "
+from omega import SQLiteStore
+s = SQLiteStore()
+edges = s.get_edges_by_type('contradicts')
+for e in edges: print(f\"{e['source_id']} <-> {e['target_id']} ({e['weight']:.2f})\")
+"
+```
+
 ## Report What Was Recorded
 Tell the user what memories were created or updated so they know what
-the system will remember next time. Include the count and types.
+the system will remember next time. Include the count, types, and any
+new connections discovered in the knowledge graph.

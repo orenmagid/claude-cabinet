@@ -27,9 +27,11 @@ If not available, tell the user:
 
 ## Adapter Reference
 
-The adapter (`scripts/cabinet-memory-adapter.py`) is the single interface
-to omega. All commands read JSON from stdin, output JSON to stdout, and
-exit 0 even on failure. Always call it via the venv Python:
+The adapter (`scripts/cabinet-memory-adapter.py`) provides project-scoped
+queries and a stable JSON interface. Session-level capture and recall are
+handled by omega's native hooks (configured globally). The adapter handles
+skill-invoked operations. All commands read JSON from stdin, output JSON
+to stdout, and exit 0 even on failure.
 
 ```bash
 echo '<json>' | ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py <command>
@@ -37,16 +39,13 @@ echo '<json>' | ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-
 
 | Command | Input | Output |
 |---------|-------|--------|
-| `welcome` | `{}` or hook JSON | `{ok, context}` — relevant memories |
 | `store` | `{text, type, tags?, project?}` | `{ok, id}` — stored memory ID |
-| `query` | `{text, limit?, type?, project?, scope?}` | `{ok, results}` — semantic search |
+| `query` | `{text, limit?, type?, project?, scope?}` | `{ok, results}` — semantic search with project scoping |
 | `delete` | `{id}` | `{ok, deleted}` — requires full node_id |
 | `list` | `{type?, project?, limit?}` | `{ok, memories, count}` — all memories with full IDs |
-| `capture` | hook JSON with `compact_summary` | `{ok, stored}` — auto-capture count |
-| `status` | `{}` | `{ok, ...health info}` |
 
-Memory types: `decision`, `lesson`, `preference`, `constraint`, `pattern`,
-`compaction`.
+Memory types: `decision`, `lesson_learned`, `user_preference`, `constraint`,
+`error_pattern`.
 
 ## Commands
 
@@ -83,6 +82,25 @@ Present results conversationally — highlight the most relevant matches,
 their types, and which project they came from when cross-project results
 appear.
 
+**Graph enrichment:** For the top 1-2 results, check for related memories
+via omega's graph traversal. This surfaces the knowledge network — not
+just what matched, but what's connected to what matched:
+
+```bash
+~/.claude-cabinet/omega-venv/bin/python3 -c "
+from omega import traverse
+result = traverse('THE_MEMORY_ID', max_hops=2)
+print(result)
+"
+```
+
+If traversal returns connected memories, present them as "Related:"
+under the main result. Edge types tell the story:
+- `related` — semantically similar
+- `evolution` — this understanding has developed over time
+- `contradicts` — conflicts with another memory (surface both sides)
+- `temporal_cluster` — captured in the same session
+
 ### Remember — user wants to store something
 
 ```bash
@@ -97,7 +115,51 @@ Pick the type based on what the user said:
 - `constraint` — a limitation or prerequisite
 - `pattern` — a convention or recurring approach
 
-Confirm what was stored.
+Confirm what was stored. After storing, check for similar existing memories
+and link them if relevant:
+
+```bash
+~/.claude-cabinet/omega-venv/bin/python3 -c "
+from omega import find_similar_memories
+result = find_similar_memories('THE_NEW_MEMORY_ID')
+print(result)
+"
+```
+
+If similar memories exist, tell the user: "This connects to N existing
+memories about [topic]." Omega auto-relates on store, but surfacing it
+builds user confidence that the knowledge graph is working.
+
+### Link — user wants to connect memories
+
+If the user says "link these" or "these are related":
+
+```bash
+~/.claude-cabinet/omega-venv/bin/python3 -c "
+from omega import SQLiteStore
+s = SQLiteStore()
+s.add_edge('MEM_ID_1', 'MEM_ID_2', edge_type='related', weight=1.0)
+print('Linked')
+"
+```
+
+Edge types: `related`, `contradicts`, `supersedes`, `evolves`.
+
+### Contradictions — user asks what conflicts
+
+```bash
+~/.claude-cabinet/omega-venv/bin/python3 -c "
+from omega import SQLiteStore
+s = SQLiteStore()
+edges = s.get_edges_by_type('contradicts')
+for e in edges:
+    print(f\"{e['source_id']} <-> {e['target_id']} (confidence: {e['weight']:.2f})\")
+if not edges: print('No contradictions found')
+"
+```
+
+For each contradiction pair, query both memories to show the user what
+conflicts. Ask which one is correct, then supersede the wrong one.
 
 ### Forget — user wants to remove something
 

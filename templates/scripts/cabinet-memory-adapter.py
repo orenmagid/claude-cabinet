@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 """
-Cabinet Memory Adapter — single Python file wrapping all omega interaction.
+Cabinet Memory Adapter — single Python file wrapping omega interaction.
 
-Called by hook scripts via the venv Python. All omega calls go through here.
+Called by skills and scripts via the venv Python. Provides project-scoped
+tiered retrieval (omega's main gap) and a stable JSON-in/JSON-out interface.
 Designed for D2 (never block Claude Code) and D3 (graceful degradation).
+
+Note: Session-level hooks (welcome, capture, session start/stop) are handled
+by omega's native hooks configured in ~/.claude/settings.json (global).
+This adapter handles skill-invoked operations only.
 
 Usage:
     cabinet-memory-adapter.py <command> [options]
 
 Commands:
-    welcome         Surface relevant memories for session start
-    capture         Store a memory from hook input (PostCompact)
-    store           Store a memory directly (called by debrief)
-    query           Query memories by text
+    store           Store a memory directly (called by debrief, /memory)
+    query           Query memories by text (with project-scoped tiering)
     delete          Delete a memory by full node_id
     list            List all memories with full node_ids
-    status          Check omega health
 
 All commands read JSON from stdin when applicable.
 All commands output JSON to stdout.
@@ -57,89 +59,6 @@ def _import_omega():
         return omega
     except ImportError:
         return None
-
-
-def cmd_welcome():
-    """Surface relevant memories for session start.
-
-    Reads session context from stdin (session_id, cwd, source).
-    Calls omega.welcome() to get relevant memories.
-    Outputs memories as context text for SessionStart hook stdout.
-    """
-    data = _read_stdin()
-    omega = _import_omega()
-    if not omega:
-        _error("omega not available")
-        return
-
-    try:
-        cwd = data.get("cwd", os.getcwd())
-        project_name = os.path.basename(cwd)
-
-        result = omega.welcome(project=project_name)
-        if not result:
-            _output({"ok": True, "context": ""})
-            return
-
-        # welcome() returns a dict with memory count, recent memories, etc.
-        if isinstance(result, dict):
-            context = (
-                result.get("observation_prefix", "")
-                or result.get("summary", "")
-                or result.get("context", "")
-            )
-            if not context and result.get("memory_count", 0) == 0:
-                _output({"ok": True, "context": ""})
-                return
-            if not context:
-                context = json.dumps(result, indent=2)
-            _output({"ok": True, "context": context})
-        elif isinstance(result, str):
-            _output({"ok": True, "context": result})
-        else:
-            _output({"ok": True, "context": str(result)})
-    except Exception as e:
-        _error(f"welcome failed: {e}")
-
-
-def cmd_capture():
-    """Capture context from PostCompact summary.
-
-    Reads compact_summary from stdin.
-    Extracts key decisions, lessons, and reasoning chains.
-    Stores them in omega.
-    """
-    data = _read_stdin()
-    omega = _import_omega()
-    if not omega:
-        _error("omega not available")
-        return
-
-    summary = data.get("compact_summary", "")
-    if not summary:
-        _output({"ok": True, "stored": 0, "reason": "no summary"})
-        return
-
-    session_id = data.get("session_id", "unknown")
-    cwd = data.get("cwd", os.getcwd())
-    project_name = os.path.basename(cwd)
-
-    try:
-        result = omega.auto_capture(
-            summary,
-            event_type="compaction",
-            session_id=session_id,
-            project=project_name,
-        )
-        count = 0
-        if isinstance(result, dict):
-            count = result.get("stored", 0)
-        elif isinstance(result, (list, tuple)):
-            count = len(result)
-
-        _output({"ok": True, "stored": count})
-    except Exception as e:
-        _error(f"capture failed: {e}")
 
 
 def cmd_store():
@@ -335,23 +254,6 @@ def cmd_query():
         _error(f"query failed: {e}")
 
 
-def cmd_status():
-    """Check omega health status."""
-    omega = _import_omega()
-    if not omega:
-        _output({"ok": False, "status": "omega not available"})
-        return
-
-    try:
-        result = omega.status()
-        if isinstance(result, dict):
-            _output({"ok": True, **result})
-        else:
-            _output({"ok": True, "status": str(result)})
-    except Exception as e:
-        _error(f"status failed: {e}")
-
-
 def cmd_delete():
     """Delete a memory by its full node_id.
 
@@ -433,13 +335,10 @@ def cmd_list():
 
 
 COMMANDS = {
-    "welcome": cmd_welcome,
-    "capture": cmd_capture,
     "store": cmd_store,
     "query": cmd_query,
     "delete": cmd_delete,
     "list": cmd_list,
-    "status": cmd_status,
 }
 
 if __name__ == "__main__":

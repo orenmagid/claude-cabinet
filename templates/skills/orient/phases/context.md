@@ -41,18 +41,9 @@ your investor-reports project too."
 
 ### Omega Semantic Memory
 
-If `~/.claude-cabinet/omega-venv/bin/python3` and
-`scripts/cabinet-memory-adapter.py` both exist, surface relevant
-memories from omega at session start:
-
-```bash
-echo '{}' | ~/.claude-cabinet/omega-venv/bin/python3 \
-  scripts/cabinet-memory-adapter.py welcome
-```
-
-The `welcome` command returns memories relevant to the current project.
-The SessionStart hook (`memory-session-start.sh`) also does this
-automatically, but during orient you can query for specific context:
+Omega's native SessionStart hook (in `~/.claude/settings.json` global)
+automatically surfaces recalled memories at session start. During orient,
+you can query for additional specific context using the adapter:
 
 ```bash
 echo '{"text": "recent decisions and lessons", "limit": 5}' | \
@@ -60,9 +51,11 @@ echo '{"text": "recent decisions and lessons", "limit": 5}' | \
   scripts/cabinet-memory-adapter.py query
 ```
 
+To verify omega is healthy, run `omega hooks doctor` or `omega status`.
+
 If omega is not available, check whether the memory module is installed
 (look for `"memory": true` in `.ccrc.json`). If it IS installed but the
-venv or adapter is missing, surface a warning:
+venv is missing, surface a warning:
 
 > **⚠ Memory module is installed but omega is not available.**
 > The venv at `~/.claude-cabinet/omega-venv/` may be missing or broken.

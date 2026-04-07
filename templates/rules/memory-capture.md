@@ -1,43 +1,42 @@
 # Memory Capture Rules
 
-When omega memory is active (check: `~/.claude-cabinet/omega-venv/bin/python3`
-exists and `scripts/cabinet-memory-adapter.py` exists), these rules govern
-what gets captured and when.
+When omega memory is active (check: `omega hooks doctor` reports OK),
+these rules govern what gets captured and when.
 
-## During Sessions — What to Capture
+## How Capture Works
 
-Capture to omega when you observe any of these during a session:
+Omega handles memory capture natively through its hooks in
+`~/.claude/settings.json` (global). No project-level hook scripts needed.
 
-**Decisions with reasoning.** When the user makes a non-obvious choice
-(architecture, naming, tradeoffs, tool selection), capture the decision
-AND the reasoning. "Chose SQLite over Postgres because single-user,
-no server dependency" — not just "uses SQLite."
+**Automatic capture (omega native hooks):**
+- `auto_capture` (UserPromptSubmit) — detects decisions/lessons from user messages in real time
+- `assistant_capture` (Stop) — extracts insights from assistant responses at session end
+- `session_stop` (Stop) — session summary, activity report, auto-reflection
+- `surface_memories` (PostToolUse) — surfaces relevant memories before file edits
 
-**Discovered constraints.** When something that seemed possible turns
-out to have a limitation, gotcha, or prerequisite. "Python venv on
-Debian requires separate python3-venv package" — the kind of thing
-that wastes 30 minutes if you don't know it.
+**Manual capture (adapter or omega MCP tools):**
+- Use `omega_store()` MCP tool directly, or
+- Use the adapter for project-scoped storage:
+  ```bash
+  echo '{"text": "the memory", "type": "decision"}' | \
+    ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
+  ```
 
-**User preferences revealed through correction.** When the user says
-"no, not like that" or redirects your approach, capture what they
-actually want. "User prefers single bundled PRs for refactors, not
-many small ones."
+**Memory types:** `decision`, `lesson_learned`, `user_preference`, `constraint`, `error_pattern`
 
-**Pattern establishment.** When a convention is established for the
-first time — naming pattern, file organization, workflow step. Not
-the convention itself (that's in the code), but that it was a
-deliberate choice.
+## What to Capture Manually
 
-## How to Capture
+Omega's auto_capture hook catches many decisions and lessons from
+conversation flow. Manual capture is for things the hooks miss:
 
-Use the adapter — never call omega directly from shell:
+**Decisions with reasoning.** Non-obvious architectural choices where
+the "why" matters as much as the "what."
 
-```bash
-echo '{"text": "the memory", "type": "decision"}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
-```
+**Discovered constraints.** Limitations or gotchas that waste time
+if you don't know them in advance.
 
-Memory types: `decision`, `lesson`, `preference`, `constraint`, `pattern`
+**User preferences revealed through correction.** When the user
+redirects your approach — capture what they actually want.
 
 ## What NOT to Capture
 
@@ -49,17 +48,11 @@ Memory types: `decision`, `lesson`, `preference`, `constraint`, `pattern`
 
 ## Capture Cadence
 
-Do NOT capture after every interaction. Capture when something worth
-remembering actually happens. Most messages in a session produce nothing
-worth storing.
-
-Cadence scales with session length and discovery density. A short
-focused session might produce 0-1 memories. A long session with
-multiple discoveries, corrections, and decisions could produce 5-10+.
-The right number is however many genuinely worth-remembering things
-happened — no artificial cap.
+Omega's native hooks handle most capture automatically. Manual capture
+should be rare — only when something important happened that the hooks
+wouldn't detect (e.g., a nuanced architectural decision discussed
+verbally, or a constraint discovered through external research).
 
 Over-capturing degrades retrieval quality. The test: *"Would a future
 session benefit from knowing this?"* If yes, capture it. If it's just
-noise or ephemera, skip it. The debrief sweep catches anything
-important that was missed during the session.
+noise or ephemera, skip it.

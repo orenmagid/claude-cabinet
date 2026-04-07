@@ -105,6 +105,28 @@ to help you do your job.
    Omega data lives at `~/.omega/omega.db` (SQLite). The `/memory` skill
    gives users self-serve access to browse, search, and manage memories.
 
+   **Graph traversal** (follow connections from a memory):
+   ```bash
+   ~/.claude-cabinet/omega-venv/bin/python3 -c "
+   from omega import traverse
+   result = traverse('MEM_ID', max_hops=2)
+   print(result)
+   "
+   ```
+   After finding a relevant memory, traverse its graph connections to
+   discover related decisions, contradictions, or how understanding evolved.
+   Edge types: `related`, `evolution`, `contradicts`, `temporal_cluster`.
+
+   **Contradiction detection** (find conflicting memories):
+   ```bash
+   ~/.claude-cabinet/omega-venv/bin/python3 -c "
+   from omega import SQLiteStore
+   s = SQLiteStore()
+   edges = s.get_edges_by_type('contradicts')
+   for e in edges: print(f\"{e['source_id']} <-> {e['target_id']} ({e['weight']:.2f})\")
+   "
+   ```
+
    Omega returns memories ranked by relevance. This is the richest source
    of institutional memory when available. If omega queries return nothing
    or fail, fall through to source 1 (flat memory files).
@@ -190,10 +212,10 @@ what was about to happen next. This is the historian's moment.
    in a session should survive compaction because it's been written
    down *during* the session, not just summarized after truncation.
 
-**Omega and compaction:** If omega memory is active, the PostCompact
-hook (`memory-post-compact.sh`) automatically captures key context from
-the compaction summary. After compaction, query omega to see what was
-preserved:
+**Omega and compaction:** If omega memory is active, omega's native hooks
+automatically capture key context at session boundaries (session_stop,
+auto_capture, assistant_capture). After compaction, query omega to see
+what was preserved:
 
 ```bash
 echo '{"text": "session context before compaction", "limit": 5}' | \
