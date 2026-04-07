@@ -209,9 +209,17 @@ Read `phases/update-state.md` for what state files and documentation
 to update. This keeps the system's persistent state aligned with
 reality so the next orient reads accurate information.
 
-**If cabinet consultations (step 3) included a record-keeper or similar
-doc-checking member**, review what it already fixed rather than
-re-checking the same files. Focus on anything the members didn't cover.
+**Division of labor with cabinet consultations (step 3):** If a
+record-keeper or similar doc-checking member ran in step 3, it handled
+**staleness detection** — finding claims in docs that became wrong.
+This step handles what members don't cover:
+- **Additions** — new capabilities, version bumps, new state that needs
+  recording (not stale claims, but missing claims)
+- **User-level state** — preferences, registry entries (see below)
+- **Project-specific state** — whatever `phases/update-state.md` defines
+
+Don't re-check what the members already fixed. Do check what they
+wouldn't know to add.
 
 **Default (absent/empty):** Check whether `system-status.md`
 (or equivalent) needs updating to reflect what was built, fixed, or
