@@ -180,12 +180,42 @@ Read `phases/update-state.md` for what state files and documentation
 to update. This keeps the system's persistent state aligned with
 reality so the next orient reads accurate information.
 
-**Default (absent/empty):** At minimum check whether `system-status.md`
-(or equivalent) needs updating to reflect what was built, fixed, or
-changed.
+**Default (absent/empty):** Run the session-scoped doc check below,
+then apply the user-level state check.
 
-Also check **briefing freshness** — did this session's work invalidate
-any claims in the briefing files? Common drift signals:
+#### Session-Scoped Doc Check
+
+This is the per-session version of what the record-keeper does during
+audit. It's not a full doc audit — it's scoped to what THIS session
+changed. The goal: no session ends with docs that contradict what was
+just built.
+
+**Step A — Identify the blast radius.** From the session inventory
+(step 1), get the list of files changed. These are the session's
+"blast radius" — anything that references these files or describes
+their behavior might now be stale.
+
+**Step B — Check CLAUDE.md files against the blast radius.**
+
+For each CLAUDE.md file in the project (root and nested):
+- Does it reference any file that was modified, moved, or deleted
+  this session? If so, verify the reference is still accurate.
+- Does it describe behavior, conventions, or directory structure
+  that this session changed? If so, update it.
+- Does it list scripts, commands, or workflows that were modified?
+  If so, verify they still work as described.
+
+Don't read every CLAUDE.md for every session — only check the ones
+whose scope overlaps with the session's blast radius. If the session
+only touched `lib/cli.js`, check root CLAUDE.md (which describes the
+project) but skip nested CLAUDE.md files in unrelated directories.
+
+**Step C — Check system-status.md.** Does it need updating to reflect
+what was built, fixed, or changed? Are there items marked "planned"
+that are now built? Items marked "built" that were removed?
+
+**Step D — Check briefing freshness.** Did this session's work
+invalidate any claims in the briefing files? Common drift signals:
 - Session installed a new module or capability, but the briefing still
   says it's not available
 - Session changed architecture (new data store, new framework, new
@@ -199,8 +229,21 @@ monolithic `_briefing.md` if the project hasn't split yet). Don't wait
 for `/audit` to catch this — stale briefings degrade every cabinet
 member's judgment until they're fixed.
 
-Also check the **user-level state** (silently — don't make this a
-conversation unless something needs updating):
+**Step E — Check memory files.** If the session changed something that
+a memory file references (a decision that was reversed, a constraint
+that was lifted, a pattern that was replaced), update or delete the
+stale memory. Stale memories are worse than no memories — they actively
+mislead future sessions.
+
+**Step F — Fix, don't flag.** This is debrief, not audit. When you
+find stale docs, update them now. Don't create findings or defer to
+a future audit. The whole point is that docs are accurate by the time
+this session ends.
+
+#### User-Level State
+
+Check silently — don't make this a conversation unless something
+needs updating:
 
 - **`~/.claude/CLAUDE.md`** — did the user reveal something about
   themselves this session that isn't in their profile? A new role,
