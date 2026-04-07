@@ -240,7 +240,7 @@ context-aware presentation modes.
 in steps 1-6: project state, work items needing attention, any health
 issues found, maintenance results.
 
-### 8. Show Available Skills (presentation)
+### 8. Show Available Skills (core)
 
 After the briefing, show the user what skills are available. This
 serves the same purpose as a menu at a restaurant — you can't order
@@ -295,7 +295,7 @@ phases always run because they keep the system healthy.
 
 - **Core phases** (always run): context, data-sync, work-scan,
   health-checks, auto-maintenance, cabinet
-- **Presentation phases** (skippable): briefing, skills-menu
+- **Presentation phases** (skippable): briefing
 
 A project that wants a quick orient variant skips the briefing phase
 and outputs a one-line confirmation instead.
