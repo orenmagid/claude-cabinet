@@ -131,9 +131,15 @@ authorized update path for manifest-tracked files.
 
 ### 2.4. Memory Hook Migration (v0.9.x → v0.10+)
 
-**This step runs when upgrading from v0.9.x or earlier** (detected by
-the presence of `memory-session-start.sh` or `memory-post-compact.sh`
-in `.claude/settings.json`).
+**This step runs when upgrading from v0.9.x or earlier.** Detect by
+checking BOTH:
+- `.claude/settings.json` for `memory-session-start.sh` or
+  `memory-post-compact.sh` references
+- `.claude/hooks/` directory for the actual files on disk
+
+Either condition triggers this step. The installer cleans settings.json
+references but does NOT delete the orphaned files (it treats them as
+project-owned since they're no longer in the upstream manifest).
 
 Starting in v0.10, omega's native hooks handle memory capture/recall
 directly (configured in global `~/.claude/settings.json`). The old
@@ -145,13 +151,13 @@ context injection if left in place.
    in `SessionStart` hooks and `memory-post-compact.sh` in `PostCompact`
 2. If found, remove those entries. Keep other hooks (git-guardrails,
    cc-upstream-guard, telemetry) untouched.
-3. Verify omega native hooks are configured: run `omega hooks doctor`.
+3. Check for orphaned files: `ls .claude/hooks/memory-session-start.sh
+   .claude/hooks/memory-post-compact.sh 2>/dev/null`. Delete any that
+   exist — they are dead weight, not project-owned content.
+4. Verify omega native hooks are configured: run `omega hooks doctor`.
    If not configured, the installer's omega-setup already ran
    `omega hooks setup` — verify by checking `~/.claude/settings.json`
    for `fast_hook.py` entries.
-4. The old shell scripts (`hooks/memory-session-start.sh`,
-   `hooks/memory-post-compact.sh`) can be deleted from the project's
-   `.claude/hooks/` directory — they're no longer called.
 
 **Tell the user:** "Memory hooks have been upgraded to omega native.
 You now get 3 additional capabilities: real-time decision capture,
