@@ -1,0 +1,55 @@
+# Cabinet member committees — canonical groupings of upstream cabinet members.
+#
+# This file is upstream-owned and manifest-tracked. It is updated automatically
+# by the installer. Do not edit — your customizations go in committees-project.yaml.
+#
+# Consumed by:
+#   - /audit skill (committee selection menu)
+#   - scripts/resolve-committees.cjs (merges with committees-project.yaml)
+#
+# Cross-portfolio cabinet members are NOT in any committee. They activate via
+# standing-mandate in their SKILL.md frontmatter and run on every audit:
+#   anti-confirmation, qa, debugger, organized-mind, user-advocate
+
+committees:
+  ux:
+    name: "UX & Design"
+    members:
+      - usability
+      - accessibility
+      - small-screen
+      - information-design
+      - ui-experimentalist
+      - framework-quality
+      - mantine-quality
+
+  code:
+    name: "Code Quality"
+    members:
+      - technical-debt
+      - architecture
+      - boundary-man
+
+  health:
+    name: "System Health"
+    members:
+      - security
+      - data-integrity
+      - speed-freak
+
+  process:
+    name: "Process & Meta"
+    members:
+      - workflow-cop
+      - record-keeper
+      - process-therapist
+      - roster-check
+      - cc-health
+
+  strategic:
+    name: "Strategic"
+    members:
+      - system-advocate
+      - historian
+      - goal-alignment
+      - vision

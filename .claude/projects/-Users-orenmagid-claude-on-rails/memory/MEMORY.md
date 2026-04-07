@@ -1,0 +1,2 @@
+- [Perspective drift](lesson_perspective_drift.md) — 16/20 Flow perspectives drifted from CoR templates undetected; upstream guard hook and drift check now prevent this
+- [Context section contract](lesson_context_sections.md) — CoR templates reference `_context.md §` sections by name; missing sections silently break generic templates; onboard should ensure required sections exist

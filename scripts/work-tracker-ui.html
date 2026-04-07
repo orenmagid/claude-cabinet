@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Tracker</title>
+  <meta name="color-scheme" content="light dark">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      padding: 20px 24px;
+      color: #c1c2c5;
+      background: #1a1b1e;
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #373a40;
+    }
+    h1 { font-size: 18px; color: #fff; font-weight: 600; }
+    .stats { color: #909296; font-size: 12px; display: flex; gap: 12px; }
+    .stat-num { color: #e9ecef; font-weight: 600; }
+
+    /* Navigation tabs */
+    .tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #373a40;
+    }
+    .tab {
+      padding: 8px 16px;
+      color: #909296;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.12s;
+    }
+    .tab:hover { color: #c1c2c5; }
+    .tab.active { color: #7048e8; border-bottom-color: #7048e8; }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .filter-btn {
+      padding: 4px 12px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #25262b;
+      color: #909296;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      transition: all 0.12s;
+    }
+    .filter-btn:hover { background: #2c2e33; color: #c1c2c5; }
+    .filter-btn.active { background: #7048e8; color: #fff; border-color: #7048e8; }
+    .search-input {
+      flex: 1;
+      padding: 5px 10px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #25262b;
+      color: #c1c2c5;
+      font-size: 12px;
+    }
+    .search-input::placeholder { color: #5c5f66; }
+
+    /* Project cards */
+    .project-card {
+      margin-bottom: 8px;
+      border: 1px solid #373a40;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .project-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #25262b;
+      cursor: pointer;
+      user-select: none;
+    }
+    .project-header:hover { background: #2c2e33; }
+    .project-name {
+      font-weight: 600;
+      color: #e9ecef;
+      font-size: 14px;
+      flex: 1;
+    }
+    .project-meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+      color: #909296;
+    }
+    .project-body { padding: 0; }
+    .project-body.collapsed { display: none; }
+
+    /* Action rows */
+    .action-row {
+      padding: 8px 14px;
+      border-top: 1px solid #2c2e33;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      transition: background 0.1s;
+    }
+    .action-row:hover { background: #25262b; }
+    .action-row.completed { opacity: 0.5; }
+    .action-row.completed .action-text { text-decoration: line-through; }
+
+    .action-check {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #5c5f66;
+      border-radius: 3px;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.12s;
+      background: transparent;
+      color: transparent;
+      font-size: 11px;
+    }
+    .action-check:hover { border-color: #7048e8; }
+    .action-check.checked {
+      background: #7048e8;
+      border-color: #7048e8;
+      color: #fff;
+    }
+    .action-content { flex: 1; min-width: 0; }
+    .action-text { color: #e9ecef; font-weight: 500; word-break: break-word; }
+    .action-sub {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #5c5f66;
+    }
+    .action-fid { font-family: monospace; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+    }
+    .badge-active { background: #2b8a3e; color: #fff; }
+    .badge-done { background: #5c5f66; color: #fff; }
+    .badge-paused { background: #f08c00; color: #fff; }
+    .badge-dropped { background: #e03131; color: #fff; }
+    .badge-someday { background: #1c7ed6; color: #fff; }
+    .badge-open { background: #1c7ed6; color: #fff; }
+    .badge-in-progress { background: #f08c00; color: #fff; }
+    .badge-blocked { background: #e03131; color: #fff; }
+    .badge-deferred { background: #5c5f66; color: #fff; }
+
+    .flag {
+      color: #f08c00;
+      font-size: 12px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .flag.unflagged { color: #373a40; }
+
+    /* Notes panel */
+    .notes-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(560px, 50vw);
+      height: 100vh;
+      background: #25262b;
+      border-left: 1px solid #373a40;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+    }
+    .notes-panel.open { display: flex; }
+    .notes-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid #373a40;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .notes-title { color: #fff; font-weight: 600; font-size: 14px; flex: 1; padding-right: 12px; }
+    .notes-close {
+      background: none;
+      border: none;
+      color: #909296;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .notes-close:hover { color: #fff; }
+    .notes-meta {
+      padding: 8px 16px;
+      border-bottom: 1px solid #2c2e33;
+      font-size: 12px;
+      color: #909296;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .notes-body {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 14px 16px;
+      font-size: 13px;
+      line-height: 1.7;
+      word-break: break-word;
+      color: #c1c2c5;
+    }
+    .notes-body h1, .notes-body h2, .notes-body h3, .notes-body h4 {
+      color: #fff;
+      margin: 16px 0 8px 0;
+      line-height: 1.3;
+    }
+    .notes-body h1 { font-size: 18px; }
+    .notes-body h2 { font-size: 15px; border-bottom: 1px solid #373a40; padding-bottom: 4px; }
+    .notes-body h3 { font-size: 14px; }
+    .notes-body h4 { font-size: 13px; color: #e9ecef; }
+    .notes-body p { margin: 6px 0; }
+    .notes-body ul, .notes-body ol { margin: 6px 0; padding-left: 20px; }
+    .notes-body li { margin: 3px 0; }
+    .notes-body code {
+      background: #1a1b1e;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .notes-body pre {
+      background: #1a1b1e;
+      border: 1px solid #373a40;
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin: 8px 0;
+      overflow-x: auto;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .notes-body pre code { background: none; padding: 0; }
+    .notes-body blockquote {
+      border-left: 3px solid #7048e8;
+      padding-left: 12px;
+      color: #909296;
+      margin: 8px 0;
+    }
+    .notes-body strong { color: #e9ecef; }
+    .notes-body hr { border: none; border-top: 1px solid #373a40; margin: 12px 0; }
+    .notes-body table { border-collapse: collapse; margin: 8px 0; width: 100%; }
+    .notes-body th, .notes-body td {
+      border: 1px solid #373a40;
+      padding: 4px 8px;
+      text-align: left;
+      font-size: 12px;
+    }
+    .notes-body th { background: #2c2e33; color: #e9ecef; }
+
+    /* Editable controls in notes panel */
+    .notes-edit-bar {
+      padding: 8px 16px;
+      border-bottom: 1px solid #2c2e33;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .edit-btn {
+      padding: 3px 10px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #2c2e33;
+      color: #909296;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      transition: all 0.12s;
+    }
+    .edit-btn:hover { background: #373a40; color: #c1c2c5; }
+    .edit-btn.active { background: #7048e8; color: #fff; border-color: #7048e8; }
+    .edit-btn.save { background: #2b8a3e; color: #fff; border-color: #2b8a3e; }
+    .edit-btn.save:hover { background: #237032; }
+    .status-select {
+      padding: 3px 8px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #25262b;
+      color: #c1c2c5;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .edit-title-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #7048e8;
+      border-radius: 4px;
+      background: #1a1b1e;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+    }
+    .edit-notes-textarea {
+      width: 100%;
+      height: 100%;
+      padding: 14px 16px;
+      border: none;
+      background: transparent;
+      color: #c1c2c5;
+      font-size: 13px;
+      line-height: 1.7;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      resize: none;
+    }
+    .edit-notes-textarea:focus { outline: none; }
+    .save-indicator {
+      font-size: 11px;
+      color: #2b8a3e;
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .save-indicator.show { opacity: 1; }
+
+    /* Orphan actions (no project) */
+    .orphan-section {
+      margin-bottom: 8px;
+      border: 1px solid #373a40;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .orphan-header {
+      padding: 10px 14px;
+      background: #2c2e33;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+      color: #909296;
+      font-size: 13px;
+    }
+    .orphan-header:hover { background: #373a40; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #5c5f66;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #909296;
+    }
+    #loading .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #373a40;
+      border-top-color: #7048e8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .progress-bar {
+      height: 3px;
+      background: #373a40;
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #7048e8;
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Work Tracker</h1>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-view="projects">Projects</div>
+    <div class="tab" data-view="actions">All Actions</div>
+    <div class="tab" data-view="flagged">Flagged</div>
+  </div>
+
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" data-status="active">Active</button>
+    <button class="filter-btn" data-status="done">Done</button>
+    <button class="filter-btn" data-status="paused">Paused</button>
+    <button class="filter-btn" data-status="all">All</button>
+    <input class="search-input" id="search" placeholder="Search projects and actions...">
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>Loading...</div>
+  </div>
+
+  <div id="content"></div>
+  <div class="notes-panel" id="notes-panel">
+    <div class="notes-header">
+      <span class="notes-title" id="notes-title"></span>
+      <button class="notes-close" id="notes-close">&times;</button>
+    </div>
+    <div class="notes-meta" id="notes-meta"></div>
+    <div class="notes-edit-bar" id="notes-edit-bar"></div>
+    <div class="notes-body" id="notes-body"></div>
+  </div>
+
+  <script>
+    // State
+    let projects = [];
+    let actions = [];
+    let currentView = 'projects';
+    let currentStatus = 'active';
+    let searchQuery = '';
+    let expandedProjects = new Set();
+
+    // Fetch data
+    async function load() {
+      try {
+        const [projRes, actRes, statsRes] = await Promise.all([
+          fetch(`/api/projects?status=${currentStatus}`),
+          fetch('/api/actions?status=all'),
+          fetch('/api/stats'),
+        ]);
+        projects = await projRes.json();
+        actions = await actRes.json();
+        const stats = await statsRes.json();
+        renderStats(stats);
+        document.getElementById('loading').style.display = 'none';
+        render();
+      } catch (err) {
+        document.getElementById('loading').innerHTML =
+          '<div class="empty-state">Could not connect to server.<br>Run: node scripts/work-tracker-server.mjs</div>';
+      }
+    }
+
+    function renderStats(stats) {
+      const a = stats.actions || {};
+      const el = document.getElementById('stats');
+      el.innerHTML = `
+        <span><span class="stat-num">${a.open || 0}</span> open</span>
+        <span><span class="stat-num">${a.done || 0}</span> done</span>
+        ${a.flagged ? `<span><span class="stat-num">${a.flagged}</span> flagged</span>` : ''}
+      `;
+    }
+
+    // Render
+    function render() {
+      const root = document.getElementById('content');
+      root.innerHTML = '';
+
+      if (currentView === 'projects') renderProjects(root);
+      else if (currentView === 'actions') renderAllActions(root);
+      else if (currentView === 'flagged') renderFlagged(root);
+    }
+
+    function renderProjects(root) {
+      const filtered = filterProjects();
+      if (filtered.length === 0) {
+        root.innerHTML = '<div class="empty-state">No projects found.</div>';
+        return;
+      }
+
+      for (const p of filtered) {
+        const projectActions = actions.filter(a => a.project_fid === p.fid);
+        const open = projectActions.filter(a => !a.completed);
+        const done = projectActions.filter(a => a.completed);
+        const expanded = expandedProjects.has(p.fid);
+
+        const card = document.createElement('div');
+        card.className = 'project-card';
+
+        const pct = projectActions.length > 0 ? Math.round(done.length / projectActions.length * 100) : 0;
+
+        card.innerHTML = `
+          <div class="project-header" data-fid="${p.fid}">
+            <span class="project-name">${esc(p.name)}</span>
+            <div class="project-meta">
+              ${p.area ? `<span>${esc(p.area)}</span>` : ''}
+              <span>${open.length} open / ${projectActions.length} total</span>
+              <span class="badge badge-${p.status}">${p.status}</span>
+            </div>
+          </div>
+          <div class="project-body ${expanded ? '' : 'collapsed'}" data-project="${p.fid}">
+            ${projectActions.length > 0 ? `
+              <div style="padding: 4px 14px 0;">
+                <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+              </div>
+            ` : ''}
+            ${renderActionRows(open)}
+            ${done.length > 0 ? `
+              <div style="padding:6px 14px 2px;font-size:11px;color:#5c5f66;border-top:1px solid #2c2e33;">
+                Completed (${done.length})
+              </div>
+              ${renderActionRows(done)}
+            ` : ''}
+            ${projectActions.length === 0 ? '<div style="padding:12px 14px;color:#5c5f66;font-size:12px;">No actions yet.</div>' : ''}
+          </div>
+        `;
+        root.appendChild(card);
+      }
+
+      // Orphan actions (no project)
+      const orphans = actions.filter(a => !a.project_fid && matchesSearch(a.text));
+      const openOrphans = orphans.filter(a => !a.completed);
+      const doneOrphans = orphans.filter(a => a.completed);
+      if (orphans.length > 0) {
+        const section = document.createElement('div');
+        section.className = 'orphan-section';
+        const expanded = expandedProjects.has('_orphan');
+        section.innerHTML = `
+          <div class="orphan-header" data-fid="_orphan">Unassigned Actions (${openOrphans.length} open / ${orphans.length} total)</div>
+          <div class="project-body ${expanded ? '' : 'collapsed'}" data-project="_orphan">
+            ${renderActionRows(openOrphans)}
+            ${doneOrphans.length > 0 ? renderActionRows(doneOrphans) : ''}
+          </div>
+        `;
+        root.appendChild(section);
+      }
+    }
+
+    function renderAllActions(root) {
+      const filtered = actions.filter(a => matchesSearch(a.text) || matchesSearch(a.project_name));
+      if (filtered.length === 0) {
+        root.innerHTML = '<div class="empty-state">No actions found.</div>';
+        return;
+      }
+      root.innerHTML = renderActionRows(filtered, true);
+    }
+
+    function renderFlagged(root) {
+      const flagged = actions.filter(a => a.flagged && !a.completed);
+      if (flagged.length === 0) {
+        root.innerHTML = '<div class="empty-state">No flagged actions.</div>';
+        return;
+      }
+      root.innerHTML = renderActionRows(flagged, true);
+    }
+
+    function renderActionRows(items, showProject = false) {
+      return items.map(a => `
+        <div class="action-row ${a.completed ? 'completed' : ''}" data-action-fid="${a.fid}">
+          <div class="action-check ${a.completed ? 'checked' : ''}" data-toggle="${a.fid}" title="Toggle complete">&#10003;</div>
+          <div class="action-content">
+            <div class="action-text">${esc(a.text)}</div>
+            <div class="action-sub">
+              <span class="action-fid">${esc(a.fid)}</span>
+              ${a.status !== 'open' && a.status !== 'done' ? `<span class="badge badge-${a.status}">${a.status}</span>` : ''}
+              ${showProject && a.project_name ? `<span>${esc(a.project_name)}</span>` : ''}
+              ${a.due ? `<span>due ${esc(a.due)}</span>` : ''}
+              ${a.notes ? `<span style="cursor:pointer;color:#7048e8;" data-notes="${a.fid}">notes</span>` : ''}
+            </div>
+          </div>
+          <span class="flag ${a.flagged ? '' : 'unflagged'}" data-flag="${a.fid}" title="Toggle flag">&#9873;</span>
+        </div>
+      `).join('');
+    }
+
+    function filterProjects() {
+      let filtered = projects;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(p =>
+          p.name.toLowerCase().includes(q) ||
+          (p.area && p.area.toLowerCase().includes(q)) ||
+          actions.some(a => a.project_fid === p.fid && a.text.toLowerCase().includes(q))
+        );
+      }
+      return filtered;
+    }
+
+    function matchesSearch(text) {
+      if (!searchQuery) return true;
+      return text && text.toLowerCase().includes(searchQuery.toLowerCase());
+    }
+
+    function esc(s) {
+      if (!s) return '';
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // Simple markdown → HTML renderer
+    function renderMarkdown(text) {
+      if (!text) return '<em style="color:#5c5f66">(no notes)</em>';
+      let html = esc(text);
+
+      // Code blocks (``` ... ```)
+      html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+        return `<pre><code>${code.trim()}</code></pre>`;
+      });
+
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // Headers
+      html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+      // Bold and italic
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+      // Horizontal rules
+      html = html.replace(/^---+$/gm, '<hr>');
+
+      // Blockquotes
+      html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+
+      // Unordered lists — group consecutive lines
+      html = html.replace(/((?:^- .+$\n?)+)/gm, (block) => {
+        const items = block.trim().split('\n').map(l => `<li>${l.replace(/^- /, '')}</li>`).join('');
+        return `<ul>${items}</ul>`;
+      });
+
+      // Ordered lists
+      html = html.replace(/((?:^\d+\. .+$\n?)+)/gm, (block) => {
+        const items = block.trim().split('\n').map(l => `<li>${l.replace(/^\d+\. /, '')}</li>`).join('');
+        return `<ol>${items}</ol>`;
+      });
+
+      // Checkbox lists
+      html = html.replace(/<li>\[x\] /g, '<li>&#9745; ');
+      html = html.replace(/<li>\[ \] /g, '<li>&#9744; ');
+
+      // Paragraphs — double newlines
+      html = html.replace(/\n\n+/g, '</p><p>');
+      // Single newlines inside paragraphs
+      html = html.replace(/\n/g, '<br>');
+
+      // Wrap in paragraph if not starting with block element
+      if (!/^<(h[1-4]|pre|ul|ol|blockquote|hr)/.test(html)) {
+        html = '<p>' + html + '</p>';
+      }
+
+      // Clean up empty paragraphs around block elements
+      html = html.replace(/<p><(h[1-4]|pre|ul|ol|blockquote|hr)/g, '<$1');
+      html = html.replace(/<\/(h[1-4]|pre|ul|ol|blockquote)><\/p>/g, '</$1>');
+
+      return html;
+    }
+
+    // Notes panel
+    let editingFid = null;
+    let editMode = false;
+
+    function showNotes(fid) {
+      const a = actions.find(x => x.fid === fid);
+      if (!a) return;
+      editingFid = fid;
+      editMode = false;
+
+      document.getElementById('notes-title').textContent = a.text;
+      document.getElementById('notes-meta').innerHTML = [
+        `<span>${esc(a.fid)}</span>`,
+        a.project_name ? `<span>${esc(a.project_name)}</span>` : '',
+        `<span class="badge badge-${a.status || (a.completed ? 'done' : 'open')}">${a.status || (a.completed ? 'done' : 'open')}</span>`,
+        a.due ? `<span>Due: ${esc(a.due)}</span>` : '',
+        a.created ? `<span>Created: ${esc(a.created)}</span>` : '',
+      ].filter(Boolean).join('');
+
+      renderEditBar(a);
+      document.getElementById('notes-body').innerHTML = renderMarkdown(a.notes);
+      document.getElementById('notes-panel').classList.add('open');
+    }
+
+    function renderEditBar(a) {
+      const status = a.status || (a.completed ? 'done' : 'open');
+      document.getElementById('notes-edit-bar').innerHTML = `
+        <button class="edit-btn ${editMode ? 'active' : ''}" id="toggle-edit">
+          ${editMode ? 'Preview' : 'Edit'}
+        </button>
+        <select class="status-select" id="status-select">
+          <option value="open" ${status === 'open' ? 'selected' : ''}>Open</option>
+          <option value="in-progress" ${status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+          <option value="blocked" ${status === 'blocked' ? 'selected' : ''}>Blocked</option>
+          <option value="deferred" ${status === 'deferred' ? 'selected' : ''}>Deferred</option>
+          <option value="done" ${status === 'done' ? 'selected' : ''}>Done</option>
+        </select>
+        ${editMode ? '<button class="edit-btn save" id="save-btn">Save</button>' : ''}
+        <span class="save-indicator" id="save-indicator">Saved</span>
+      `;
+    }
+
+    function enterEditMode() {
+      const a = actions.find(x => x.fid === editingFid);
+      if (!a) return;
+      editMode = true;
+      renderEditBar(a);
+
+      const titleEl = document.getElementById('notes-title');
+      titleEl.innerHTML = `<input class="edit-title-input" id="edit-title" value="${esc(a.text)}">`;
+
+      document.getElementById('notes-body').innerHTML =
+        `<textarea class="edit-notes-textarea" id="edit-notes">${esc(a.notes || '')}</textarea>`;
+      document.getElementById('edit-notes').focus();
+    }
+
+    function exitEditMode() {
+      const a = actions.find(x => x.fid === editingFid);
+      if (!a) return;
+      editMode = false;
+      renderEditBar(a);
+      document.getElementById('notes-title').textContent = a.text;
+      document.getElementById('notes-body').innerHTML = renderMarkdown(a.notes);
+    }
+
+    async function saveAction() {
+      const a = actions.find(x => x.fid === editingFid);
+      if (!a) return;
+
+      const titleInput = document.getElementById('edit-title');
+      const notesInput = document.getElementById('edit-notes');
+      const updates = {};
+
+      if (titleInput && titleInput.value !== a.text) {
+        updates.text = titleInput.value;
+        a.text = titleInput.value;
+      }
+      if (notesInput && notesInput.value !== (a.notes || '')) {
+        updates.notes = notesInput.value;
+        a.notes = notesInput.value;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await fetch(`/api/action/${encodeURIComponent(editingFid)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates),
+        });
+        flashSaved();
+        render();
+      }
+      exitEditMode();
+    }
+
+    async function updateStatus(newStatus) {
+      const a = actions.find(x => x.fid === editingFid);
+      if (!a) return;
+      const completed = newStatus === 'done' ? 1 : 0;
+      await fetch(`/api/action/${encodeURIComponent(editingFid)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus, completed }),
+      });
+      a.status = newStatus;
+      a.completed = completed;
+      // Update meta badge
+      document.getElementById('notes-meta').innerHTML = [
+        `<span>${esc(a.fid)}</span>`,
+        a.project_name ? `<span>${esc(a.project_name)}</span>` : '',
+        `<span class="badge badge-${newStatus}">${newStatus}</span>`,
+        a.due ? `<span>Due: ${esc(a.due)}</span>` : '',
+        a.created ? `<span>Created: ${esc(a.created)}</span>` : '',
+      ].filter(Boolean).join('');
+      flashSaved();
+      render();
+    }
+
+    function flashSaved() {
+      const el = document.getElementById('save-indicator');
+      if (!el) return;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1500);
+    }
+
+    // Events
+    document.getElementById('tabs').addEventListener('click', e => {
+      const tab = e.target.closest('.tab');
+      if (!tab) return;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentView = tab.dataset.view;
+
+      // Show/hide filter bar based on view
+      const fb = document.getElementById('filter-bar');
+      fb.style.display = currentView === 'projects' ? 'flex' : (currentView === 'actions' ? 'flex' : 'none');
+      render();
+    });
+
+    document.getElementById('filter-bar').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentStatus = btn.dataset.status;
+      // Reload projects with new status
+      const statusParam = currentStatus === 'all' ? 'active' : currentStatus;
+      if (currentStatus === 'all') {
+        Promise.all(['active', 'done', 'paused', 'dropped', 'someday'].map(s =>
+          fetch(`/api/projects?status=${s}`).then(r => r.json())
+        )).then(results => {
+          projects = results.flat();
+          render();
+        });
+      } else {
+        fetch(`/api/projects?status=${currentStatus}`).then(r => r.json()).then(data => {
+          projects = data;
+          render();
+        });
+      }
+    });
+
+    document.getElementById('search').addEventListener('input', e => {
+      searchQuery = e.target.value;
+      render();
+    });
+
+    // Delegate clicks on content
+    document.getElementById('content').addEventListener('click', e => {
+      // Project header toggle
+      const header = e.target.closest('.project-header, .orphan-header');
+      if (header) {
+        const fid = header.dataset.fid;
+        if (expandedProjects.has(fid)) expandedProjects.delete(fid);
+        else expandedProjects.add(fid);
+        const body = header.nextElementSibling;
+        if (body) body.classList.toggle('collapsed');
+        return;
+      }
+
+      // Toggle complete
+      const check = e.target.closest('[data-toggle]');
+      if (check) {
+        const fid = check.dataset.toggle;
+        const a = actions.find(x => x.fid === fid);
+        if (!a) return;
+        const newVal = a.completed ? 0 : 1;
+        fetch(`/api/action/${encodeURIComponent(fid)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ completed: newVal, status: newVal ? 'done' : 'open' }),
+        }).then(() => {
+          a.completed = newVal;
+          a.status = newVal ? 'done' : 'open';
+          render();
+        });
+        return;
+      }
+
+      // Toggle flag
+      const flag = e.target.closest('[data-flag]');
+      if (flag) {
+        const fid = flag.dataset.flag;
+        const a = actions.find(x => x.fid === fid);
+        if (!a) return;
+        const newVal = a.flagged ? 0 : 1;
+        fetch(`/api/action/${encodeURIComponent(fid)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ flagged: newVal }),
+        }).then(() => {
+          a.flagged = newVal;
+          render();
+        });
+        return;
+      }
+
+      // Show notes
+      const notes = e.target.closest('[data-notes]');
+      if (notes) {
+        showNotes(notes.dataset.notes);
+        return;
+      }
+    });
+
+    // Notes panel edit bar events (delegated)
+    document.getElementById('notes-edit-bar').addEventListener('click', e => {
+      if (e.target.id === 'toggle-edit') {
+        if (editMode) exitEditMode();
+        else enterEditMode();
+      }
+      if (e.target.id === 'save-btn') {
+        saveAction();
+      }
+    });
+    document.getElementById('notes-edit-bar').addEventListener('change', e => {
+      if (e.target.id === 'status-select') {
+        updateStatus(e.target.value);
+      }
+    });
+
+    // Close notes panel
+    document.getElementById('notes-close').addEventListener('click', () => {
+      editMode = false;
+      editingFid = null;
+      document.getElementById('notes-panel').classList.remove('open');
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        editMode = false;
+        editingFid = null;
+        document.getElementById('notes-panel').classList.remove('open');
+      }
+      // Cmd/Ctrl+S to save while editing
+      if ((e.metaKey || e.ctrlKey) && e.key === 's' && editMode) {
+        e.preventDefault();
+        saveAction();
+      }
+    });
+
+    // Init
+    load();
+  </script>
+</body>
+</html>

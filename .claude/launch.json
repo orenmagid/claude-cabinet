@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "work-tracker",
+      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeArgs": ["templates/scripts/work-tracker-server.mjs", "--db", "pib.db"],
+      "port": 3458,
+      "autoPort": true
+    }
+  ]
+}
