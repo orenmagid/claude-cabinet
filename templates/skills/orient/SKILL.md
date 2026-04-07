@@ -30,6 +30,9 @@ related:
     path: .claude/skills/orient/phases/cabinet.md
     role: "Project-specific: which cabinet members to activate"
   - type: file
+    path: .claude/skills/orient/phases/skills-menu.md
+    role: "Project-specific: what skills to show after briefing"
+  - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
 ---
@@ -237,7 +240,23 @@ context-aware presentation modes.
 in steps 1-6: project state, work items needing attention, any health
 issues found, maintenance results.
 
-### 8. Discover Custom Phases
+### 8. Show Available Skills (presentation)
+
+After the briefing, show the user what skills are available. This
+serves the same purpose as a menu at a restaurant — you can't order
+what you don't know exists.
+
+**Default (absent/empty):** Invoke the `/menu` skill. This dynamically
+discovers all skills in `.claude/skills/` (both CC upstream and project-
+specific), reads their frontmatter, and presents them grouped by
+auto-invocable vs manual. It also suggests which skills are most
+relevant given current context.
+
+Read `phases/skills-menu.md` for project-specific overrides (e.g.,
+highlighting certain skills, suppressing others, or changing the
+presentation format).
+
+### 9. Discover Custom Phases
 
 After running the core phases above, check for any additional phase
 files in `phases/` that the skeleton doesn't define. These are project-
@@ -245,7 +264,7 @@ specific extensions. Each custom phase file declares its position in the
 workflow (e.g., "runs after work scan, before briefing"). Execute them
 at their declared position.
 
-### 9. Name the Session
+### 10. Name the Session
 
 Rename the session so the sidebar is scannable. Every session that starts
 with `/orient` looks identical in the history — naming fixes this.
@@ -265,6 +284,7 @@ stated a focus, ask.
 | `auto-maintenance.md` | Default: omega memory hygiene | Recurring session-start tasks |
 | `cabinet.md` | Skip | Which cabinet members to activate |
 | `briefing.md` | Default: simple summary | How to present orientation |
+| `skills-menu.md` | Default: invoke /menu | What skills to show and how |
 
 ## Quick Mode
 
@@ -275,7 +295,7 @@ phases always run because they keep the system healthy.
 
 - **Core phases** (always run): context, data-sync, work-scan,
   health-checks, auto-maintenance, cabinet
-- **Presentation phases** (skippable): briefing
+- **Presentation phases** (skippable): briefing, skills-menu
 
 A project that wants a quick orient variant skips the briefing phase
 and outputs a one-line confirmation instead.
@@ -292,7 +312,6 @@ Examples of phases mature projects add:
 - Command queue processing (check for instructions from external UIs)
 - Deferred item evaluation (re-check trigger conditions on paused work)
 - Time-aware briefing modes (first session of day vs. returning session)
-- Proactive skill suggestions (surface tools relevant to current state)
 - Calendar integration (upcoming events that need preparation)
 
 ## Calibration
