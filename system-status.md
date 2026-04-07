@@ -26,13 +26,16 @@
 - Drift detection: `cc-drift-check.cjs` compares file hashes against manifest
 - Semantic memory module: omega-memory backend, project-scoped tiered retrieval, /memory skill
 - Python venv setup: auto-discovers Python 3.11+, creates venv at ~/.claude-cabinet/omega-venv/
-- Memory hooks: SessionStart (recall), PostCompact (auto-capture)
+- Memory: omega native hooks (5 hooks in global settings), slimmed adapter (4 commands)
+- Memory maintenance: consolidate (every session), compact + discover_connections + backup (weekly)
+- Knowledge graph: traverse, link, contradiction detection, auto-relate on store
+- Historian memory health measurement: growth, connectivity, contradictions, retrieval quality
 - Dogfooded: installed on itself (full install, all 9 modules)
 - Split briefing files for dogfood install: identity, architecture, jurisdictions, cabinet, work-tracking
 
 ## What's Active
 
-- Published at v0.8.5 on npm as `create-claude-cabinet`
+- Published at v0.9.0 on npm as `create-claude-cabinet`
 - One downstream consumer: Flow (v0.8.5, 27 upstream + 6 project-specific cabinet members)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)

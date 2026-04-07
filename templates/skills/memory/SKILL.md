@@ -109,11 +109,13 @@ echo '{"text": "what to remember", "type": "preference"}' | \
 ```
 
 Pick the type based on what the user said:
-- `decision` — they made a choice and want it recorded
-- `lesson` — they learned something
-- `preference` — they want something done a certain way
-- `constraint` — a limitation or prerequisite
-- `pattern` — a convention or recurring approach
+- `decision` — they made a choice and want it recorded (permanent)
+- `lesson` — they learned something (maps to `lesson_learned`, permanent)
+- `preference` — they want something done a certain way (maps to `user_preference`, permanent)
+- `constraint` — a limitation or prerequisite (permanent)
+- `error` — a failure pattern to avoid (maps to `error_pattern`, permanent)
+
+The adapter maps friendly names to omega's native types for correct TTL.
 
 Confirm what was stored. After storing, check for similar existing memories
 and link them if relevant:

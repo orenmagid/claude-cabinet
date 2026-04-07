@@ -251,11 +251,64 @@ You are responsible for the health of the memory system:
    they can be catalogued — if the team keeps re-deriving solutions, if
    memory files are growing too large to scan, if conversation history
    search isn't surfacing what it should — advocate for better tooling.
-   This might mean:
-   - A new skill for structured lesson capture
-   - Better memory file organization (by domain, by date, by type)
-   - Improving search strategies or adding new query patterns
-   - A periodic "memory review" to prune, consolidate, and re-index
+
+### Memory Health Measurement
+
+When activated during audit or review, evaluate omega memory health:
+
+**Growth & Coverage:**
+```bash
+~/.claude-cabinet/omega-venv/bin/omega stats --json 2>&1
+```
+Check: Is the memory count growing session over session? Are all
+permanent types represented (decision, lesson_learned, user_preference,
+constraint, error_pattern)? Gaps suggest capture isn't working for
+certain categories.
+
+**Graph Connectivity:**
+```bash
+~/.claude-cabinet/omega-venv/bin/python3 -c "
+from omega import SQLiteStore
+s = SQLiteStore()
+import sqlite3
+conn = sqlite3.connect(s.db_path)
+total = conn.execute('SELECT COUNT(*) FROM memories').fetchone()[0]
+edges = s.edge_count()
+connected = conn.execute('SELECT COUNT(DISTINCT source_id) + COUNT(DISTINCT target_id) FROM memory_relationships').fetchone()[0]
+print(f'Memories: {total}, Edges: {edges}, Connected: {connected}/{total} ({100*connected//max(total,1)}%)')
+"
+```
+Target: >50% of memories should participate in at least one edge.
+Below 30% means discover_connections isn't running or memories are
+too diverse to auto-relate.
+
+**Contradiction Health:**
+```bash
+~/.claude-cabinet/omega-venv/bin/python3 -c "
+from omega import SQLiteStore
+s = SQLiteStore()
+contradictions = s.get_edges_by_type('contradicts')
+print(f'{len(contradictions)} contradiction(s) detected')
+for c in contradictions:
+    print(f'  {c[\"source_id\"]} <-> {c[\"target_id\"]} (confidence: {c[\"weight\"]:.2f})')
+"
+```
+Unresolved contradictions are technical debt in the knowledge graph.
+Surface them and recommend resolution.
+
+**Consolidation Effectiveness:**
+```bash
+~/.claude-cabinet/omega-venv/bin/omega consolidate --prune-days 30 2>&1
+```
+Check: Are duplicates accumulating? Are zero-access memories growing?
+If consolidation consistently prunes many entries, capture quality
+may need improvement (storing noise instead of signal).
+
+**Retrieval Quality (spot check):**
+Pick 2-3 recent decisions or lessons from the session. Query omega
+for each one. Does the query return the correct memory in the top 3
+results? If not, embeddings may be degraded or the memory text may
+be too generic to differentiate.
 
 ## Output Format
 
