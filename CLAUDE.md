@@ -35,7 +35,7 @@ for Claude Code projects. Small codebase: 7 files in `lib/`, templates in
 
 ## Claude Should Never
 
-- Add dependencies without discussing it first — the single-dependency
+- Add dependencies without discussing it first — the minimal-dependency
   footprint is intentional
 - Modify installed `.claude/skills/` files directly — edit the templates
   in `templates/` instead (installed copies are downstream)

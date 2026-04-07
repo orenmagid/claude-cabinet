@@ -220,6 +220,17 @@ Every cabinet member skill should have these sections:
 name: cabinet-{name}
 description: Rich 2-3 sentence description for ambient discovery
 user-invocable: false
+standing-mandate: audit, plan
+directives:
+  plan: >
+    One-sentence scoped task for this member during planning.
+  debrief: >
+    One-sentence scoped task for this member during debrief.
+files:
+  - "glob/pattern/*.ext"
+topics:
+  - keyword1
+  - keyword2
 ---
 
 # {Name}
@@ -229,9 +240,9 @@ What this expert thinks about. The analytical framework.
 What makes this cabinet member unique.
 
 ## Convening Criteria
-Files: glob patterns that trigger this cabinet member
-Topics: keywords that trigger this cabinet member
-Standing-mandate: which skill types always activate this cabinet member
+Files: glob patterns that trigger this cabinet member (also in frontmatter `files`)
+Topics: keywords that trigger this cabinet member (also in frontmatter `topics`)
+Standing-mandate: which contexts always activate this cabinet member (frontmatter `standing-mandate`)
 
 ## Research Method
 Where to get information, how to investigate, what to examine.

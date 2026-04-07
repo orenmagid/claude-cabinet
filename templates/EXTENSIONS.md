@@ -226,8 +226,8 @@ command queue processing (needed by any project with an async work queue).
 
 ## Writing Domain-Specific Cabinet Members
 
-CC ships 14 generic cabinet members. Flow has 19 additional domain-specific
-cabinet members. Here are three examples showing how to write your own.
+CC ships 27 generic cabinet members. Your project can add domain-specific
+cabinet members on top of these. Here are three examples showing how to write your own.
 
 ### Example 1: GTD (encoding domain expertise)
 

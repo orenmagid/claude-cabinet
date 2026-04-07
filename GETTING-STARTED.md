@@ -19,7 +19,7 @@ sessions, this helps.
 
 - **`/orient`** — start each session briefed. Claude reads project state,
   checks what's due, and tells you what needs attention.
-- **The cabinet** — 20 domain experts (security, performance,
+- **The cabinet** — 27 domain experts (security, performance,
   accessibility, architecture, etc.) who review your project and flag
   what you'd miss alone. They show up during audits and planning.
 - **`/debrief`** — end each session by closing the loop. Claude records
@@ -71,7 +71,7 @@ The installer handles everything:
 - If you don't have git or Node.js, it installs them (may ask for your
   Mac password — that's normal)
 - It sets up a git repository in your folder if there isn't one
-- It installs the full cabinet: session loop, 20 expert members,
+- It installs the full cabinet: session loop, 27 expert members,
   planning tools, hooks, and triage system
 - It creates a task database for tracking work between sessions
 
@@ -141,6 +141,8 @@ Type `/menu` to see everything available. Here are the highlights:
 | `/plan` | Create a structured plan — cabinet members critique it before you build |
 | `/audit` | Convene the cabinet for a full quality review of your project |
 | `/investigate` | Systematically explore a question or problem |
+| `/cabinet` | Browse your expert cabinet members or consult one by name |
+| `/work-tracker` | Open the work tracking UI to review projects and tasks |
 | `/orient-quick` | Fast version of orient — just the essentials |
 | `/debrief-quick` | Fast version of debrief — just close things out |
 

@@ -18,7 +18,7 @@
 - Conversational onboard, seed, and cc-upgrade skills
 - Link/unlink skills for local dev workflow
 - Publish skill (CC-source-repo only, not shipped to consumers)
-- Debrief skeleton checks briefing freshness by default (Step 4)
+- Record-keeper handles doc freshness during debrief cabinet consultations (Step 3)
 - cc-health Check 6 has concrete cross-references (ccrc vs briefing, pib-db vs claims)
 - Extract skill for proposing upstream extraction from consuming projects
 - Upstream feedback loop: debrief phase auto-surfaces CC friction from consuming projects

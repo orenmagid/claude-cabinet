@@ -7,7 +7,7 @@ opinionated process infrastructure for Claude Code projects. It's a Node CLI
 that copies skill templates, hooks, and scripts into a target project's `.claude/`
 directory, then uses a conversational `/onboard` skill to generate project-specific
 briefings. The audience is anyone using Claude Code — developers and non-developers
-alike. The codebase is small: ~6 JS files in `lib/`, templates in `templates/`.
+alike. The codebase is small: 7 JS files in `lib/`, templates in `templates/`.
 
 ## Core Principles
 

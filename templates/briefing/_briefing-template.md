@@ -74,19 +74,26 @@ Which cabinet members need which briefing files (identity is always loaded):
 | cc-health             |     |  x  |  x  |     |     |
 | data-integrity        |  x  |  x  |     |     |  x  |
 | debugger              |  x  |     |     |     |     |
-| record-keeper         |     |  x  |     |     |     |
+| framework-quality     |     |  x  |     |     |     |
+| goal-alignment        |     |     |     |     |     |
 | historian             |  x  |     |     |     |     |
-| process-therapist     |     |  x  |  x  |     |     |
-| small-screen          |     |  x  |     |     |     |
+| information-design    |     |  x  |     |     |     |
+| mantine-quality       |     |  x  |     |     |     |
 | organized-mind        |  x  |     |     |     |     |
-| speed-freak           |  x  |  x  |     |     |     |
-| workflow-cop          |     |  x  |     |     |     |
+| process-therapist     |     |  x  |  x  |     |     |
 | qa                    |  x  |  x  |     |     |     |
-| security              |  x  |  x  |     |     |  x  |
+| record-keeper         |     |  x  |     |     |     |
 | roster-check          |     |     |  x  |     |     |
-| system-advocate        |     |     |  x  |     |     |
+| security              |  x  |  x  |     |     |  x  |
+| small-screen          |     |  x  |     |     |     |
+| speed-freak           |  x  |  x  |     |     |     |
+| system-advocate       |     |     |  x  |     |     |
 | technical-debt        |  x  |     |     |     |     |
+| ui-experimentalist    |     |  x  |     |     |     |
 | usability             |     |  x  |     |     |     |
+| user-advocate         |     |  x  |     |     |     |
+| vision                |     |     |     |     |     |
+| workflow-cop          |     |  x  |     |     |     |
 
 ## Domain Extension Files
 
