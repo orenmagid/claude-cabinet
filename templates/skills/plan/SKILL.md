@@ -246,7 +246,16 @@ of phase file content.
 Read `phases/work-tracker.md` for how to file the approved plan as a
 work item in your project's tracking system.
 
-**Skip (absent/empty).** Present the plan in conversation for the user
+**Default (absent/empty):** If `scripts/pib-db.js` exists, file the
+approved plan as a pib-db action. Use the plan title as the action text
+and the full plan (with surface area, acceptance criteria, etc.) as the
+notes. If the plan belongs to an existing project, associate it:
+
+```bash
+node scripts/pib-db.js create-action --text "<plan title>" --project "<project fid>" --notes "<full plan>"
+```
+
+If pib-db doesn't exist, present the plan in conversation for the user
 to file manually. But note: plans that live only in conversation context
 will be lost — they need to be persisted somewhere durable.
 
@@ -268,7 +277,7 @@ declared position.
 | `cabinet-critique.md` | Default: match by convening criteria | Which cabinet members, special rules |
 | `completeness-check.md` | Default: three generic checks | Domain-specific completeness rules |
 | `present.md` | Default: inline in conversation | How and where to present |
-| `work-tracker.md` | Skip | How to file work items |
+| `work-tracker.md` | Default: file to pib-db | How to file work items |
 | `calibration-examples.md` | Default: narrative only | Detailed before/after plan examples |
 
 ## Principles

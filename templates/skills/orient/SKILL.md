@@ -122,9 +122,64 @@ Read `phases/work-scan.md` for what work items to check. This includes
 whatever the project uses to track work: a backlog, task list, inbox,
 queue, or issue tracker.
 
-**Skip (absent/empty).** But note: without work scanning, orient can
-only report on project state, not on what needs doing. This phase is
-what connects orientation to action.
+**Default (absent/empty):** If `scripts/pib-db.js` exists, run the
+standard work scan:
+
+1. **Active projects and open actions:**
+   ```bash
+   node scripts/pib-db.js query "
+     SELECT p.fid, p.name,
+       (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) as open_actions
+     FROM projects p
+     WHERE p.status = 'active' AND p.deleted_at IS NULL
+     ORDER BY open_actions DESC
+   "
+   ```
+
+2. **Flagged actions** (prioritized items needing attention):
+   ```bash
+   node scripts/pib-db.js query "
+     SELECT a.fid, a.text, p.name as project
+     FROM actions a
+     LEFT JOIN projects p ON a.project_fid = p.fid
+     WHERE a.flagged = 1 AND a.completed = 0 AND a.deleted_at IS NULL
+   "
+   ```
+
+3. **Staleness detection** — flag projects that need attention:
+
+   **Completion candidates** — active projects where all actions are done:
+   ```bash
+   node scripts/pib-db.js query "
+     SELECT p.fid, p.name
+     FROM projects p
+     WHERE p.status = 'active' AND p.deleted_at IS NULL
+       AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid) > 0
+       AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) = 0
+   "
+   ```
+
+   **Stale projects** — active projects with no action completed in 14+ days:
+   ```bash
+   node scripts/pib-db.js query "
+     SELECT p.fid, p.name,
+       MAX(a.completed_at) as last_completion
+     FROM projects p
+     LEFT JOIN actions a ON a.project_fid = p.fid AND a.completed = 1
+     WHERE p.status = 'active' AND p.deleted_at IS NULL
+       AND (SELECT COUNT(*) FROM actions a2 WHERE a2.project_fid = p.fid AND a2.completed = 0 AND a2.deleted_at IS NULL) > 0
+     GROUP BY p.fid
+     HAVING last_completion < date('now', '-14 days')
+       OR last_completion IS NULL
+   "
+   ```
+
+   Surface in briefing as actionable signals:
+   - "N projects may be ready to close (0 open actions)"
+   - "N projects have had no activity in 14+ days"
+
+If pib-db doesn't exist, skip with no warning — the project may use
+a different work tracking system configured in `phases/work-scan.md`.
 
 ### 4. Health Checks (core)
 
@@ -202,7 +257,7 @@ stated a focus, ask.
 |-------|----------|-------------------|
 | `context.md` | Default: read CLAUDE.md, status, memory | What files and state to load |
 | `data-sync.md` | Skip | How to sync remote data |
-| `work-scan.md` | Skip | What work items to check |
+| `work-scan.md` | Default: pib-db scan + staleness detection | What work items to check |
 | `health-checks.md` | Skip | System health checks |
 | `auto-maintenance.md` | Skip | Recurring session-start tasks |
 | `cabinet.md` | Skip | Which cabinet members to activate |

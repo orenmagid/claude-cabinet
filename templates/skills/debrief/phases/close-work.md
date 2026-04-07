@@ -86,3 +86,36 @@ When closing an item that has documented sub-phases or next steps in its
 notes, create new items for each. Known work that lives only in completed
 items' notes will be forgotten. There is no "later" — create it now.
 -->
+
+## Project Completion Scan
+
+After closing individual actions, check for projects that may be ready
+to complete. A project with actions where all are done is finished —
+leaving it active is stale state that erodes trust in the work tracker.
+
+When using pib-db (default):
+
+```bash
+node scripts/pib-db.js query "
+  SELECT p.fid, p.name,
+    (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid) as total,
+    (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 1) as done
+  FROM projects p
+  WHERE p.status = 'active'
+    AND p.deleted_at IS NULL
+    AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid) > 0
+    AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) = 0
+"
+```
+
+For each result: all actions are complete. Propose completing the project:
+- Show the project name and action count (e.g., "prj:abc — My Project (5/5 actions done)")
+- Ask the user to confirm before closing
+- On confirmation: `node scripts/pib-db.js query "UPDATE projects SET status = 'done', completed_at = date('now') WHERE fid = '<fid>'"`
+
+**Design notes:**
+- Projects with zero total actions are excluded — they may be containers
+  or newly created, not "done."
+- This runs AFTER individual action closing, so newly-completed actions
+  from this session are counted.
+- If pib-db doesn't exist, skip this check.
