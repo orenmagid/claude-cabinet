@@ -12,6 +12,12 @@ briefing:
   - _briefing-architecture.md
 standing-mandate: plan, execute, orient, debrief
 directives:
+  plan: >
+    Check prior art. Have we attempted something similar before? What
+    worked or failed? Surface relevant decisions and patterns.
+  execute: >
+    Flag if this code repeats a known mistake or contradicts an
+    established pattern.
   orient: >
     Review the loaded context. Surface 1-3 prior decisions or lessons
     most relevant to today's likely work. Keep it brief — facts only,

@@ -11,7 +11,14 @@ briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
-standing-mandate: audit, plan
+standing-mandate: audit, plan, investigate
+directives:
+  plan: >
+    Evaluate structural fit. Does this plan compose well with existing
+    architecture, or introduce unnecessary coupling or layering violations?
+  investigate: >
+    Guide where to look. Which layers, components, and boundaries are
+    most relevant to this investigation?
 ---
 
 # Architecture Cabinet Member

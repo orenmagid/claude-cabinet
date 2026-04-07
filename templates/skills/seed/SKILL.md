@@ -102,7 +102,21 @@ phase file). Projects override this phase to add domain-specific signals
 compliance cabinet member; a financial project might map payment libraries
 to a financial-integrity cabinet member.
 
-### 2. Evaluate Existing Cabinet Members
+### 2. Cabinet Consultations
+
+Before evaluating gaps, check if any cabinet members have relevant
+context. Read `.claude/skills/_index.json` and filter to entries where
+`standingMandate` includes `"seed"` and `directives.seed` exists.
+Spawn matching members as agents in parallel, passing the scan results
+from step 1.
+
+Include their findings in the evaluation step — a roster-check member
+might identify coverage gaps, a process-therapist might flag unhealthy
+existing members before you add new ones.
+
+If no members match or the index is missing, proceed directly.
+
+### 3. Evaluate Existing Cabinet Members
 
 Read `phases/evaluate-existing.md` for how to compare detected signals
 against the current cabinet members.
@@ -124,7 +138,7 @@ gaps to fill and which staleness to address. Not every technology needs
 a cabinet member — some are too minor, some are well-understood, some are
 covered by existing cabinet members with broader scope.
 
-### 3. Build New Cabinet Members
+### 4. Build New Cabinet Members
 
 Read `phases/build-member.md` for how to collaboratively build a
 new cabinet member with the user.
@@ -149,7 +163,7 @@ built with the user's input — "we use Mantine, we care about keyboard
 navigation, our users are on slow connections" — catches what actually
 matters.
 
-### 4. Maintain Existing Cabinet Members
+### 5. Maintain Existing Cabinet Members
 
 Read `phases/maintain.md` for how to review the health of existing
 cabinet members and recommend changes.

@@ -44,7 +44,18 @@ Bad questions (too vague — narrow first):
 - "How does the system work?" → Pick a specific subsystem
 - "Is the code good?" → That's /audit, not /investigate
 
-### 2. Observe (Gather Facts)
+### 2. Cabinet Consultations
+
+Before exploring, check if any cabinet members have relevant context.
+Read `.claude/skills/_index.json` and filter to entries where
+`standingMandate` includes `"investigate"` and `directives.investigate`
+exists. Spawn matching members as agents in parallel, passing the
+investigation question from step 1.
+
+If no members match or the index is missing, proceed directly to
+observation.
+
+### 3. Observe (Gather Facts)
 
 Collect raw data without interpreting it. Use the Explore agent or
 direct Grep/Glob/Read calls:
@@ -62,7 +73,7 @@ direct Grep/Glob/Read calls:
 **Output:** A bulleted list of concrete observations. Each observation
 should cite a specific file:line or data point.
 
-### 3. Hypothesize (Form Explanations)
+### 4. Hypothesize (Form Explanations)
 
 Based on observations, form 1-3 hypotheses that explain what you're seeing.
 
@@ -75,7 +86,7 @@ For each hypothesis:
 first explanation. If you only have one hypothesis, you're not investigating
 — you're confirming.
 
-### 4. Test (Verify)
+### 5. Test (Verify)
 
 For each hypothesis, actively seek the confirming AND refuting evidence
 you identified. This may involve:
@@ -87,7 +98,7 @@ you identified. This may involve:
 **Record results per hypothesis:** confirmed, refuted, or inconclusive
 (with what additional data would resolve it).
 
-### 5. Conclude
+### 6. Conclude
 
 Summarize findings in a structured report:
 

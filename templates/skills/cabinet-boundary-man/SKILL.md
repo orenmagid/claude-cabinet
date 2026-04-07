@@ -12,6 +12,10 @@ briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
 standing-mandate: execute
+directives:
+  execute: >
+    Watch for implicit boundary conditions, unguarded state transitions,
+    and silent exclusions in the code being written.
 ---
 
 # Boundary Man

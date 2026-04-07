@@ -10,6 +10,11 @@ briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
 standing-mandate: execute
+directives:
+  execute: >
+    Before code runs, verify prerequisites. Dependencies installed?
+    Environment configured? Migrations needed? Flag anything that will
+    surface as a runtime surprise.
 ---
 
 # Debugger Cabinet Member

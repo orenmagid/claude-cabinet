@@ -11,7 +11,12 @@ briefing:
   - _briefing-identity.md
   - _briefing-cabinet.md
   - _briefing-jurisdictions.md
-standing-mandate: audit
+standing-mandate: audit, seed
+directives:
+  seed: >
+    Before adding new members, evaluate whether existing members are
+    healthy and being used effectively. Are current members overlapping
+    or underperforming?
 files:
   - skills/**/*.md
   - skills/cabinet-*/_prompt-guide.md

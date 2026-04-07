@@ -10,7 +10,11 @@ user-invocable: false
 briefing:
   - _briefing-identity.md
   - _briefing-cabinet.md
-standing-mandate: audit
+standing-mandate: audit, seed
+directives:
+  seed: >
+    Identify coverage gaps. What expertise is the cabinet missing for
+    this project's current technology stack and workflow?
 files:
   - .claude/skills/**/*.md
   - CLAUDE.md

@@ -104,17 +104,21 @@ loop (Steps 4-5) and instead:
 Read `phases/cabinet.md` for which cabinet members to activate during
 execution, any always-on cabinet members, and any project-specific rules.
 
-**Default (absent/empty):** Read `.claude/skills/cabinet-*/SKILL.md`
-and select cabinet members whose convening criteria match:
-- **standing-mandate: execute** — always included
+**Default (absent/empty):** Use `.claude/skills/_index.json` to select
+cabinet members whose convening criteria match:
+- **`standingMandate` includes `"execute"`** — always included
 - **File patterns** — any file in the plan's surface area matches
 - **Topic keywords** — any keyword in the plan description matches
+
+Fall back to reading `cabinet-*/SKILL.md` if the index is missing.
 
 Err toward inclusion. A cabinet member that activates unnecessarily costs
 a few seconds; one that doesn't activate when needed costs rework.
 
 Prepare reusable briefing for agent prompts: read `_briefing.md` once and
-keep the essential facts ready to paste into each agent's prompt.
+keep the essential facts ready to paste into each agent's prompt. When a
+member has a `directives.execute`, include it in the agent prompt to
+sharpen their focus during execution checkpoints.
 
 If no cabinet members exist in the project, skip all checkpoint steps
 (3, 4b, 5) and execute the plan directly. Checkpoints add depth, not

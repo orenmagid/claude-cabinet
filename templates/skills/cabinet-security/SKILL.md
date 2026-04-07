@@ -12,6 +12,13 @@ briefing:
   - _briefing-jurisdictions.md
   - _briefing-api.md
 standing-mandate: audit, plan, execute
+directives:
+  plan: >
+    Check for security exposure. Does this plan handle auth, data access,
+    and input validation? Any secrets or credentials at risk?
+  execute: >
+    Watch for hardcoded secrets, missing auth checks, unvalidated input,
+    and accidental data exposure in the code being written.
 ---
 
 # Security Cabinet Member

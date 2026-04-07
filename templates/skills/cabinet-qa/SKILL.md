@@ -12,6 +12,13 @@ briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
 standing-mandate: plan, execute
+directives:
+  plan: >
+    Evaluate testability. Are acceptance criteria verifiable? What edge
+    cases and failure modes are missing from the plan?
+  execute: >
+    Verify each checkpoint against acceptance criteria. Flag untested
+    paths and regressions.
 ---
 
 # QA Cabinet Member

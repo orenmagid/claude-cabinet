@@ -14,6 +14,11 @@ briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
 standing-mandate: audit, plan
+directives:
+  plan: >
+    Evaluate cognitive load. Will this plan's result be understandable
+    and maintainable? Does it externalize complexity or pile it on the
+    operator?
 ---
 
 # The Organized Mind
