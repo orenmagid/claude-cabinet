@@ -30,6 +30,12 @@ Schema: `scripts/pib-db-schema.sql`
 Must stay in sync with: current version number, module count, cabinet member
 count, install methods (shell + npm), CLI flags, and what actually ships.
 
+`WORKFLOW-GUIDE.md` — comprehensive user journey guide. When to plan vs. just
+build, when to audit, how to use investigate, how the cabinet works in practice,
+how the system grows. Targeted at users who have installed and onboarded.
+
+`GETTING-STARTED.md` — step-by-step install guide for first-time users.
+
 `system-status.md` — what's built and what's active.
 Must reflect reality after every session (debrief updates it).
 

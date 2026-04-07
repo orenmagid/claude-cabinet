@@ -31,3 +31,8 @@ activate in (orient, debrief, plan, execute, investigate, seed) via
 frontmatter `standing-mandate` and provide scoped `directives` for each
 context. The skill index (`.claude/skills/_index.json`) enables fast
 lookup. Use `/cabinet` to browse members or consult one directly.
+
+**Project-level directive overlay:** `.claude/cabinet/directives-project.yaml`
+extends upstream member definitions with project-specific mandates and
+directives. Lets consuming projects customize member behavior without modifying
+upstream files. Merged at runtime alongside `committees-project.yaml`.

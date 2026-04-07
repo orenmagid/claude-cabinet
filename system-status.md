@@ -39,6 +39,8 @@
 - Scoped directives: 12 cabinet members declare per-context focused tasks (plan, execute, orient, debrief, investigate, seed)
 - Cabinet consultations wired into orient, debrief, investigate, and seed skeletons
 - Block scalar YAML parsing: parseFrontmatter handles `description: >` and `description: |` correctly
+- WORKFLOW-GUIDE.md: comprehensive user journey guide (when to plan, audit, investigate; how cabinet works)
+- Project-level directive overlay: `directives-project.yaml` in `.claude/cabinet/` extends upstream members with project-specific mandates without modifying upstream files
 
 ## What's Active
 
