@@ -11,6 +11,7 @@ briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
+standing-mandate: audit, plan
 ---
 
 # Architecture Cabinet Member

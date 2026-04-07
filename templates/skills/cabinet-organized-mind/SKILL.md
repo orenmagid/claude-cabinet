@@ -13,6 +13,7 @@ user-invocable: false
 briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
+standing-mandate: audit, plan
 ---
 
 # The Organized Mind

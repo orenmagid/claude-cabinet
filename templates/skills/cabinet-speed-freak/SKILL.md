@@ -12,6 +12,7 @@ briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
 interactive-only: true
+standing-mandate: audit
 ---
 
 # Speed Freak

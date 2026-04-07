@@ -10,6 +10,7 @@ user-invocable: false
 briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
+standing-mandate: audit
 ---
 
 # Technical Debt Cabinet Member

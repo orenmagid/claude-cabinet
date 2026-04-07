@@ -12,6 +12,7 @@ user-invocable: false
 briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
+standing-mandate: audit
 ---
 
 # Framework Quality

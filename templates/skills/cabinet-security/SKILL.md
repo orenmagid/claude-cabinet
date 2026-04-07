@@ -11,6 +11,7 @@ briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
   - _briefing-api.md
+standing-mandate: audit, plan, execute
 ---
 
 # Security Cabinet Member

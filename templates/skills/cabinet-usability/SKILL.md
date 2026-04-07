@@ -10,6 +10,7 @@ briefing:
   - _briefing-identity.md
   - _briefing-jurisdictions.md
 interactive-only: true
+standing-mandate: audit
 ---
 
 # Usability Cabinet Member
