@@ -3,7 +3,7 @@
 ## What's Built
 
 - CLI installer with interactive and flag-based module selection
-- 8 modules: session-loop, hooks, work-tracking, planning, compliance, audit, lifecycle, validate
+- 9 modules: session-loop, hooks, work-tracking, planning, compliance, audit, lifecycle, validate, memory
 - 3 install modes: Everything, Lean (`--lean`), Custom (interactive per-module)
 - Template copying with hash-based conflict detection and manifest tracking
 - Existing installs: add-only (no overwrite prompts), updates via `/cc-upgrade`
@@ -24,13 +24,16 @@
 - Upstream feedback loop: debrief phase auto-surfaces CC friction from consuming projects
 - Write protection: hook blocks edits to manifest-tracked files, prevents downstream drift
 - Drift detection: `cc-drift-check.cjs` compares file hashes against manifest
-- Dogfooded: installed on itself (full install, all 8 modules)
+- Semantic memory module: omega-memory backend, project-scoped tiered retrieval, /memory skill
+- Python venv setup: auto-discovers Python 3.11+, creates venv at ~/.claude-cabinet/omega-venv/
+- Memory hooks: SessionStart (recall), PostCompact (auto-capture)
+- Dogfooded: installed on itself (full install, all 9 modules)
 - Split briefing files for dogfood install: identity, architecture, jurisdictions, cabinet, work-tracking
 
 ## What's Active
 
-- Published at v0.7.5 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (v0.7.5, 27 upstream + 6 project-specific cabinet members)
+- Published at v0.8.5 on npm as `create-claude-cabinet`
+- One downstream consumer: Flow (v0.8.5, 27 upstream + 6 project-specific cabinet members)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)

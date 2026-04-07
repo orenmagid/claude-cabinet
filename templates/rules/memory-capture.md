@@ -51,7 +51,15 @@ Memory types: `decision`, `lesson`, `preference`, `constraint`, `pattern`
 
 Do NOT capture after every interaction. Capture when something worth
 remembering actually happens. Most messages in a session produce nothing
-worth storing. A typical session might generate 0-3 memories.
+worth storing.
 
-Over-capturing degrades retrieval quality. When in doubt, don't capture.
-The debrief sweep catches anything important that was missed.
+Cadence scales with session length and discovery density. A short
+focused session might produce 0-1 memories. A long session with
+multiple discoveries, corrections, and decisions could produce 5-10+.
+The right number is however many genuinely worth-remembering things
+happened — no artificial cap.
+
+Over-capturing degrades retrieval quality. The test: *"Would a future
+session benefit from knowing this?"* If yes, capture it. If it's just
+noise or ephemera, skip it. The debrief sweep catches anything
+important that was missed during the session.

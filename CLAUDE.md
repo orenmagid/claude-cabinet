@@ -1,13 +1,14 @@
 # Claude Cabinet — Project Instructions
 
 Node CLI package (`create-claude-cabinet`) that scaffolds process infrastructure
-for Claude Code projects. Small codebase: 6 files in `lib/`, templates in
-`templates/`. One dependency (`prompts`). No build step.
+for Claude Code projects. Small codebase: 7 files in `lib/`, templates in
+`templates/`. Two dependencies (`prompts`, `better-sqlite3`). No build step.
 
 ## Key Files
 
 - `lib/cli.js` — main orchestration, module definitions, all CLI logic
 - `lib/copy.js` — template copying with conflict detection
+- `lib/omega-setup.js` — Python discovery, venv creation, omega-memory install
 - `templates/skills/` — skill definitions (SKILL.md) and phase files
 - `templates/skills/onboard/` — conversational onboarding skill
 - `templates/skills/cabinet-*/` — 27 expert cabinet member definitions

@@ -66,14 +66,48 @@ to help you do your job.
    It stores decisions, lessons, preferences, and constraints with semantic
    retrieval — meaning you can search by concept, not just keyword.
 
+   **Querying** (search by meaning, not just keyword):
    ```bash
    echo '{"text": "your query here", "limit": 10}' | \
      ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
    ```
+   Queries use **tiered scoping** by default: project memories first,
+   then cross-project to fill remaining slots. Use `"scope": "project"`
+   for strict project-only, or `"scope": "all"` for global search.
+
+   **Storing** (when you discover something worth remembering):
+   ```bash
+   echo '{"text": "the lesson or decision", "type": "lesson"}' | \
+     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
+   ```
+   Stores are automatically tagged with the current project name.
+
+   Memory types: `decision` (architectural choices), `lesson` (gotchas,
+   discoveries), `preference` (user corrections), `constraint` (limitations
+   found), `pattern` (conventions established), `compaction` (auto-captured
+   from context compaction).
+
+   **Listing** (browse all memories with full IDs):
+   ```bash
+   echo '{"limit": 20}' | \
+     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py list
+   ```
+
+   **Deleting** (remove stale or incorrect memories):
+   ```bash
+   echo '{"id": "mem-077e6037742e"}' | \
+     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py delete
+   ```
+   Note: deletion requires the **full node_id** (e.g. `mem-077e6037742e`),
+   not the truncated display ID shown in `omega timeline`. Use `list` to
+   get full IDs.
+
+   Omega data lives at `~/.omega/omega.db` (SQLite). The `/memory` skill
+   gives users self-serve access to browse, search, and manage memories.
 
    Omega returns memories ranked by relevance. This is the richest source
-   of institutional memory when available. If omega is not available, skip
-   to source 1.
+   of institutional memory when available. If omega queries return nothing
+   or fail, fall through to source 1 (flat memory files).
 
 1. **Memory files** — `.claude/memory/*.md` and any project-level memory
    index (e.g., `MEMORY.md`). These are the distilled, catalogued lessons.
@@ -178,9 +212,10 @@ advocate for improvements.
 
 You are responsible for the health of the memory system:
 
-1. **After significant work:** Ensure lessons are captured in memory files.
-   If a session produced important context that isn't in any memory file,
-   create or update one.
+1. **After significant work:** Ensure lessons are captured. If omega is
+   available, store lessons there (they persist across sessions and support
+   semantic retrieval). If not, use flat memory files. If a session produced
+   important context that isn't captured anywhere, store it now.
 
 2. **Cataloguing:** Memory files should be indexed with clear one-line
    descriptions. A memory file that exists but isn't indexed is invisible

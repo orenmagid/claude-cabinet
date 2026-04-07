@@ -89,6 +89,18 @@ sessions, and project-specific context.
 - `.claude/memory/patterns/` — enforcement patterns from prior sessions.
   Scan the directory, read each pattern file. These are project-level
   feedback that guides behavior (what to avoid, what to keep doing).
+- **Omega semantic memory** — if `~/.claude-cabinet/omega-venv/bin/python3`
+  and `scripts/cabinet-memory-adapter.py` both exist, query omega for
+  relevant context:
+  ```bash
+  echo '{"text": "session context project status recent decisions", "limit": 10}' | \
+    ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
+  ```
+  Surface any relevant memories (decisions, lessons, constraints) that
+  inform the current session. If the venv is missing but `.ccrc.json`
+  lists the memory module as installed, warn the user:
+  > ⚠ Memory module is installed but omega venv is missing.
+  > Run `npx create-claude-cabinet` to restore it.
 
 The goal: build a mental model of where things stand before doing
 anything else.
