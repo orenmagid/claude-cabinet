@@ -13,8 +13,12 @@ briefing:
 standing-mandate: audit, debrief
 directives:
   debrief: >
-    Review this session's changed files. Check if any CLAUDE.md,
-    system-status, briefing, or memory files now contain stale claims.
+    Own all documentation state updates for this session. Two jobs:
+    (1) Staleness — check if any CLAUDE.md, README, system-status,
+    briefing, or memory files now contain claims that became wrong.
+    (2) Additions — check if this session built, changed, or published
+    anything that should be recorded in those files but isn't yet
+    (new capabilities, version bumps, count changes, new conventions).
     Fix what you find — don't create findings.
 files:
   - CLAUDE.md

@@ -210,20 +210,20 @@ to update. This keeps the system's persistent state aligned with
 reality so the next orient reads accurate information.
 
 **Division of labor with cabinet consultations (step 3):** If a
-record-keeper or similar doc-checking member ran in step 3, it handled
-**staleness detection** — finding claims in docs that became wrong.
-This step handles what members don't cover:
-- **Additions** — new capabilities, version bumps, new state that needs
-  recording (not stale claims, but missing claims)
+record-keeper or similar doc-checking member ran in step 3, it owns
+all documentation updates — both staleness (wrong claims) and additions
+(missing claims). This step handles only what isn't doc work:
 - **User-level state** — preferences, registry entries (see below)
-- **Project-specific state** — whatever `phases/update-state.md` defines
+- **Project-specific non-doc state** — whatever `phases/update-state.md`
+  defines beyond documentation
 
-Don't re-check what the members already fixed. Do check what they
-wouldn't know to add.
+If a record-keeper ran, don't duplicate its work on docs. If no
+record-keeper ran (no cabinet members, or none with a debrief mandate),
+fall back to the default below.
 
-**Default (absent/empty):** Check whether `system-status.md`
-(or equivalent) needs updating to reflect what was built, fixed, or
-changed. Also check the user-level state below.
+**Default (absent/empty, no record-keeper):** Check whether
+`system-status.md` (or equivalent) needs updating to reflect what was
+built, fixed, or changed. Also check the user-level state below.
 
 #### User-Level State
 
