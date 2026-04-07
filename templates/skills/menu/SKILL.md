@@ -56,6 +56,9 @@ whether they are auto-invocable or manual-only.
 
 - Do NOT hardcode any skill names or descriptions. Every entry must come
   from reading the actual SKILL.md files at discovery time.
+- **Exclude `cabinet-*` skills from the menu.** Individual cabinet members
+  are accessed through `/cabinet`, not listed alongside workflow skills.
+  The `/cabinet` skill itself DOES appear in the menu.
 - If a new skill is added to `.claude/skills/`, it automatically appears
   in the menu on the next invocation. No updates to this file needed.
 - If a SKILL.md has no description, show the skill name with "(no description)".
