@@ -166,7 +166,36 @@ When closing an item that has documented follow-on work (sub-phases,
 next steps, future enhancements), create new items for each NOW. Known
 work that lives only in completed items' notes will be forgotten.
 
-### 3. Auto-Maintenance (core)
+### 3. Cabinet Consultations (core)
+
+Spawn cabinet members whose `standing-mandate` includes `debrief`.
+This runs early — right after inventory and work-item closing — so
+members can do their work (update docs, check state, verify lessons)
+before subsequent phases duplicate that effort.
+
+**Discovery:** Read `.claude/skills/_index.json` and filter to entries
+where `standingMandate` includes `"debrief"`. Each matching entry has
+a `directives.debrief` field — this is the scoped task for that member.
+If the index is missing, fall back to reading `cabinet-*/SKILL.md`
+frontmatter for `standing-mandate` and `directives`.
+
+**For each matching member**, spawn an agent with:
+- The member's full SKILL.md (read from the `path` in the index)
+- The session inventory from step 1 (what changed)
+- The member's `directives.debrief` as the task
+
+Spawn in parallel where possible. If a member has no directive for
+`debrief`, skip it — a standing mandate without a directive is a data
+error, not a reason to give the member an open-ended task.
+
+**Cost control:** These are lightweight passes, not full audits. Each
+agent should complete in under 2 minutes. If a member's directive
+produces no findings or changes, it returns silently. Include their
+results in the report only when they surfaced or changed something.
+
+If no cabinet members match, skip silently and proceed.
+
+### 4. Auto-Maintenance (core)
 
 Read `phases/auto-maintenance.md` for recurring automated tasks that
 should run at session end. Same principle as orient's auto-maintenance:
@@ -174,11 +203,15 @@ operations that decay if left to human memory.
 
 **Skip (absent/empty).**
 
-### 4. Update State (core)
+### 5. Update State (core)
 
 Read `phases/update-state.md` for what state files and documentation
 to update. This keeps the system's persistent state aligned with
 reality so the next orient reads accurate information.
+
+**If cabinet consultations (step 3) included a record-keeper or similar
+doc-checking member**, review what it already fixed rather than
+re-checking the same files. Focus on anything the members didn't cover.
 
 **Default (absent/empty):** Check whether `system-status.md`
 (or equivalent) needs updating to reflect what was built, fixed, or
@@ -197,7 +230,7 @@ needs updating:
   description still match reality? If the project has evolved
   significantly, propose updating the registry entry.
 
-### 5. Health Checks (core)
+### 6. Health Checks (core)
 
 Read `phases/health-checks.md` for end-of-session health checks. These
 verify that the session's work didn't break anything and that the system
@@ -205,7 +238,7 @@ is in a good state for next time.
 
 **Skip (absent/empty).**
 
-### 6. Persist Work
+### 7. Persist Work
 
 Commit and push the session's changes. Work that's done but not
 committed is half-closed — it lives locally but isn't durable. Persist
@@ -215,7 +248,7 @@ while lessons go to memory (which may live outside the repo).
 Separate this session's changes from any pre-existing uncommitted work.
 Don't silently bundle unrelated changes.
 
-### 7. Record Lessons (core)
+### 8. Record Lessons (core)
 
 Read `phases/record-lessons.md` for how to capture what was learned.
 This is the second irreducible purpose of debrief — the first is
@@ -255,7 +288,7 @@ in the debrief report:
 > different destinations (memory/feedback vs finding database). Both
 > feed the enforcement pipeline, but through different channels.
 
-### 8. Upstream Feedback (core)
+### 9. Upstream Feedback (core)
 
 Read `phases/upstream-feedback.md`. This is an **instruction phase**
 shipped with CC — it tells Claude to reflect on whether the session
@@ -272,7 +305,7 @@ what was confusing, what needed a workaround.
 
 **This phase should not be skipped.** It's how CC learns from use.
 
-### 9. Skill Discovery (core)
+### 10. Skill Discovery (core)
 
 Silently reflect: did this session involve a workflow the user is
 likely to repeat? Not every session produces one — most don't. But
@@ -303,7 +336,7 @@ generalizable pattern, cabinet member, or convention? If so, mention
 `/extract` as an option for proposing it upstream to CC. This is
 rarer than project-specific skills.
 
-### 10. Cabinet Check (core)
+### 11. Cabinet Check (core)
 
 Silently reflect: is this project's expertise coverage still right
 for what it's actually doing?
@@ -368,7 +401,7 @@ If the user says no, move on. Don't re-suggest the same gap next
 session. Track declined suggestions in system-status.md or equivalent
 so you don't nag.
 
-### 11. Capture Loose Ends (core)
+### 12. Capture Loose Ends (core)
 
 Read `phases/loose-ends.md` for non-project items and environmental
 concerns to capture before closing. Sessions generate non-project
@@ -376,30 +409,6 @@ work — manual tasks, purchases, emails, configuration changes. If
 these aren't captured somewhere, they rely on human memory.
 
 **Skip (absent/empty).**
-
-### 12. Cabinet Consultations (core)
-
-Spawn cabinet members whose `standing-mandate` includes `debrief`.
-
-**Discovery:** Read `.claude/skills/_index.json` and filter to entries
-where `standingMandate` includes `"debrief"`. Each matching entry has
-a `directives.debrief` field — this is the scoped task for that member.
-If the index is missing, fall back to reading `cabinet-*/SKILL.md`
-frontmatter for `standing-mandate` and `directives`.
-
-**For each matching member**, spawn an agent with:
-- The member's full SKILL.md (read from the `path` in the index)
-- The session inventory from step 1 (what changed)
-- The member's `directives.debrief` as the task
-
-Spawn in parallel where possible. If a member has no directive for
-`debrief`, skip it — a standing mandate without a directive is a data
-error, not a reason to give the member an open-ended task.
-
-**Cost control:** These are lightweight passes, not full audits. Each
-agent should complete in under 2 minutes. If a member's directive
-produces no findings or changes, it returns silently. Include their
-results in the report only when they surfaced or changed something.
 
 ### 13. Discover Custom Phases
 
@@ -438,10 +447,10 @@ Phases are either **core** (maintain system state) or **presentation**
 (surface information for the user). For lightweight session closes,
 skip presentation phases. Core phases always run.
 
-- **Core phases** (always run): inventory, close-work, auto-maintenance,
-  update-state, health-checks, record-lessons, upstream-feedback,
-  skill-discovery, cabinet-check, loose-ends, cabinet-consultations,
-  persist work
+- **Core phases** (always run): inventory, close-work,
+  cabinet-consultations, auto-maintenance, update-state, health-checks,
+  persist-work, record-lessons, upstream-feedback, skill-discovery,
+  cabinet-check, loose-ends
 - **Presentation phases** (skippable): report
 
 A project that wants a quick debrief variant skips the report and
