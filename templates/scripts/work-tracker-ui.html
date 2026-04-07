@@ -286,6 +286,72 @@
     }
     .notes-body th { background: #2c2e33; color: #e9ecef; }
 
+    /* Editable controls in notes panel */
+    .notes-edit-bar {
+      padding: 8px 16px;
+      border-bottom: 1px solid #2c2e33;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .edit-btn {
+      padding: 3px 10px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #2c2e33;
+      color: #909296;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      transition: all 0.12s;
+    }
+    .edit-btn:hover { background: #373a40; color: #c1c2c5; }
+    .edit-btn.active { background: #7048e8; color: #fff; border-color: #7048e8; }
+    .edit-btn.save { background: #2b8a3e; color: #fff; border-color: #2b8a3e; }
+    .edit-btn.save:hover { background: #237032; }
+    .status-select {
+      padding: 3px 8px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #25262b;
+      color: #c1c2c5;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .edit-title-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #7048e8;
+      border-radius: 4px;
+      background: #1a1b1e;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+    }
+    .edit-notes-textarea {
+      width: 100%;
+      height: 100%;
+      padding: 14px 16px;
+      border: none;
+      background: transparent;
+      color: #c1c2c5;
+      font-size: 13px;
+      line-height: 1.7;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      resize: none;
+    }
+    .edit-notes-textarea:focus { outline: none; }
+    .save-indicator {
+      font-size: 11px;
+      color: #2b8a3e;
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .save-indicator.show { opacity: 1; }
+
     /* Orphan actions (no project) */
     .orphan-section {
       margin-bottom: 8px;
@@ -374,6 +440,7 @@
       <button class="notes-close" id="notes-close">&times;</button>
     </div>
     <div class="notes-meta" id="notes-meta"></div>
+    <div class="notes-edit-bar" id="notes-edit-bar"></div>
     <div class="notes-body" id="notes-body"></div>
   </div>
 
@@ -616,9 +683,15 @@
     }
 
     // Notes panel
+    let editingFid = null;
+    let editMode = false;
+
     function showNotes(fid) {
       const a = actions.find(x => x.fid === fid);
       if (!a) return;
+      editingFid = fid;
+      editMode = false;
+
       document.getElementById('notes-title').textContent = a.text;
       document.getElementById('notes-meta').innerHTML = [
         `<span>${esc(a.fid)}</span>`,
@@ -627,8 +700,110 @@
         a.due ? `<span>Due: ${esc(a.due)}</span>` : '',
         a.created ? `<span>Created: ${esc(a.created)}</span>` : '',
       ].filter(Boolean).join('');
+
+      renderEditBar(a);
       document.getElementById('notes-body').innerHTML = renderMarkdown(a.notes);
       document.getElementById('notes-panel').classList.add('open');
+    }
+
+    function renderEditBar(a) {
+      const status = a.status || (a.completed ? 'done' : 'open');
+      document.getElementById('notes-edit-bar').innerHTML = `
+        <button class="edit-btn ${editMode ? 'active' : ''}" id="toggle-edit">
+          ${editMode ? 'Preview' : 'Edit'}
+        </button>
+        <select class="status-select" id="status-select">
+          <option value="open" ${status === 'open' ? 'selected' : ''}>Open</option>
+          <option value="in-progress" ${status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+          <option value="blocked" ${status === 'blocked' ? 'selected' : ''}>Blocked</option>
+          <option value="deferred" ${status === 'deferred' ? 'selected' : ''}>Deferred</option>
+          <option value="done" ${status === 'done' ? 'selected' : ''}>Done</option>
+        </select>
+        ${editMode ? '<button class="edit-btn save" id="save-btn">Save</button>' : ''}
+        <span class="save-indicator" id="save-indicator">Saved</span>
+      `;
+    }
+
+    function enterEditMode() {
+      const a = actions.find(x => x.fid === editingFid);
+      if (!a) return;
+      editMode = true;
+      renderEditBar(a);
+
+      const titleEl = document.getElementById('notes-title');
+      titleEl.innerHTML = `<input class="edit-title-input" id="edit-title" value="${esc(a.text)}">`;
+
+      document.getElementById('notes-body').innerHTML =
+        `<textarea class="edit-notes-textarea" id="edit-notes">${esc(a.notes || '')}</textarea>`;
+      document.getElementById('edit-notes').focus();
+    }
+
+    function exitEditMode() {
+      const a = actions.find(x => x.fid === editingFid);
+      if (!a) return;
+      editMode = false;
+      renderEditBar(a);
+      document.getElementById('notes-title').textContent = a.text;
+      document.getElementById('notes-body').innerHTML = renderMarkdown(a.notes);
+    }
+
+    async function saveAction() {
+      const a = actions.find(x => x.fid === editingFid);
+      if (!a) return;
+
+      const titleInput = document.getElementById('edit-title');
+      const notesInput = document.getElementById('edit-notes');
+      const updates = {};
+
+      if (titleInput && titleInput.value !== a.text) {
+        updates.text = titleInput.value;
+        a.text = titleInput.value;
+      }
+      if (notesInput && notesInput.value !== (a.notes || '')) {
+        updates.notes = notesInput.value;
+        a.notes = notesInput.value;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        await fetch(`/api/action/${encodeURIComponent(editingFid)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates),
+        });
+        flashSaved();
+        render();
+      }
+      exitEditMode();
+    }
+
+    async function updateStatus(newStatus) {
+      const a = actions.find(x => x.fid === editingFid);
+      if (!a) return;
+      const completed = newStatus === 'done' ? 1 : 0;
+      await fetch(`/api/action/${encodeURIComponent(editingFid)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus, completed }),
+      });
+      a.status = newStatus;
+      a.completed = completed;
+      // Update meta badge
+      document.getElementById('notes-meta').innerHTML = [
+        `<span>${esc(a.fid)}</span>`,
+        a.project_name ? `<span>${esc(a.project_name)}</span>` : '',
+        `<span class="badge badge-${newStatus}">${newStatus}</span>`,
+        a.due ? `<span>Due: ${esc(a.due)}</span>` : '',
+        a.created ? `<span>Created: ${esc(a.created)}</span>` : '',
+      ].filter(Boolean).join('');
+      flashSaved();
+      render();
+    }
+
+    function flashSaved() {
+      const el = document.getElementById('save-indicator');
+      if (!el) return;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 1500);
     }
 
     // Events
@@ -731,12 +906,39 @@
       }
     });
 
+    // Notes panel edit bar events (delegated)
+    document.getElementById('notes-edit-bar').addEventListener('click', e => {
+      if (e.target.id === 'toggle-edit') {
+        if (editMode) exitEditMode();
+        else enterEditMode();
+      }
+      if (e.target.id === 'save-btn') {
+        saveAction();
+      }
+    });
+    document.getElementById('notes-edit-bar').addEventListener('change', e => {
+      if (e.target.id === 'status-select') {
+        updateStatus(e.target.value);
+      }
+    });
+
     // Close notes panel
     document.getElementById('notes-close').addEventListener('click', () => {
+      editMode = false;
+      editingFid = null;
       document.getElementById('notes-panel').classList.remove('open');
     });
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') document.getElementById('notes-panel').classList.remove('open');
+      if (e.key === 'Escape') {
+        editMode = false;
+        editingFid = null;
+        document.getElementById('notes-panel').classList.remove('open');
+      }
+      // Cmd/Ctrl+S to save while editing
+      if ((e.metaKey || e.ctrlKey) && e.key === 's' && editMode) {
+        e.preventDefault();
+        saveAction();
+      }
     });
 
     // Init
