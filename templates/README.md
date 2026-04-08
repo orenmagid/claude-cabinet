@@ -11,12 +11,11 @@ templates, see [EXTENSIONS.md](EXTENSIONS.md).
 
 ## What's Here
 
-### Hooks (5)
+### Hooks (4)
 
 | Artifact | What It Does |
 |----------|-------------|
 | `hooks/git-guardrails.sh` | PreToolUse hook that blocks destructive git operations (force push to main, hard reset, git clean). Zero configuration. |
-| `hooks/stop-hook.md` | Stop event hook that checks whether the session-closing skill ran. Prompt-type (advisory, not blocking). |
 | `hooks/skill-telemetry.sh` | UserPromptSubmit hook that detects /skill-name invocations and logs to JSONL. Configurable via env vars. |
 | `hooks/skill-tool-telemetry.sh` | PostToolUse hook that captures programmatic Skill tool invocations. Configurable via env vars. |
 | `hooks/cc-upstream-guard.sh` | PreToolUse hook that blocks edits to manifest-tracked upstream files. Prevents downstream drift. |
@@ -171,7 +170,7 @@ into your project's `.claude/` directory. The minimum viable adoption:
 
 You now have git safety and skill discovery. Add more modules as needed:
 
-- **Session loop:** `skills/orient/`, `skills/debrief/`, `hooks/stop-hook.md`
+- **Session loop:** `skills/orient/`, `skills/debrief/`
 - **Planning:** `skills/plan/`, `skills/execute/`
 - **Audit:** `skills/audit/`, `skills/pulse/`, `skills/triage-audit/`, plus `cabinet/` infrastructure and `scripts/`
 - **Cabinet members:** Copy individual `skills/cabinet-*/` directories for the experts you want

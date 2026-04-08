@@ -33,9 +33,16 @@ os.environ["OMEGA_TELEMETRY"] = "0"
 
 
 def _output(data):
-    """Write JSON to stdout and exit cleanly."""
-    print(json.dumps(data))
-    sys.exit(0)
+    """Write JSON to stdout and exit cleanly.
+
+    Uses os._exit(0) to skip Python's normal shutdown sequence. This avoids
+    SIGSEGV (exit 139) caused by onnxruntime's C++ destructors racing during
+    interpreter finalization. The operation is complete by this point — stdout
+    is flushed explicitly, so no data is lost.
+    """
+    sys.stdout.write(json.dumps(data) + "\n")
+    sys.stdout.flush()
+    os._exit(0)
 
 
 def _error(msg):

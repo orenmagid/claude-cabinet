@@ -41,11 +41,14 @@
 - Block scalar YAML parsing: parseFrontmatter handles `description: >` and `description: |` correctly
 - WORKFLOW-GUIDE.md: comprehensive user journey guide (when to plan, audit, investigate; how cabinet works)
 - Project-level directive overlay: `directives-project.yaml` in `.claude/cabinet/` extends upstream members with project-specific mandates without modifying upstream files
+- stop-hook.md removed: prompt-type Stop hook deleted (caused infinite loop via session_stop → session_stop). hooks count is now 4.
+- Memory adapter ONNX fix: `cabinet-memory-adapter.py` uses `os._exit(0)` instead of `sys.exit(0)` to avoid SIGSEGV from ONNX cleanup on exit
+- Plugin format exploration: project `prj:plugin-format` filed in pib-db with 4 actions; exploring whether skills/cabinet members can be distributed as installable plugins
 
 ## What's Active
 
 - Published at v0.11.2 on npm as `create-claude-cabinet`
-- One downstream consumer: Flow (v0.11.1, 27 upstream + project-specific cabinet members)
+- Two downstream consumers: Flow (v0.11.2), multiShopper (v0.5.4, experiment)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
