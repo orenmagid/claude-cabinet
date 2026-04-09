@@ -29,7 +29,7 @@ Returns JSON array of findings in the same format as run-summary.json.
 ### Specific Run
 Load findings from a specific audit run instead of all open findings:
 ```bash
-node scripts/pib-db.js query "SELECT * FROM audit_findings WHERE run_id = 'run-2026-04-01'"
+node scripts/pib-db.mjs query "SELECT * FROM audit_findings WHERE run_id = 'run-2026-04-01'"
 ```
 
 ### Multiple Sources

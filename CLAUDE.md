@@ -33,6 +33,16 @@ for Claude Code projects. Small codebase: 7 files in `lib/`, templates in
   logic into SKILL.md files
 - Write interview questions one at a time, never batched
 
+## Dogfooding
+
+When installing CC on itself (the source repo), always use:
+```bash
+node bin/create-claude-cabinet.js --yes
+```
+Never use `npx create-claude-cabinet` from inside the source directory —
+npx resolves the local package.json instead of fetching from npm,
+which can install stale cached versions.
+
 ## Claude Should Never
 
 - Add dependencies without discussing it first — the minimal-dependency

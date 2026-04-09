@@ -185,7 +185,7 @@ source code.
 └── settings.json    # hook configuration
 
 scripts/
-├── pib-db.js        # work tracking CLI (if installed)
+├── pib-db.mjs        # work tracking CLI (if installed)
 └── ...              # triage tools (if audit installed)
 
 .ccrc.json           # installation metadata

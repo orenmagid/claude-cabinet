@@ -114,7 +114,7 @@ mandates and scoped directives.
 | `scripts/finding-schema.json` | JSON Schema for audit finding validation. |
 | `scripts/load-triage-history.js` | Build suppression lists from triage history. Tries pib-db first, falls back to filesystem. |
 | `scripts/merge-findings.js` | Merge per-cabinet-member JSON outputs into unified run-summary. Optional `--db` flag for pib-db ingestion. |
-| `scripts/pib-db.js` | Reference data layer CLI. SQLite for work tracking (actions, projects) and audit findings. |
+| `scripts/pib-db.mjs` | Reference data layer CLI. SQLite for work tracking (actions, projects) and audit findings. |
 | `scripts/pib-db-schema.sql` | Database schema: projects, actions, audit_runs, audit_findings. |
 | `scripts/resolve-committees.cjs` | Merge upstream `committees.yaml` with project `committees-project.yaml`. Deterministic output. |
 | `scripts/triage-server.mjs` | Self-contained Node.js HTTP server for triage UI. Zero external dependencies. |

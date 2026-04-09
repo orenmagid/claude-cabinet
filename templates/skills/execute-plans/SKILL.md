@@ -57,7 +57,7 @@ Read `phases/fetch-plans.md` for where plans come from.
 surface area declarations:
 
 ```bash
-node scripts/pib-db.js query "
+node scripts/pib-db.mjs query "
   SELECT a.fid, a.text, a.notes
   FROM actions a
   WHERE a.completed = 0 AND a.deleted_at IS NULL
@@ -200,7 +200,7 @@ Read `phases/completion.md` for how to mark plans as done after execution.
 
 **Default (absent/empty):** Mark completed plans via pib-db:
 ```bash
-node scripts/pib-db.js complete-action <fid>
+node scripts/pib-db.mjs complete-action <fid>
 ```
 
 Projects using external APIs or different work trackers define this phase.

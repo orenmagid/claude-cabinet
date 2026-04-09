@@ -6,17 +6,17 @@
 // override via phase files (pointing to their own API, DB, or service).
 //
 // Usage:
-//   node scripts/pib-db.js init                        # Create/migrate DB
-//   node scripts/pib-db.js query "SELECT * FROM ..."   # Run a query
-//   node scripts/pib-db.js create-action "Do the thing" --area dev
-//   node scripts/pib-db.js list-actions [--status X]   # Open actions (or filtered)
-//   node scripts/pib-db.js update-action act:abc --status in-progress
-//   node scripts/pib-db.js complete-action act:abc123
-//   node scripts/pib-db.js create-project "My Project" --area dev
-//   node scripts/pib-db.js list-projects               # Active projects
-//   node scripts/pib-db.js ingest-findings <run-dir>   # Ingest audit findings
-//   node scripts/pib-db.js triage <finding-id> <status> [notes]
-//   node scripts/pib-db.js triage-history              # Suppression list JSON
+//   node scripts/pib-db.mjs init                        # Create/migrate DB
+//   node scripts/pib-db.mjs query "SELECT * FROM ..."   # Run a query
+//   node scripts/pib-db.mjs create-action "Do the thing" --area dev
+//   node scripts/pib-db.mjs list-actions [--status X]   # Open actions (or filtered)
+//   node scripts/pib-db.mjs update-action act:abc --status in-progress
+//   node scripts/pib-db.mjs complete-action act:abc123
+//   node scripts/pib-db.mjs create-project "My Project" --area dev
+//   node scripts/pib-db.mjs list-projects               # Active projects
+//   node scripts/pib-db.mjs ingest-findings <run-dir>   # Ingest audit findings
+//   node scripts/pib-db.mjs triage <finding-id> <status> [notes]
+//   node scripts/pib-db.mjs triage-history              # Suppression list JSON
 //
 // Environment:
 //   PIB_DB_PATH  — path to SQLite file (default: ./pib.db)
@@ -344,7 +344,7 @@ switch (command) {
     triageHistory();
     break;
   default:
-    console.log(`Usage: pib-db.js <command>
+    console.log(`Usage: pib-db.mjs <command>
 
 Commands:
   init                              Create/migrate the database

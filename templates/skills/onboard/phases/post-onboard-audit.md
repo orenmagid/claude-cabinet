@@ -44,7 +44,7 @@ generated phase files:
 
 - **Skipped modules:** No phase file should reference a skipped module's
   infrastructure. If work-tracking was skipped, no phase should reference
-  `pib.db` or `pib-db.js`. If audit was skipped, no phase should reference
+  `pib.db` or `pib-db.mjs`. If audit was skipped, no phase should reference
   `committees.yaml`, `committees-project.yaml`, or cabinet member activation.
 - **Installed modules:** Each installed module should have at least a
   minimal presence in the generated configuration. A module that's installed

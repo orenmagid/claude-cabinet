@@ -16,13 +16,13 @@ When no custom close-work is configured:
 
 1. **Get session work:** Review `git log --oneline` for this session's
    commits (since session start or last 2 hours)
-2. **Get open actions:** `node scripts/pib-db.js list-actions`
+2. **Get open actions:** `node scripts/pib-db.mjs list-actions`
 3. **Match:** For each open action, check if this session's work
    addresses it (compare action text/notes against commit messages
    and changed files)
 4. **Propose:** Present matched actions and ask the user to confirm
    which to close
-5. **Close confirmed:** `node scripts/pib-db.js complete-action <fid>`
+5. **Close confirmed:** `node scripts/pib-db.mjs complete-action <fid>`
 
 If pib-db doesn't exist, skip with a note.
 
@@ -96,7 +96,7 @@ leaving it active is stale state that erodes trust in the work tracker.
 When using pib-db (default):
 
 ```bash
-node scripts/pib-db.js query "
+node scripts/pib-db.mjs query "
   SELECT p.fid, p.name,
     (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid) as total,
     (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 1) as done
@@ -111,7 +111,7 @@ node scripts/pib-db.js query "
 For each result: all actions are complete. Propose completing the project:
 - Show the project name and action count (e.g., "prj:abc — My Project (5/5 actions done)")
 - Ask the user to confirm before closing
-- On confirmation: `node scripts/pib-db.js query "UPDATE projects SET status = 'done', completed_at = date('now') WHERE fid = '<fid>'"`
+- On confirmation: `node scripts/pib-db.mjs query "UPDATE projects SET status = 'done', completed_at = date('now') WHERE fid = '<fid>'"`
 
 **Design notes:**
 - Projects with zero total actions are excluded — they may be containers

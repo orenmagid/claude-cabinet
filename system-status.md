@@ -63,4 +63,4 @@
 ## What's Planned
 
 Planned work is tracked in pib-db (`./pib.db`). Query with
-`node scripts/pib-db.js list-projects` and `node scripts/pib-db.js list-actions`.
+`node scripts/pib-db.mjs list-projects` and `node scripts/pib-db.mjs list-actions`.

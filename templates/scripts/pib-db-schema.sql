@@ -3,8 +3,8 @@
 -- This is the default persistence layer. Projects that outgrow it
 -- override via phase files (pointing to their own API, DB, or service).
 --
--- Initialize: node scripts/pib-db.js init
--- Query:      node scripts/pib-db.js query "SELECT ..."
+-- Initialize: node scripts/pib-db.mjs init
+-- Query:      node scripts/pib-db.mjs query "SELECT ..."
 
 CREATE TABLE IF NOT EXISTS projects (
   fid           TEXT PRIMARY KEY CHECK(fid GLOB 'prj:*'),

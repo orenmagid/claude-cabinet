@@ -6,7 +6,7 @@ tracking system. The /plan skill reads this file after user approval.
 When this file is absent or empty, the default behavior is: create an
 action in the reference data layer (pib-db) with the plan summary in
 notes. If pib-db is not initialized, note that work tracking is available
-via `node scripts/pib-db.js init`.
+via `node scripts/pib-db.mjs init`.
 
 ## Default Behavior (pib-db)
 
@@ -14,7 +14,7 @@ When no custom work tracker is configured:
 
 ```bash
 # Create an action for the approved plan
-node scripts/pib-db.js create-action "Short imperative plan title" \
+node scripts/pib-db.mjs create-action "Short imperative plan title" \
   --area "<area>" \
   --notes "## Problem\n...\n\n## Implementation\n..."
 ```
@@ -26,7 +26,7 @@ If the plan relates to an existing project in pib-db, include
 `--project <project-fid>` to link them.
 
 If pib-db doesn't exist, note: "Work tracking available — run
-`node scripts/pib-db.js init` to set up. Plan saved in conversation
+`node scripts/pib-db.mjs init` to set up. Plan saved in conversation
 only."
 
 ## What to Include

@@ -268,9 +268,9 @@ anything that future sessions need to know? A new pattern, a gotcha,
 a process gap, a user preference? Lessons are perishable — capture
 them now while context is fresh.
 
-**Omega-primary:** If `~/.claude-cabinet/omega-venv/bin/python3` and
+**Omega-only:** If `~/.claude-cabinet/omega-venv/bin/python3` and
 `scripts/cabinet-memory-adapter.py` both exist, write lessons to omega
-as the primary destination — not flat markdown. Use the adapter:
+— never to flat markdown. A guard hook enforces this. Use the adapter:
 
 ```bash
 echo '{"text": "the lesson", "type": "lesson"}' | \
@@ -278,7 +278,7 @@ echo '{"text": "the lesson", "type": "lesson"}' | \
 ```
 
 Types: `decision`, `lesson`, `preference`, `constraint`, `pattern`.
-Fall back to flat markdown memory only if omega is unavailable.
+Flat markdown memory is the fallback only when omega is unavailable.
 
 **Omega broken:** If the memory module is installed (check `.ccrc.json`
 for `"memory": true`) but the venv or adapter is missing, surface this

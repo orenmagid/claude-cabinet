@@ -7,7 +7,7 @@ only report on project state, not on what needs doing.
 When this file is absent or empty, the default behavior is: query the
 reference data layer (pib-db) for open actions and projects. If pib-db
 is not initialized, skip gracefully with a note that work tracking is
-available via `node scripts/pib-db.js init`.
+available via `node scripts/pib-db.mjs init`.
 
 ## Default Behavior (pib-db)
 
@@ -15,10 +15,10 @@ When no custom work-scan is configured, query pib-db:
 
 ```bash
 # Open actions (overdue first, then due today, then flagged, then recent)
-node scripts/pib-db.js list-actions
+node scripts/pib-db.mjs list-actions
 
 # Active projects with open action counts
-node scripts/pib-db.js list-projects
+node scripts/pib-db.mjs list-projects
 ```
 
 Present grouped by urgency:
@@ -28,7 +28,7 @@ Present grouped by urgency:
 - **Recent** — actions created in the last 7 days
 
 If pib-db doesn't exist (file not found), skip with: "Work tracking
-available — run `node scripts/pib-db.js init` to set up."
+available — run `node scripts/pib-db.mjs init` to set up."
 
 ## What to Include
 

@@ -13,7 +13,7 @@ related:
     path: scripts/work-tracker-ui.html
     role: "Browser-based work tracking interface"
   - type: file
-    path: scripts/pib-db.js
+    path: scripts/pib-db.mjs
     role: "Data layer — projects and actions in pib.db"
 ---
 
@@ -32,7 +32,7 @@ and progress in a browser rather than through conversation.
    ```
    If missing, initialize it:
    ```bash
-   node scripts/pib-db.js init
+   node scripts/pib-db.mjs init
    ```
 
 2. **Start the server:**
@@ -45,7 +45,7 @@ and progress in a browser rather than through conversation.
 
 4. **Stay available.** The user may come back with questions about what
    they see, or ask you to create/update projects and actions based on
-   their review. Use `scripts/pib-db.js` for any mutations they request.
+   their review. Use `scripts/pib-db.mjs` for any mutations they request.
 
 ## Notes
 

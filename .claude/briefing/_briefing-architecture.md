@@ -34,7 +34,7 @@ templates/
   cabinet/          — committees, lifecycle, composition patterns, eval protocol
   briefing/         — briefing templates for consuming projects
   hooks/            — git-guardrails, upstream-guard, telemetry scripts
-  scripts/          — pib-db.js, triage tools, cc-drift-check.cjs
+  scripts/          — pib-db.mjs, triage tools, cc-drift-check.cjs
   rules/            — enforcement-pipeline.md
   memory/           — pattern templates
 

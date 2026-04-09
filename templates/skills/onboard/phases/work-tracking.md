@@ -56,8 +56,8 @@ that CC skills (orient, debrief, plan) use by default.
 - Projects that also use the audit loop (findings can link to actions)
 
 **What gets set up:**
-- `pib.db` — SQLite database (created by `node scripts/pib-db.js init`)
-- `scripts/pib-db.js` — CLI for create/query/close operations
+- `pib.db` — SQLite database (created by `node scripts/pib-db.mjs init`)
+- `scripts/pib-db.mjs` — CLI for create/query/close operations
 - `scripts/pib-db-schema.sql` — Schema definition
 - Orient `work-scan.md` phase — queries pib-db for open items
 - Plan `work-tracker.md` phase — creates actions from plans

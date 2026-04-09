@@ -126,12 +126,12 @@ Read `phases/work-scan.md` for what work items to check. This includes
 whatever the project uses to track work: a backlog, task list, inbox,
 queue, or issue tracker.
 
-**Default (absent/empty):** If `scripts/pib-db.js` exists, run the
+**Default (absent/empty):** If `scripts/pib-db.mjs` exists, run the
 standard work scan:
 
 1. **Active projects and open actions:**
    ```bash
-   node scripts/pib-db.js query "
+   node scripts/pib-db.mjs query "
      SELECT p.fid, p.name,
        (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) as open_actions
      FROM projects p
@@ -142,7 +142,7 @@ standard work scan:
 
 2. **Flagged actions** (prioritized items needing attention):
    ```bash
-   node scripts/pib-db.js query "
+   node scripts/pib-db.mjs query "
      SELECT a.fid, a.text, p.name as project
      FROM actions a
      LEFT JOIN projects p ON a.project_fid = p.fid
@@ -154,7 +154,7 @@ standard work scan:
 
    **Completion candidates** — active projects where all actions are done:
    ```bash
-   node scripts/pib-db.js query "
+   node scripts/pib-db.mjs query "
      SELECT p.fid, p.name
      FROM projects p
      WHERE p.status = 'active' AND p.deleted_at IS NULL
@@ -165,7 +165,7 @@ standard work scan:
 
    **Stale projects** — active projects with no action completed in 14+ days:
    ```bash
-   node scripts/pib-db.js query "
+   node scripts/pib-db.mjs query "
      SELECT p.fid, p.name,
        MAX(a.completed_at) as last_completion
      FROM projects p
@@ -259,9 +259,21 @@ Read `phases/briefing.md` for how to present the orientation results.
 This phase controls format, sections, tone, and any time-aware or
 context-aware presentation modes.
 
-**Default (absent/empty):** Present a simple summary of what was gathered
-in steps 1-6: project state, work items needing attention, any health
-issues found, maintenance results.
+**Default (absent/empty):** Present a structured briefing with these
+required sections in this order:
+
+1. **Project State** — version, what's active, high-level status
+2. **Work Items** — active projects, open action counts, flagged/overdue
+   items listed explicitly
+3. **Attention Items** — anything surfaced by health checks, feedback
+   reports, extraction proposals, stale/completable projects
+4. **Maintenance** — omega consolidation results, any weekly tasks run
+5. **Cabinet Notes** — output from cabinet consultations (only if they
+   had something to say)
+
+Keep sections consistent across sessions. Omit a section only if it
+has literally nothing to report (not "nothing interesting" — nothing
+at all). Use the same section names and order every time.
 
 ### 9. Show Available Skills (core)
 

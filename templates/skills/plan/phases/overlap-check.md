@@ -14,7 +14,7 @@ When no custom overlap check is configured:
 
 ```bash
 # Search open actions for keywords related to the proposed work
-node scripts/pib-db.js query "SELECT fid, text, substr(notes, 1, 200) as notes_preview FROM actions WHERE completed = 0 AND deleted_at IS NULL AND (text LIKE '%keyword%' OR notes LIKE '%keyword%')"
+node scripts/pib-db.mjs query "SELECT fid, text, substr(notes, 1, 200) as notes_preview FROM actions WHERE completed = 0 AND deleted_at IS NULL AND (text LIKE '%keyword%' OR notes LIKE '%keyword%')"
 ```
 
 Search with multiple keywords derived from the proposed plan's problem

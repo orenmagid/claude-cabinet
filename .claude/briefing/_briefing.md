@@ -8,7 +8,7 @@ Split briefing files for this project:
 | `_briefing-architecture.md` | Single-layer Node CLI, codebase layout, tech stack |
 | `_briefing-jurisdictions.md` | Where code, templates, docs, and data live |
 | `_briefing-cabinet.md` | 20 active cabinet members, portfolio rules, invocation |
-| `_briefing-work-tracking.md` | pib-db (SQLite), query/mutation via pib-db.js |
+| `_briefing-work-tracking.md` | pib-db (SQLite), query/mutation via pib-db.mjs |
 
 No `_briefing-api.md` — this project has no API.
 

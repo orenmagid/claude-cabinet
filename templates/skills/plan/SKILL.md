@@ -249,13 +249,13 @@ of phase file content.
 Read `phases/work-tracker.md` for how to file the approved plan as a
 work item in your project's tracking system.
 
-**Default (absent/empty):** If `scripts/pib-db.js` exists, file the
+**Default (absent/empty):** If `scripts/pib-db.mjs` exists, file the
 approved plan as a pib-db action. Use the plan title as the action text
 and the full plan (with surface area, acceptance criteria, etc.) as the
 notes. If the plan belongs to an existing project, associate it:
 
 ```bash
-node scripts/pib-db.js create-action --text "<plan title>" --project "<project fid>" --notes "<full plan>"
+node scripts/pib-db.mjs create-action --text "<plan title>" --project "<project fid>" --notes "<full plan>"
 ```
 
 If pib-db doesn't exist, present the plan in conversation for the user

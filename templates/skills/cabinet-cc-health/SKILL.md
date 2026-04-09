@@ -222,7 +222,7 @@ drift between the two:
   - Work tracking specifically: the pib-db scripts ship with both the
     work-tracking and audit modules, so `.ccrc.json` alone doesn't tell
     you if work tracking is active. Check whether `pib.db` exists AND
-    has projects/actions with real data (`node scripts/pib-db.js
+    has projects/actions with real data (`node scripts/pib-db.mjs
     list-projects`). If it does but the briefing says "no work tracking,"
     that's a direct contradiction.
   - `.ccrc.json` version vs `package.json` version — they should match.

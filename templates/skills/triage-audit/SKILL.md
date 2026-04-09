@@ -24,7 +24,7 @@ related:
     path: scripts/triage-ui.html
     role: "Browser-based triage interface"
   - type: file
-    path: scripts/pib-db.js
+    path: scripts/pib-db.mjs
     role: "Reference data layer for finding persistence"
   - type: file
     path: cabinet/_briefing.md

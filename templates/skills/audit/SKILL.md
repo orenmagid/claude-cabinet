@@ -40,7 +40,7 @@ related:
     path: scripts/load-triage-history.js
     role: "Builds suppression lists from triage history"
   - type: file
-    path: scripts/pib-db.js
+    path: scripts/pib-db.mjs
     role: "Reference data layer for finding persistence"
 ---
 

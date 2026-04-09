@@ -117,7 +117,7 @@ console.log(`  critical: ${severityCounts.critical}, warn: ${severityCounts.warn
 // ---------------------------------------------------------------------------
 if (useDb) {
   try {
-    const pibDb = join(__dirname, 'pib-db.js');
+    const pibDb = join(__dirname, 'pib-db.mjs');
     execSync(`node "${pibDb}" ingest-findings "${runDir}"`, { stdio: 'inherit' });
   } catch (err) {
     console.error(`DB ingest failed: ${err.message}`);

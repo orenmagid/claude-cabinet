@@ -27,7 +27,7 @@ Define your verdict application strategy:
    - If successful, update `triage_status = 'fixed'`
    - If failed, create an action instead
 3. If not auto-fixable:
-   - Create an action via `node scripts/pib-db.js create-action`
+   - Create an action via `node scripts/pib-db.mjs create-action`
    - Include finding details in action notes
 
 ### Defer Verdicts

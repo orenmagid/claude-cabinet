@@ -18,9 +18,9 @@ Check whether omega memory is available:
 - `~/.claude-cabinet/omega-venv/bin/python3` exists AND
 - `scripts/cabinet-memory-adapter.py` exists
 
-**When omega is available (primary path):** Write lessons to omega via
-the adapter. This is the durable, semantic memory store that persists
-across sessions and supports retrieval by meaning, not just keyword.
+**When omega is available — use it. No exceptions.** Write lessons to
+omega via the adapter. Never write to flat markdown memory files when
+omega is available — a guard hook will block the attempt.
 
 ```bash
 echo '{"text": "the lesson", "type": "lesson", "tags": ["tag1"]}' | \
@@ -34,10 +34,9 @@ Memory types to use:
 - `constraint` — limitations discovered, prerequisites found
 - `pattern` — conventions established, recurring solutions
 
-**When omega is NOT available (fallback):** Use the flat markdown memory
-system (auto-memory in `~/.claude/projects/` memory directory). This is
-the same system Claude Code uses natively. It works, but lacks semantic
-retrieval.
+**When omega is NOT available:** Only then use flat markdown memory
+(auto-memory in `~/.claude/projects/` memory directory). Check omega
+availability first — don't assume it's unavailable without checking.
 
 ## What to Look For
 

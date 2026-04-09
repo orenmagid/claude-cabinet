@@ -256,7 +256,7 @@ for hook in cc-upstream-guard.sh git-guardrails.sh skill-telemetry.sh skill-tool
 done
 # Copy scripts
 mkdir -p "$PROJECT_DIR/scripts"
-for script in cc-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.js pib-db-schema.sql resolve-committees.cjs triage-server.mjs triage-ui.html; do
+for script in cc-drift-check.cjs finding-schema.json load-triage-history.js merge-findings.js pib-db.mjs pib-db-schema.sql resolve-committees.cjs triage-server.mjs triage-ui.html; do
   if [ -f "$TEMPLATE_DIR/scripts/$script" ]; then
     cp "$TEMPLATE_DIR/scripts/$script" "$PROJECT_DIR/scripts/"
     copied=$((copied + 1))
@@ -347,9 +347,9 @@ SETTINGS
 fi
 
 # --- Initialize work tracking database ---
-if command -v node >/dev/null 2>&1 && [ -f "$PROJECT_DIR/scripts/pib-db.js" ]; then
+if command -v node >/dev/null 2>&1 && [ -f "$PROJECT_DIR/scripts/pib-db.mjs" ]; then
   if [ ! -f "$PROJECT_DIR/pib.db" ]; then
-    node "$PROJECT_DIR/scripts/pib-db.js" init 2>/dev/null && echo "  ✓ Created task database" || true
+    node "$PROJECT_DIR/scripts/pib-db.mjs" init 2>/dev/null && echo "  ✓ Created task database" || true
   fi
 fi
 

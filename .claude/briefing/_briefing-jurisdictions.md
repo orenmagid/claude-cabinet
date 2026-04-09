@@ -14,7 +14,7 @@ Cabinet members reference these sections by name to know where to look.
 `templates/memory/` — pattern templates
 
 ## Data Store
-SQLite at `./pib.db` (via `scripts/pib-db.js`)
+SQLite at `./pib.db` (via `scripts/pib-db.mjs`)
 Schema: `scripts/pib-db-schema.sql`
 
 ## Audit Infrastructure

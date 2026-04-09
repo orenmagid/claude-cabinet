@@ -18,7 +18,7 @@ const DB_PATH = resolve(process.argv.find((_, i, a) => a[i - 1] === '--db') || '
 
 if (!existsSync(DB_PATH)) {
   console.error(`Database not found: ${DB_PATH}`);
-  console.error('Run: node scripts/pib-db.js init');
+  console.error('Run: node scripts/pib-db.mjs init');
   process.exit(1);
 }
 
