@@ -247,7 +247,7 @@ done
 
 # Copy hooks
 mkdir -p "$CLAUDE_DIR/hooks"
-for hook in cc-upstream-guard.sh git-guardrails.sh skill-telemetry.sh skill-tool-telemetry.sh; do
+for hook in cc-upstream-guard.sh git-guardrails.sh omega-memory-guard.sh skill-telemetry.sh skill-tool-telemetry.sh; do
   if [ -f "$TEMPLATE_DIR/hooks/$hook" ]; then
     cp "$TEMPLATE_DIR/hooks/$hook" "$CLAUDE_DIR/hooks/"
     chmod 755 "$CLAUDE_DIR/hooks/$hook"

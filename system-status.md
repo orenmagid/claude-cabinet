@@ -44,11 +44,17 @@
 - stop-hook.md removed: prompt-type Stop hook deleted (caused infinite loop via session_stop → session_stop). hooks count is now 4.
 - Memory adapter ONNX fix: `cabinet-memory-adapter.py` uses `os._exit(0)` instead of `sys.exit(0)` to avoid SIGSEGV from ONNX cleanup on exit
 - Plugin format exploration: project `prj:plugin-format` filed in pib-db with 4 actions; exploring whether skills/cabinet members can be distributed as installable plugins
+- ESM rename: `pib-db.js` → `pib-db.mjs` across 37+ files (fixes ESM import issues without type:module in package.json)
+- Omega memory guard: `omega-memory-guard.sh` PreToolUse hook blocks flat markdown memory writes when omega is active
+- Orient briefing strengthened: default orient now requires 5 sections (State of the World, What's Active, Decision Queue, Health, Suggested Focus)
+- better-sqlite3 error handling: distinguishes version mismatch from missing module
+- settings-merge.js: MEMORY_HOOKS constant and `includeMemory` param for memory module hook injection
+- db-setup.js: no longer injects `type:module` into package.json (removed to prevent CLI breakage)
 
 ## What's Active
 
-- Published at v0.11.2 on npm as `create-claude-cabinet`
-- Two downstream consumers: Flow (v0.11.2), multiShopper (v0.5.4, experiment)
+- Published at v0.12.1 on npm as `create-claude-cabinet`
+- Two downstream consumers: Flow (v0.12.1), multiShopper (v0.5.4, experiment)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)

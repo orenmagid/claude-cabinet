@@ -74,8 +74,7 @@ With user confirmation:
   present, run a full install (`node bin/create-claude-cabinet.js --yes`).
   If only lean modules, run `--lean`. Never downgrade a full install to
   lean.
-- After the install, verify `package.json` wasn't corrupted (the db-setup
-  module adds `"type": "module"` which may not be wanted — check if the
-  pre-install `package.json` had it and revert if not).
+- After the install, verify `package.json` wasn't corrupted — check that
+  no unexpected fields were added or existing fields changed.
 - Update `system-status.md` if it exists
 - Report the published version and npm URL
