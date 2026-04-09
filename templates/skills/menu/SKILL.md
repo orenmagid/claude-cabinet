@@ -26,13 +26,16 @@ whether they are auto-invocable or manual-only.
      accessed through `/cabinet`, not listed here.
    - Group remaining skills into:
 
-   **Auto (Claude uses these when relevant)** — skills where `manual`
-   is absent or false.
+   **Auto (Claude uses these when relevant)** — skills where `type`
+   is not `"plugin"` and `manual` is absent or false.
 
-   **Manual (user invokes these — they have side effects)** — skills
-   where `manual` is true.
+   **Manual (you invoke these — they have side effects)** — skills
+   where `type` is not `"plugin"` and `manual` is true.
 
-3. **Format as two tables:**
+   **Plugins** — skills where `type === "plugin"`. Group by `source`
+   if multiple plugins are present.
+
+3. **Format as tables:**
 
    ### Auto (Claude uses these when relevant)
    | Skill | What it does |
@@ -42,6 +45,13 @@ whether they are auto-invocable or manual-only.
    ### Manual (you invoke these — they have side effects)
    | Skill | What it does |
    |---|---|
+
+   ### Plugins
+   | Skill | Plugin | What it does |
+   |---|---|---|
+   | `/name` | source | description |
+
+   Omit the Plugins section if no plugin skills are indexed.
 
    Sort alphabetically within each group.
 

@@ -146,8 +146,9 @@ Forcing premature classification degrades the taxonomy. The
 "uncategorized" state is legitimate infrastructure, not technical debt.
 
 ### 16. Affordances in Skill Templates
-The template structure (Identity → Convening Criteria → Research Method
-→ Boundaries → Calibration Examples) is itself an affordance system.
+The template structure (Identity → Convening Criteria → Investigation Protocol
+→ Boundaries → Calibration Examples → Historically Problematic Patterns) is
+itself an affordance system.
 Each section tells the agent *how to use the skill* without needing
 external memory. If a new skill requires reading documentation outside
 itself to be invoked correctly, the template has failed.
@@ -244,9 +245,11 @@ Files: glob patterns that trigger this cabinet member (also in frontmatter `file
 Topics: keywords that trigger this cabinet member (also in frontmatter `topics`)
 Standing-mandate: which contexts always activate this cabinet member (frontmatter `standing-mandate`)
 
-## Research Method
-Where to get information, how to investigate, what to examine.
-Merged from Knowledge Base + What to Reason About + Paths.
+## Investigation Protocol
+Two-stage investigation: Stage 1 (Instrument) runs automated tools with
+explicit "if unavailable" fallbacks. Stage 2 (Analyze) does manual
+reasoning informed by Stage 1 results. Every member works in every
+project regardless of available tooling.
 
 ## Boundaries
 What you do NOT examine. Which other cabinet members own it.
@@ -254,6 +257,10 @@ What you do NOT examine. Which other cabinet members own it.
 ## Calibration Examples
 Plain-text observations (not JSON) showing the kind of things
 this cabinet member notices.
+
+## Historically Problematic Patterns
+Two-file overlay: upstream section (CC-owned, universal) +
+`patterns-project.md` (project-owned, never overwritten on upgrade).
 ```
 
 ## Common Failure Modes
