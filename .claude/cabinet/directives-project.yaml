@@ -1,9 +1,32 @@
-# Project directive overlay — Claude Cabinet (dogfood)
-
-cabinet-record-keeper:
-  standing-mandate: [cc-publish]
-  directives:
-    cc-publish: >
-      Check all docs for staleness and missing additions before the
-      version is published. README counts, EXTENSIONS.md counts,
-      system-status version, briefing claims, CLAUDE.md key files.
+# Project-specific directive overlay for cabinet members.
+#
+# This file is project-owned — it is NOT overwritten by the installer.
+# Use it to extend upstream members with project-specific mandates and
+# directives for project-specific skills (e.g., /publish, /deploy).
+#
+# Consumed by: generateSkillIndex() in lib/cli.js (merged at install time
+# into _index.json alongside upstream frontmatter).
+#
+# Merge rules:
+#   - standing-mandate: APPENDED to upstream (union, no duplicates)
+#   - directives: MERGED with upstream (project wins on key conflict)
+#   - You cannot remove upstream mandates or directives from here
+#
+# Format:
+#
+#   cabinet-record-keeper:
+#     standing-mandate: [cc-publish]
+#     directives:
+#       cc-publish: >
+#         Check all docs for staleness and missing additions
+#         before the version is published.
+#
+#   cabinet-security:
+#     standing-mandate: [deploy]
+#     directives:
+#       deploy: >
+#         Review deployment config for exposed secrets and
+#         overly permissive access.
+#
+# The member name must match the directory name (e.g., cabinet-record-keeper).
+# Only cabinet-* members can be extended — workflow skills use phase files.

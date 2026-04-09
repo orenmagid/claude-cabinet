@@ -12,6 +12,10 @@ briefing:
   - _briefing-jurisdictions.md
   - _briefing-api.md
 standing-mandate: audit, plan, execute
+tools:
+  - npm audit (Node projects -- dependency vulnerabilities)
+  - git log/grep (all projects -- secret scanning in history and source)
+  - semgrep (if installed -- OWASP injection pattern detection)
 directives:
   plan: >
     Check for security exposure. Does this plan handle auth, data access,
@@ -49,93 +53,140 @@ sure basic hygiene prevents embarrassing or damaging accidents.
 - **files:** .env*, .gitignore, Dockerfile, scripts/*.sh, .claude/settings*.json, .mcp.json, package.json (see `_briefing.md § API / Server` and `_briefing.md § App Source` for actual paths)
 - **topics:** security, auth, secrets, injection, CORS, vulnerability, API protection, environment variables, credentials, tokens, gitignore, deployment security, npm audit
 
-## Research Method
+## Investigation Protocol
 
 See `_briefing.md` for shared codebase context and principles.
 
-### 1. Secrets Management
+**Two stages: measure first, then reason.** Run automated tools to establish
+a baseline before manual code review. Every tool is optional -- if unavailable,
+use the manual fallback. The member produces useful findings either way.
 
-Grep the entire repo for potential secret exposure:
+### Stage 1: Instrument
 
-- **Hardcoded secrets** -- API keys, passwords, tokens in source code or config
-  files. Check `.env`, `*.json`, `*.js`, `*.ts`, `*.sh`.
-- **Git history** -- Were secrets ever committed and then removed? They're still
-  in git history. `git log --all -p -S "SECRET"` can find them.
-- **.gitignore coverage** -- Are `.env` files, your database, and other sensitive
-  files properly gitignored?
-- **Environment variables** -- Are secrets passed via env vars on your deployment
-  platform (see `_briefing.md § Deployment`), not baked into the Docker image or
-  code?
-- **API auth secret** -- The API auth secret is used for endpoint protection.
-  How is it stored? Is it in Claude Code's environment? Could it leak through
-  tool output or logs?
+Run these checks in order. Skip any that aren't applicable to this project.
 
-### 2. API Protection
+**1a. Dependency scan**
 
-Read your API server (see `_briefing.md § API / Server`) and check every endpoint:
+```bash
+# Run if package.json exists
+npm audit --json 2>/dev/null
+```
 
-- **Authentication** -- Which endpoints require auth (session cookie or
-  API auth header)? Are there endpoints that should require auth but don't?
+Parse output and flag `high` and `critical` vulnerabilities. Note abandoned
+or unmaintained dependencies (last publish > 2 years). If `npm audit` is
+unavailable (non-Node project): manually review dependency manifests for
+known-problematic packages and check lock file freshness.
+
+**1b. Secret scan -- current codebase**
+
+```bash
+# Scan for hardcoded secrets in tracked files (OWASP A07:2021)
+# Targeted patterns only -- avoid open-ended searches that surface secrets
+grep -rn --include='*.js' --include='*.ts' --include='*.sh' --include='*.json' \
+  -E '(api[_-]?key|secret|token|password|credential)\s*[:=]\s*["\x27][^"\x27]{8,}' \
+  --exclude-dir=node_modules --exclude-dir=.git .
+
+# Check .gitignore coverage for sensitive file patterns
+git ls-files --cached --ignored --exclude-standard 2>/dev/null
+# If this returns .env files, database files, or key files -- they're tracked
+```
+
+If git is unavailable: grep current files only, check for `.env` files
+in the directory listing.
+
+**1c. Secret scan -- git history**
+
+```bash
+# Check if sensitive files were ever committed (not the contents, just the fact)
+git log --all --diff-filter=A --name-only -- '*.env*' '*.key' '*.pem' '*.p12' 2>/dev/null
+
+# Check for high-entropy strings that look like secrets in recent commits
+git log --all -50 --diff-filter=AM --name-only -- '*.js' '*.ts' '*.sh' '*.json' 2>/dev/null | \
+  head -100
+```
+
+**Important:** Do NOT use `git log -p -S` with broad patterns -- this surfaces
+secret values in the agent's context. Use `--name-only` to identify suspect
+files, then review them specifically.
+
+**1d. Injection pattern scan (if semgrep installed)**
+
+```bash
+# OWASP Top 10 ruleset -- covers injection (A03), auth failures (A07), etc.
+semgrep --config=p/owasp-top-ten --json 2>/dev/null
+```
+
+If semgrep is unavailable: manual review of input handling paths in Stage 2.
+
+### Stage 1 results
+
+Summarize findings before proceeding:
+- N dependency vulnerabilities (N high, N critical)
+- N potential hardcoded secrets found
+- N sensitive files in git history
+- N injection patterns detected (or "semgrep not available")
+
+### Stage 2: Analyze
+
+Interpret Stage 1 results + manual code reading for what automation misses.
+
+**2a. Secrets management** (informed by 1b/1c results)
+
+- **Hardcoded secrets** -- For any files flagged in Stage 1, read and verify.
+  False positives are common -- config keys named "secret" that hold non-secret
+  values, test fixtures, etc.
+- **.gitignore coverage** -- Are `.env` files, database files (`*.db`, `*.db-shm`,
+  `*.db-wal`), and key files properly gitignored?
+- **Environment variables** -- Are secrets passed via env vars on the deployment
+  platform (see `_briefing.md § Deployment`), not baked into the Docker image
+  or code?
+- **API auth secret** -- How is it stored? Is it in Claude Code's environment?
+  Could it leak through tool output or logs?
+
+**2b. API protection** (manual -- no tool covers auth design)
+
+Read your API server (see `_briefing.md § API / Server`) and check every
+endpoint:
+
+- **Authentication** -- Which endpoints require auth? Are there endpoints that
+  should require auth but don't? (OWASP A01:2021 Broken Access Control)
 - **Authorization** -- Can any authenticated request do anything? Or are there
   operations that should have additional checks?
 - **Input validation** -- Do endpoints validate input types, lengths, and
   formats? Can malformed input cause crashes or data corruption?
-- **Rate limiting** -- Is there any protection against rapid-fire requests?
-  (Less critical for a personal tool, but sync endpoints could be abused)
+  (OWASP A03:2021 Injection)
+- **Rate limiting** -- Any protection against rapid-fire requests?
 - **CORS** -- What origins are allowed? Is it too permissive?
 - **Error responses** -- Do error messages leak internal details (stack traces,
-  file paths, SQL queries)?
+  file paths, SQL queries)? (OWASP A04:2021 Insecure Design)
 
-### 3. Deployment Security
+**2c. Deployment security** (manual -- requires config reading)
 
 Check the deployment configuration (see `_briefing.md § Deployment`):
 
 - **Dockerfile** -- Does it expose unnecessary ports, run as root, or include
-  development dependencies in production?
-- **Environment variables** -- Are all secrets in deployment platform env vars,
-  not in code or Dockerfile?
+  development dependencies in production? (OWASP A05:2021 Security
+  Misconfiguration)
+- **Environment variables** -- All secrets in platform env vars, not in code?
 - **Volume permissions** -- Is the persistent volume properly protected?
-- **HTTPS** -- Is the app served over HTTPS? Are there any HTTP fallbacks?
-- **Git webhook** -- Is the webhook secret properly verified? Could someone
-  trigger a git pull with a forged request?
+- **HTTPS** -- Served over HTTPS? Any HTTP fallbacks?
+- **Git webhook** -- Is the webhook secret properly verified?
 
-### 4. Data Sensitivity
+**2d. Data sensitivity** (manual -- requires domain understanding)
 
-What data does this system hold, and is it appropriately protected?
-See `_briefing.md § Entity Types` for the full inventory. Common categories:
-
-- **Personal data** -- User information, notes, personal reflections.
-- **Business/project data** -- Unpublished work, plans, strategies.
-- **Credentials** -- API keys, tokens, auth secrets.
-- **Third-party data** -- Records about other people, contacts, relationships.
-
-For each: is it encrypted at rest? Could it be accessed by someone who gets the
+See `_briefing.md § Entity Types` for the full inventory. For each
+sensitive data category (personal data, credentials, third-party data):
+is it encrypted at rest? Could it be accessed by someone who gets the
 deployment URL? Is it backed up securely?
 
-### 5. Dependency Security
+**2e. Claude Code security surface** (manual)
 
-Check for known vulnerabilities:
-
-```bash
-# Check dependencies for vulnerabilities
-# See _briefing.md § App Source for actual package paths
-npm audit
-```
-
-- Are there critical or high vulnerabilities?
-- Are dependencies reasonably up to date?
-- Are there dependencies that are abandoned or unmaintained?
-
-### 6. Claude Code Security
-
-The Claude Code integration has its own security surface:
-
-- **MCP servers** -- What data do configured MCP servers have access to? Could a
-  compromised MCP server exfiltrate data?
+- **MCP servers** -- What data do configured MCP servers access? Could a
+  compromised server exfiltrate data?
 - **Skills** -- Do any skills have permissions they shouldn't?
 - **Memory files** -- Do memory files contain sensitive information that
   shouldn't persist across sessions?
-- **Bash permissions** -- What can Claude execute? Are there adequate guardrails?
+- **Bash permissions** -- What can Claude execute? Adequate guardrails?
 
 ### Scan Scope
 
@@ -187,3 +238,24 @@ The Claude Code integration has its own security surface:
   database WAL files (e.g., `*.db-shm`, `*.db-wal`) and backup files that the
   database engine or scripts might create? WAL files can contain recent writes
   including sensitive data.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->

@@ -15,6 +15,62 @@ For each validator, provide:
 
 Uncomment and adapt these for your project:
 
+### Cabinet Member Structure
+```bash
+# Check all cabinet members for required sections and frontmatter
+errors=0
+for skill_dir in .claude/skills/cabinet-*/; do
+  file="$skill_dir/SKILL.md"
+  [ -f "$file" ] || continue
+  name=$(basename "$skill_dir")
+
+  # Required frontmatter: tools field
+  if ! grep -q '^tools:' "$file" 2>/dev/null; then
+    echo "WARN: $name missing 'tools:' frontmatter"
+    errors=$((errors + 1))
+  fi
+
+  # Required section: Investigation Protocol (or Research Method for legacy)
+  if ! grep -q '## Investigation Protocol' "$file" 2>/dev/null; then
+    if ! grep -q '## Research Method' "$file" 2>/dev/null; then
+      echo "WARN: $name missing Investigation Protocol or Research Method section"
+      errors=$((errors + 1))
+    fi
+  fi
+
+  # Required section: Portfolio Boundaries
+  if ! grep -q '## Portfolio Boundaries' "$file" 2>/dev/null; then
+    echo "WARN: $name missing Portfolio Boundaries section"
+    errors=$((errors + 1))
+  fi
+
+  # Required section: Calibration Examples
+  if ! grep -q '## Calibration Examples' "$file" 2>/dev/null; then
+    echo "WARN: $name missing Calibration Examples section"
+    errors=$((errors + 1))
+  fi
+
+  # Required section: Historically Problematic Patterns
+  if ! grep -q '## Historically Problematic Patterns' "$file" 2>/dev/null; then
+    echo "WARN: $name missing Historically Problematic Patterns section"
+    errors=$((errors + 1))
+  fi
+done
+
+if [ "$errors" -gt 0 ]; then
+  echo ""
+  echo "$errors structural warnings found across cabinet members."
+  echo "See .claude/cabinet/_cabinet-member-template.md for required structure."
+  exit 1
+fi
+echo "All cabinet members pass structural validation."
+```
+Catches cabinet members missing required sections (Investigation Protocol,
+Portfolio Boundaries, Calibration Examples, Historically Problematic
+Patterns) or frontmatter fields (tools). Warns but doesn't block —
+legacy members with Research Method instead of Investigation Protocol
+are accepted.
+
 <!--
 ### Type Check
 ```bash

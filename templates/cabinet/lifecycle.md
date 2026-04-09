@@ -76,16 +76,25 @@ audits where it doesn't belong, and miss unassigned contexts where it does.
 
 ## Creating a New Cabinet Member
 
-A cabinet member is a skill with `user-invocable: false`. Create it in
-`.claude/skills/cabinet-{name}/SKILL.md` with:
+A cabinet member is a skill with `user-invocable: false`. Use the
+template at `.claude/cabinet/_cabinet-member-template.md` for the
+required structure. Create in `.claude/skills/cabinet-{name}/SKILL.md`
+with:
 
 1. **Identity** — who is this expert? What do they care about?
 2. **Convening Criteria** — `standing-mandate`, `files`, `topics`
-3. **Research Method** — what to examine, what tools to use, what to
-   reason about
+3. **Investigation Protocol** — two-stage: Stage 1 (Instrument) runs
+   automated tools with explicit "if unavailable" fallbacks, Stage 2
+   (Analyze) does manual reasoning informed by Stage 1 results
 4. **Boundaries** — what this cabinet member does NOT own (prevents overlap)
 5. **Calibration Examples** — good findings, wrong-portfolio findings, severity
    anchors
+6. **Historically Problematic Patterns** — two-file overlay: upstream
+   section (CC-owned) + `patterns-project.md` (project-owned)
+
+Required frontmatter: `name`, `description`, `user-invocable: false`,
+`briefing`, `standing-mandate`, `tools` (list every tool the member
+uses; `tools: []` for pure-reasoning members).
 
 Add the cabinet member to your `committees-project.yaml` under the appropriate
 committee (using `additional_members` to append to an upstream committee, or

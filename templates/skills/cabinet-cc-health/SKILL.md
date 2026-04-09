@@ -11,6 +11,8 @@ briefing:
   - _briefing-cabinet.md
   - _briefing-jurisdictions.md
 standing-mandate: audit
+tools:
+  - grep/file scanning (all projects -- config validation)
 files:
   - .claude/skills/*/SKILL.md
   - .claude/skills/*/phases/*.md
@@ -544,3 +546,24 @@ project's complexity warrants them.
 - **info** — Optimization opportunities (retirement candidates, promotion
   bottlenecks, minor drift). The system works but could be leaner or
   more current.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->

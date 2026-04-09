@@ -43,11 +43,15 @@ Walk through these areas with the user:
 - Ask the user what's missing or wrong about it
 - Refine until it captures the right concerns for this project
 
-**Research Method.** "What should this cabinet member examine?"
-- Propose a scan scope based on where the technology's files live
-- Propose specific things to check (patterns, anti-patterns, config)
+**Investigation Protocol.** "What should this cabinet member measure and examine?"
+- Propose Stage 1 (Instrument) checks: what tools or commands can be run?
+  For each tool, identify what it detects and what the manual fallback is
+  when the tool isn't available.
+- Propose Stage 2 (Analyze) areas: what requires manual code reading and
+  domain reasoning that tools can't cover?
 - Ask: "What has bitten you before with this technology?"
 - Ask: "What do you worry about that you don't currently check?"
+- Ask: "Are there specific tools or commands you use to check this?"
 
 **Boundaries.** "What does this cabinet member NOT own?"
 - Propose portfolio boundaries to prevent overlap with existing cabinet members
@@ -60,12 +64,21 @@ Walk through these areas with the user:
 
 ### Step 3: Create the Cabinet Member
 
-Write the cabinet member's `SKILL.md` following `_lifecycle.md` guidance:
+Read `.claude/cabinet/_cabinet-member-template.md` for the required
+structure. This template defines every required section, frontmatter
+field, and the Investigation Protocol pattern. Follow it exactly.
+
+Write the cabinet member's `SKILL.md` following the template:
 - Place in `.claude/skills/cabinet-{name}/SKILL.md`
-- Include all sections: Identity, Convening Criteria, Research Method,
-  Boundaries, Calibration Examples
-- Set `user-invocable: false` in frontmatter (cabinet members are invoked
-  by the audit system, not directly)
+- Include all required sections in order: Identity, Convening Criteria,
+  Investigation Protocol (two-stage: instrument → analyze), Scan Scope,
+  Portfolio Boundaries, Calibration Examples, Historically Problematic
+  Patterns
+- Include required frontmatter: `name`, `description`, `user-invocable: false`,
+  `briefing`, `standing-mandate`, `tools` (list every tool the member uses;
+  `tools: []` for pure-reasoning members)
+- Every tool in Stage 1 must have an explicit "if unavailable" fallback
+- The member must produce useful findings even with zero tools available
 
 ### Step 4: Wire It Up
 

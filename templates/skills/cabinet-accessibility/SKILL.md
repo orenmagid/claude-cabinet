@@ -9,6 +9,10 @@ user-invocable: false
 briefing:
   - _briefing-identity.md
   - _briefing-jurisdictions.md
+tools:
+  - axe-core (web projects -- via preview_eval CDN injection)
+  - preview_snapshot (web projects -- accessibility tree inspection)
+  - preview_inspect (web projects -- computed style contrast ratios)
 activation:
   standing-mandate: audit
   files:
@@ -50,7 +54,12 @@ screen readers, or other assistive technology.
 - Color contrast concerns
 - Always active during audit runs
 
-## Research Method
+## Investigation Protocol
+
+**Two stages: measure first, then reason.** Run automated tools to establish
+a baseline before manual testing. Every tool is optional — if preview tools
+aren't available (non-web project, no dev server), use the code-reading
+fallback. The member produces useful findings either way.
 
 ### Knowledge Sources
 
@@ -62,79 +71,132 @@ Use WebSearch to check current WCAG 2.2 guidelines when evaluating
 specific criteria. Search `site:w3.org/WAI` for authoritative guidance.
 Don't guess about compliance levels — verify.
 
-### Testing Approach
+### Stage 1: Instrument
 
-Use preview tools to actually test accessibility:
+Run automated accessibility checks if preview tools are available.
 
-**Keyboard Navigation:**
-1. Start the dev server with `preview_start`
-2. Use `preview_eval` to simulate keyboard-only navigation:
-   ```javascript
-   document.activeElement.tagName  // what has focus?
-   ```
-3. Use `preview_snapshot` to check focus state and element structure
-4. Trace tab order through every page — can you reach everything?
+**1a. axe-core automated scan**
 
-**Screen Reader Simulation:**
-Use `preview_snapshot` (accessibility tree) to evaluate what a screen
-reader would announce:
+Start the dev server with `preview_start`, then inject axe-core via
+`preview_eval`:
+
+```javascript
+// Load axe-core from CDN and run full scan
+const script = document.createElement('script');
+script.src = 'https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.2/axe.min.js';
+script.onload = () => {
+  axe.run().then(results => {
+    console.log('axe-core violations:', results.violations.length);
+    results.violations.forEach(v => {
+      console.log(`[${v.impact}] ${v.id}: ${v.description} (${v.nodes.length} instances)`);
+      console.log(`  WCAG: ${v.tags.filter(t => t.startsWith('wcag')).join(', ')}`);
+    });
+    console.log('axe-core passes:', results.passes.length);
+  });
+};
+document.head.appendChild(script);
+```
+
+Parse violations by impact level (critical, serious, moderate, minor).
+axe-core catches ~57% of WCAG violations automatically — use this as
+a baseline, not a complete assessment.
+
+**1b. Accessibility tree inspection**
+
+Use `preview_snapshot` to capture the accessibility tree. Check:
 - Do all interactive elements have accessible names?
-- Do images have alt text?
-- Are form fields properly labeled?
-- Is the heading hierarchy logical (h1 -> h2 -> h3, no skips)?
-- Are live regions used for dynamic content updates?
+- Is the heading hierarchy logical (h1 → h2 → h3, no skips)?
+- Are form fields associated with labels?
+- Are landmarks (`main`, `nav`, `aside`) present?
 
-### What to Evaluate
+**1c. Contrast measurement**
 
-**1. Keyboard Navigation**
+Use `preview_inspect` with computed styles to check contrast ratios on
+key elements (headings, body text, interactive controls, placeholder text).
+
+### Stage 1 fallback (no preview tools)
+
+If this is a non-web project or preview tools aren't available, scan
+source code directly:
+
+```bash
+# Find interactive elements missing aria-label
+grep -rn --include='*.tsx' --include='*.jsx' \
+  '<button\|<Button\|<IconButton' src/ | grep -v 'aria-label'
+
+# Find images missing alt text
+grep -rn --include='*.tsx' --include='*.jsx' \
+  '<img\|<Image' src/ | grep -v 'alt='
+
+# Find heading hierarchy (check for skips)
+grep -rn --include='*.tsx' --include='*.jsx' \
+  '<h[1-6]\|<Title\|<Heading' src/
+
+# Check for role="button" on non-button elements (a11y smell)
+grep -rn --include='*.tsx' --include='*.jsx' \
+  'role="button"' src/
+```
+
+### Stage 1 results
+
+Summarize before proceeding:
+- N axe-core violations (N critical, N serious) — or "axe-core not available"
+- Accessibility tree: N elements without accessible names
+- Contrast: N elements below WCAG AA thresholds
+- Missing alt text: N images
+
+### Stage 2: Analyze
+
+Interpret Stage 1 results + manual evaluation for what automation misses.
+
+**2a. Keyboard Navigation** (SC 2.1.1, SC 2.1.2, SC 2.4.3, SC 2.4.7)
 - **Tab order** — Is it logical? Does it follow visual layout?
 - **Focus indicators** — Can you always see what's focused? Are custom
   focus styles visible against the dark theme?
 - **Keyboard shortcuts** — Are they documented? Do they conflict with
-  browser/OS shortcuts? Can they be discovered?
+  browser/OS shortcuts? Can they be discovered? (SC 2.1.4)
 - **Focus traps** — Do modals and drawers trap focus correctly? Can you
-  escape them with Esc?
-- **Skip links** — Can keyboard users skip repetitive navigation?
+  escape them with Esc? (SC 2.1.2)
+- **Skip links** — Can keyboard users skip repetitive navigation? (SC 2.4.1)
 
-**2. Semantic Structure**
+**2b. Semantic Structure** (SC 1.3.1, SC 2.4.6, SC 2.4.10)
 - **Headings** — Is there a logical heading hierarchy on each page?
 - **Landmarks** — Are `<main>`, `<nav>`, `<aside>` used appropriately?
 - **Lists** — Are lists of items marked up as `<ul>`/`<ol>`, not just
   styled divs?
 - **Tables** — Do data tables have proper headers (`<th>` with scope)?
-- **Forms** — Are all inputs associated with labels?
+- **Forms** — Are all inputs associated with labels? (SC 1.3.1)
 
-**3. Color and Contrast**
+**2c. Color and Contrast** (SC 1.4.3, SC 1.4.6, SC 1.4.11)
 - **Text contrast** — Does all text meet WCAG AA minimum (4.5:1 for
   normal text, 3:1 for large text)? Check against the dark theme AND
-  any light theme option.
+  any light theme option. (SC 1.4.3)
+- **Non-text contrast** — Do UI components and graphical objects have at
+  least 3:1 contrast? (SC 1.4.11)
 - **Color as sole indicator** — Is color ever the only way to convey
-  information? (e.g., red for errors without an icon or text)
+  information? (SC 1.4.1)
 - **Focus contrast** — Are focus indicators visible against all
-  backgrounds?
-- Use `preview_inspect` with computed styles to check specific contrast
-  ratios.
+  backgrounds? (SC 2.4.7)
 
-**4. Interactive Elements**
-- **Button labels** — Do icon-only buttons have `aria-label`?
-- **Link purpose** — Can link text be understood out of context?
+**2d. Interactive Elements** (SC 4.1.2, SC 1.3.1, SC 3.3.1, SC 3.3.2)
+- **Button labels** — Do icon-only buttons have `aria-label`? (SC 4.1.2)
+- **Link purpose** — Can link text be understood out of context? (SC 2.4.4)
 - **Error messages** — Are form errors associated with their fields
-  via `aria-describedby`?
+  via `aria-describedby`? (SC 3.3.1)
 - **Loading states** — Are loading indicators announced to screen
-  readers? (`aria-live`, `aria-busy`)
+  readers? (`aria-live`, `aria-busy`) (SC 4.1.3)
 - **Notifications** — Are toast notifications in an `aria-live` region?
 
-**5. Dynamic Content**
-- **Content updates** — When content changes (task completed, item
-  processed), is the change communicated to assistive technology?
-- **Drag and drop** — Is there a keyboard alternative for drag-and-drop
-  reordering?
-- **Modals and drawers** — Do they manage focus correctly? (Focus moves
-  in on open, returns to trigger on close)
-- **Tabs** — Do tab panels follow WAI-ARIA tab pattern? Arrow keys to
-  switch tabs, tab key to enter panel content?
+**2e. Dynamic Content** (SC 4.1.3, SC 2.1.1, SC 2.4.3)
+- **Content updates** — When content changes, is the change communicated
+  to assistive technology? (SC 4.1.3)
+- **Drag and drop** — Is there a keyboard alternative? (SC 2.1.1)
+- **Modals and drawers** — Focus moves in on open, returns to trigger
+  on close? (SC 2.4.3)
+- **Tabs** — Follow WAI-ARIA tab pattern? Arrow keys to switch, tab key
+  to enter panel content?
 
-**6. Motion and Animation**
+**2f. Motion and Animation** (SC 2.3.1, SC 2.3.3)
 - **Reduced motion** — Does the app respect `prefers-reduced-motion`?
 - **Auto-playing animation** — Is any content animated automatically
   without user control?
@@ -178,3 +240,24 @@ Adding aria-label to each would fix it with no behavior change.
 **Not a finding:** A component uses a slightly different shade of blue
 than the theme default. This is a visual preference, not an accessibility
 concern, unless the contrast ratio falls below WCAG AA thresholds.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->

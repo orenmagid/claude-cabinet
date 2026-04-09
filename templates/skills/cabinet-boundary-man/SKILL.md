@@ -12,6 +12,7 @@ briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
 standing-mandate: execute
+tools: []
 directives:
   execute: >
     Watch for implicit boundary conditions, unguarded state transitions,
@@ -118,63 +119,6 @@ hold regardless of input. Examples:
 Then check: does the implementation preserve these invariants at every
 discovered boundary?
 
-## Historically Problematic Patterns
-
-These patterns have caused bugs in practice. When you encounter them in
-a diff, **flag immediately** — don't wait for the full analysis:
-
-### 1. Optional-chaining-as-guard
-```typescript
-// DANGEROUS: silently excludes items without parentId
-if (dragData?.meta?.parentId) {
-  // items with no parent never reach this branch
-}
-```
-The `?.` operator is correct for null-safe access, but when used as a
-boolean guard it silently excludes the null/undefined case. Ask: "Is the
-falsy case (no value) actually invalid, or is it the most common case?"
-
-### 2. Falsy vs nullish confusion
-```typescript
-// These are NOT equivalent:
-if (value)           // excludes 0, '', false, null, undefined
-if (value != null)   // excludes only null and undefined
-if (value !== undefined)  // excludes only undefined
-```
-When guarding numeric fields, `if (count)` excludes zero. When guarding
-strings, `if (name)` excludes empty string. Ask: "Is zero/empty a valid
-value here?"
-
-### 3. Filter-then-count mismatch
-```typescript
-const filtered = items.filter(i => i.parentId);
-badge.count = items.length;        // shows ALL items
-rendered = filtered.map(...)       // renders FEWER items
-// User sees "11 items" but can only find 8
-```
-When a badge/count uses one filter and the rendered list uses a different
-filter, the numbers diverge. This manifests wherever filtering is split
-across locations.
-
-### 4. Guard-gated processing
-```typescript
-if (sourceParentId && targetParentId) {
-  // cross-parent move logic
-}
-// What about: no source parent → target parent?
-// What about: source parent → no target (unassign)?
-```
-When a guard requires BOTH values to be present, it excludes three
-cases: only-source, only-target, and neither. Are all three exclusions
-intentional?
-
-### 5. Default-value masking
-```typescript
-const category = item.category || 'default';
-// If category is intentionally empty/null, this silently assigns 'default'
-// Was the default intentional or does it mask missing data?
-```
-
 ## Portfolio Boundaries
 
 **IN scope:**
@@ -268,3 +212,79 @@ found in production:
 
 The historically problematic patterns section is a living document —
 it should grow as the codebase reveals its specific failure modes.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->
+
+These patterns have caused bugs in practice. When you encounter them in
+a diff, **flag immediately** — don't wait for the full analysis:
+
+### 1. Optional-chaining-as-guard
+```typescript
+// DANGEROUS: silently excludes items without parentId
+if (dragData?.meta?.parentId) {
+  // items with no parent never reach this branch
+}
+```
+The `?.` operator is correct for null-safe access, but when used as a
+boolean guard it silently excludes the null/undefined case. Ask: "Is the
+falsy case (no value) actually invalid, or is it the most common case?"
+
+### 2. Falsy vs nullish confusion
+```typescript
+// These are NOT equivalent:
+if (value)           // excludes 0, '', false, null, undefined
+if (value != null)   // excludes only null and undefined
+if (value !== undefined)  // excludes only undefined
+```
+When guarding numeric fields, `if (count)` excludes zero. When guarding
+strings, `if (name)` excludes empty string. Ask: "Is zero/empty a valid
+value here?"
+
+### 3. Filter-then-count mismatch
+```typescript
+const filtered = items.filter(i => i.parentId);
+badge.count = items.length;        // shows ALL items
+rendered = filtered.map(...)       // renders FEWER items
+// User sees "11 items" but can only find 8
+```
+When a badge/count uses one filter and the rendered list uses a different
+filter, the numbers diverge. This manifests wherever filtering is split
+across locations.
+
+### 4. Guard-gated processing
+```typescript
+if (sourceParentId && targetParentId) {
+  // cross-parent move logic
+}
+// What about: no source parent → target parent?
+// What about: source parent → no target (unassign)?
+```
+When a guard requires BOTH values to be present, it excludes three
+cases: only-source, only-target, and neither. Are all three exclusions
+intentional?
+
+### 5. Default-value masking
+```typescript
+const category = item.category || 'default';
+// If category is intentionally empty/null, this silently assigns 'default'
+// Was the default intentional or does it mask missing data?
+```

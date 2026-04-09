@@ -31,6 +31,9 @@ related:
     path: .claude/skills/debrief/phases/loose-ends.md
     role: "Project-specific: non-project items to capture"
   - type: file
+    path: .claude/skills/debrief/phases/audit-pattern-capture.md
+    role: "Instruction: detect recurring audit findings and write to patterns-project.md"
+  - type: file
     path: .claude/skills/debrief/phases/upstream-feedback.md
     role: "Instruction: surface CC friction back to source repo"
   - type: file
@@ -195,7 +198,21 @@ results in the report only when they surfaced or changed something.
 
 If no cabinet members match, skip silently and proceed.
 
-### 4. Auto-Maintenance (core)
+### 4. Audit Pattern Capture (core)
+
+Read `phases/audit-pattern-capture.md`. This is an **instruction phase**
+shipped with CC — it detects recurring audit findings from cabinet
+consultations and writes them to the relevant cabinet member's
+`patterns-project.md` file.
+
+Only runs if an audit produced findings this session. If no audit ran,
+skip silently. The phase consumes what cabinet members produced in
+step 3 — it doesn't run cabinet members itself.
+
+**This phase should not be skipped.** It's how project-level patterns
+accumulate over time, feeding the promotion pipeline.
+
+### 5. Auto-Maintenance (core)
 
 Read `phases/auto-maintenance.md` for recurring automated tasks that
 should run at session end. Same principle as orient's auto-maintenance:
@@ -203,7 +220,7 @@ operations that decay if left to human memory.
 
 **Skip (absent/empty).**
 
-### 5. Update State (core)
+### 6. Update State (core)
 
 Read `phases/update-state.md` for what state files and documentation
 to update. This keeps the system's persistent state aligned with
@@ -238,7 +255,7 @@ needs updating:
   description still match reality? If the project has evolved
   significantly, propose updating the registry entry.
 
-### 6. Health Checks (core)
+### 7. Health Checks (core)
 
 Read `phases/health-checks.md` for end-of-session health checks. These
 verify that the session's work didn't break anything and that the system
@@ -246,7 +263,7 @@ is in a good state for next time.
 
 **Skip (absent/empty).**
 
-### 7. Persist Work
+### 8. Persist Work
 
 Commit and push the session's changes. Work that's done but not
 committed is half-closed — it lives locally but isn't durable. Persist
@@ -256,7 +273,7 @@ while lessons go to memory (which may live outside the repo).
 Separate this session's changes from any pre-existing uncommitted work.
 Don't silently bundle unrelated changes.
 
-### 8. Record Lessons (core)
+### 9. Record Lessons (core)
 
 Read `phases/record-lessons.md` for how to capture what was learned.
 This is the second irreducible purpose of debrief — the first is
@@ -296,7 +313,7 @@ in the debrief report:
 > different destinations (memory/feedback vs finding database). Both
 > feed the enforcement pipeline, but through different channels.
 
-### 9. Upstream Feedback (core)
+### 10. Upstream Feedback (core)
 
 Read `phases/upstream-feedback.md`. This is an **instruction phase**
 shipped with CC — it tells Claude to reflect on whether the session
@@ -313,7 +330,7 @@ what was confusing, what needed a workaround.
 
 **This phase should not be skipped.** It's how CC learns from use.
 
-### 10. Skill Discovery (core)
+### 11. Skill Discovery (core)
 
 Silently reflect: did this session involve a workflow the user is
 likely to repeat? Not every session produces one — most don't. But
@@ -344,7 +361,7 @@ generalizable pattern, cabinet member, or convention? If so, mention
 `/cc-extract` as an option for proposing it upstream to CC. This is
 rarer than project-specific skills.
 
-### 11. Cabinet Check (core)
+### 12. Cabinet Check (core)
 
 Silently reflect: is this project's expertise coverage still right
 for what it's actually doing?
@@ -409,7 +426,7 @@ If the user says no, move on. Don't re-suggest the same gap next
 session. Track declined suggestions in system-status.md or equivalent
 so you don't nag.
 
-### 12. Capture Loose Ends (core)
+### 13. Capture Loose Ends (core)
 
 Read `phases/loose-ends.md` for non-project items and environmental
 concerns to capture before closing. Sessions generate non-project
@@ -418,14 +435,14 @@ these aren't captured somewhere, they rely on human memory.
 
 **Skip (absent/empty).**
 
-### 13. Discover Custom Phases
+### 14. Discover Custom Phases
 
 After running the core phases above, check for any additional phase
 files in `phases/` that the skeleton doesn't define. These are project-
 specific extensions. Each custom phase file declares its position in
 the workflow. Execute them at their declared position.
 
-### 14. Present Report (presentation)
+### 15. Present Report (presentation)
 
 Read `phases/report.md` for how to present the debrief summary.
 
@@ -445,6 +462,7 @@ Read `phases/report.md` for how to present the debrief summary.
 | `update-state.md` | Default: check system-status.md | What state files to update |
 | `health-checks.md` | Skip | Session-end health checks |
 | `record-lessons.md` | Default: ask what was learned | How to capture learnings |
+| `audit-pattern-capture.md` | **Instruction: always runs** | Detect recurring audit findings, write to patterns-project.md |
 | `upstream-feedback.md` | **Instruction: always runs** | Surface CC friction to source repo |
 | `loose-ends.md` | Skip | Non-project items to capture |
 | `report.md` | Default: brief summary | How to present the report |
@@ -456,9 +474,9 @@ Phases are either **core** (maintain system state) or **presentation**
 skip presentation phases. Core phases always run.
 
 - **Core phases** (always run): inventory, close-work,
-  cabinet-consultations, auto-maintenance, update-state, health-checks,
-  persist-work, record-lessons, upstream-feedback, skill-discovery,
-  cabinet-check, loose-ends
+  cabinet-consultations, audit-pattern-capture, auto-maintenance,
+  update-state, health-checks, persist-work, record-lessons,
+  upstream-feedback, skill-discovery, cabinet-check, loose-ends
 - **Presentation phases** (skippable): report
 
 A project that wants a quick debrief variant skips the report and

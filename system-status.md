@@ -10,7 +10,17 @@
 - Safe reset via `--reset` (manifest-aware, won't delete customized files)
 - Settings merge (hooks into `.claude/settings.json`)
 - Optional SQLite work tracker setup
-- 27 expert cabinet members for audit system
+- 27 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
+- Cabinet member template: `_cabinet-member-template.md` defines required structure for /seed
+- Tiered Investigation Protocol: Stage 1 (Instrument — automated tools with fallbacks) → Stage 2 (Analyze — manual reasoning informed by Stage 1)
+- `tools:` frontmatter on all 27 members declares tool dependencies (informational, not hard deps)
+- Historically Problematic Patterns: two-file overlay — upstream SKILL.md (CC-owned) + `patterns-project.md` (project-owned)
+- Pattern lifecycle: audit finding → recurs → debrief writes patterns-project.md → universal patterns promoted upstream → cc-upgrade deduplicates
+- Audit pattern capture: debrief phase detects recurring findings and writes to patterns-project.md
+- Pattern promotion: debrief upstream-feedback phase scans patterns-project.md for universal candidates
+- cc-upgrade deduplication: compares upstream HPP against patterns-project.md, removes promoted duplicates
+- Validate check: shell validator verifies cabinet member structure (tools, Investigation Protocol, Portfolio Boundaries, Calibration Examples, HPP)
+- Skill index includes `tools` field from cabinet member frontmatter
 - Split briefing files: identity, architecture, jurisdictions, cabinet, work-tracking, api
 - Cabinet member gap detection in debrief (anti-entropy)
 - Feedback outbox for non-developers (`~/.claude/cc-feedback-outbox.json`)
@@ -53,7 +63,7 @@
 
 ## What's Active
 
-- Published at v0.12.1 on npm as `create-claude-cabinet`
+- Published at v0.13.0 on npm as `create-claude-cabinet`
 - Two downstream consumers: Flow (v0.12.1), multiShopper (v0.5.4, experiment)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)

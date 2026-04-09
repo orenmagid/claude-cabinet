@@ -12,6 +12,9 @@ briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
 standing-mandate: audit, plan, investigate
+tools:
+  - fetch_docs (all projects -- Claude Code llms.txt and capability pages)
+  - WebSearch (all projects -- ecosystem monitoring)
 directives:
   plan: >
     Evaluate structural fit. Does this plan compose well with existing
@@ -285,3 +288,24 @@ This cabinet member has the broadest scope -- the whole system:
 - Three npm packages provide overlapping functionality (e.g., two HTTP
   clients, two date libraries). This is a build-vs-buy debt pattern --
   the team adopted new tools without removing old ones.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->

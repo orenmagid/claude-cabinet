@@ -1,7 +1,7 @@
 # Upstream Feedback — Surface CC Friction to the Source
 
-**Position:** Runs after record-lessons (step 7), before capture loose
-ends (step 8). Lessons are fresh; friction is top of mind.
+**Position:** Runs after record-lessons (step 9), before skill discovery
+(step 11). Lessons are fresh; friction is top of mind.
 
 **This is an instruction phase** — it tells Claude what to do, not a
 customization point for the project. It ships with CC and should not
@@ -22,6 +22,9 @@ one narrow question: **was there friction with anything CC provided?**
 This is NOT the same as `/cc-extract` (which looks for generalizable
 artifacts to upstream). This is field feedback — "this thing you shipped
 hurt when I used it."
+
+This phase also handles **pattern promotion** — surfacing project-level
+cabinet patterns that look universal enough to promote upstream.
 
 ## Workflow
 
@@ -123,7 +126,52 @@ points to a local path rather than a `node_modules` path):
 send saved feedback, read the outbox, post each `pending` entry as
 a GitHub issue, and update its status to `"sent"` with the issue URL.
 
-### 5. Done
+### 5. Check for Pattern Promotion Candidates
+
+After handling CC friction feedback, check for cabinet member patterns
+that should be promoted upstream.
+
+**Scan `patterns-project.md` files:**
+
+```bash
+# Find all project-level pattern files
+find .claude/skills/cabinet-*/patterns-project.md 2>/dev/null
+```
+
+For each file that exists, read it. For each pattern entry, evaluate:
+
+- **Is it universal?** Would this pattern apply to any project using
+  the same technology, or is it specific to this project's domain/codebase?
+- **Is it mature?** Has it been observed 3+ times, or is it still early?
+- **Is it already upstream?** Check the member's SKILL.md `## Historically
+  Problematic Patterns` section — if it's already there, skip it.
+
+**If a promotion candidate is found**, draft a feedback item:
+
+```markdown
+---
+type: pattern-promotion
+source: [project name]
+date: [ISO date]
+component: cabinet-[member-name]
+---
+
+## Pattern promotion: [pattern name]
+
+**Cabinet member:** cabinet-[member-name]
+**Pattern:** [description from patterns-project.md]
+**Occurrences:** [count] across [count] audits
+**Why it's universal:** [1 sentence — why this isn't project-specific]
+```
+
+Deliver via the same mechanism as friction feedback (step 4 above —
+linked → write to CC `feedback/`, not linked → GitHub issue or outbox).
+
+**Most sessions produce no promotion candidates.** Pattern promotion
+is rare — it requires both a mature project-level pattern AND evidence
+that the pattern is universal. Don't force it.
+
+### 6. Done
 
 Note in the debrief report what was sent and where. Move on to the
 next phase.

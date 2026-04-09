@@ -11,6 +11,7 @@ briefing:
   - _briefing-jurisdictions.md
 interactive-only: true
 standing-mandate: audit
+tools: [preview tools (web projects -- interaction testing)]
 ---
 
 # Usability Cabinet Member
@@ -188,3 +189,24 @@ when you need to understand why something behaves the way it does.
   conditional rendering replaced an editable control with a non-editable display
   based on state. Rule: never swap an editable control for a read-only one
   mid-workflow. Auto-fill is fine, but the field must stay editable.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->

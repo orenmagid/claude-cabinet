@@ -19,6 +19,7 @@ directives:
     Review what was built this session. Update the feature adoption
     ledger if new capabilities were added. Note any that need
     discoverability work.
+tools: []
 topics:
   - feature
   - adoption
@@ -200,3 +201,24 @@ that /process-inbox gets used, not how it works internally.
 
 **Too pushy:** Spotlighting the same feature for the 4th time. After 3
 spotlights without advancement, mark it `declined` and move on.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->

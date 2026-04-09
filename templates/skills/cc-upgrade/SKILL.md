@@ -368,6 +368,29 @@ If the upstream schema has new columns or tables:
 If the upgrade added modules the project hadn't installed before,
 walk through what they do and whether to keep them.
 
+#### patterns-project.md Deduplication
+
+After installing updated cabinet member SKILL.md files, check for
+patterns that were promoted from project-level to upstream:
+
+1. For each `cabinet-*/SKILL.md` that was updated in this upgrade,
+   read the `## Historically Problematic Patterns` section below the
+   `<!-- Universal patterns below this line -->` marker.
+2. Check if a corresponding `patterns-project.md` exists in that
+   member's directory.
+3. If it does, compare entries: for each pattern in `patterns-project.md`,
+   check if the upstream section now contains the same pattern (match by
+   substance, not exact text — the upstream wording may have been edited).
+4. If matches are found, present them to the user:
+   "These patterns from your project file are now in the upstream version:
+   [list]. I'll remove them from `patterns-project.md` to avoid duplication."
+5. After confirmation, remove the promoted entries from `patterns-project.md`.
+   If the file becomes empty (no remaining project-specific patterns),
+   delete it.
+
+This prevents the same pattern from appearing in both the upstream
+section and the project overlay after a promotion cycle completes.
+
 #### Terminology Pass (v0.5 → v0.6 migrations only)
 
 After structural migration (Step 2.5) and manifest updates (Step 2),

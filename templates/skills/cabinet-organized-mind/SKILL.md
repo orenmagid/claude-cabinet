@@ -14,6 +14,7 @@ briefing:
   - _briefing-identity.md
   - _briefing-architecture.md
 standing-mandate: audit, plan
+tools: []
 directives:
   plan: >
     Evaluate cognitive load. Will this plan's result be understandable
@@ -342,3 +343,24 @@ component." That's a framework-quality concern.
 **Wrong direction (violates the framework):** "The user should check
 their inbox every morning." Never suggest adding a manual step. Suggest
 making the system surface what needs attention.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->

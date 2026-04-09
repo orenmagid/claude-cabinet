@@ -13,6 +13,10 @@ briefing:
   - _briefing-architecture.md
   - _briefing-jurisdictions.md
 standing-mandate: audit
+tools:
+  - grep (all projects -- import scanning, component inventory)
+  - framework-specific ESLint plugins (if installed -- pattern detection)
+  - WebSearch (framework documentation, component API reference)
 ---
 
 # Framework Quality
@@ -82,27 +86,97 @@ Read `_briefing.md` to learn what UI framework the project uses. Then:
   theming, import boundary
 - **mandatory-for:** Plans that add or modify UI components
 
-## Research Method
+## Investigation Protocol
 
-### The Component Inventory Method
+**Two stages: measure first, then reason.** Run import scans and governance
+checks to build a concrete inventory before evaluating component choices.
+Every command is standard shell — no special tools required. The member
+produces useful findings with or without framework-specific tooling.
+
+### Stage 1: Instrument
+
+**1a. Framework import inventory**
+
+```bash
+# Identify the framework package (adjust for your project)
+# Common: @mantine/core, @chakra-ui/react, @mui/material, @radix-ui/*
+grep -r "from '@" src/ --include='*.tsx' --include='*.jsx' | \
+  grep -oP "from '(@[^/]+/[^']+|[^']+)'" | sort | uniq -c | sort -rn | head -30
+```
+
+This gives you the actual import frequency. High-count imports are the
+framework's most-used components. Low-count or zero-count framework
+components are potential underuse signals.
+
+**1b. Custom component scan**
+
+```bash
+# List all custom components (adjust path for project)
+ls src/components/ 2>/dev/null
+
+# Find components that don't import the framework at all
+# These are hand-rolled — potential framework equivalents exist
+for f in src/components/*.tsx; do
+  grep -L "from '@" "$f" 2>/dev/null
+done
+```
+
+**1c. Parallel implementation detection** (strongest underuse signal)
+
+```bash
+# Find both framework and hand-rolled versions of the same pattern
+# Example: framework Button vs hand-rolled <button>
+grep -rn --include='*.tsx' '<button ' src/ | grep -v 'node_modules'
+grep -rn --include='*.tsx' "from '.*Button'" src/ | grep -v 'node_modules'
+# If both exist, there's migration residue
+```
+
+**1d. ESLint plugin governance check**
+
+```bash
+# Check if framework-specific ESLint plugin is installed
+grep -E 'eslint-plugin-(chakra|mantine|material|radix)' package.json 2>/dev/null
+# If nothing found, flag as governance gap
+```
+
+**1e. Wrapper detection**
+
+```bash
+# Find components that import a framework component and re-export
+# These are wrapper candidates — check if they add value
+grep -rn --include='*.tsx' "from '@" src/components/ | \
+  while read line; do
+    file=$(echo "$line" | cut -d: -f1)
+    grep -l "export " "$file" 2>/dev/null
+  done | sort -u
+```
+
+### Stage 1 results
+
+Summarize before proceeding:
+- N framework components used (top 10 by frequency)
+- N custom components found (N with no framework imports)
+- N parallel implementations detected (framework + hand-rolled)
+- Framework ESLint plugin: installed / not installed / N/A
+- N potential wrapper components
+
+### Stage 2: Analyze
+
+Interpret Stage 1 results + manual code reading. Use the component
+inventory built in Stage 1 as the basis for all evaluations below.
+
+**The Component Inventory Method** (react-scanner methodology applied
+manually): scan imports, tally usage, cross-reference against the full
+inventory, identify gaps. Stage 1 gives you the raw data; Stage 2 is
+the cross-referencing and evaluation.
 
 Before evaluating individual files, build a mental inventory:
 
-1. **Scan framework imports** — which framework components does the
-   project actually use? Grep for import statements from the framework
-   package.
-2. **Cross-reference against the framework's full component list** —
-   what's available but never imported? These are potential underuse gaps.
-3. **Find custom components** — scan the component directory for
-   hand-rolled implementations. For each, ask: does the framework
-   provide an equivalent?
-4. **Find parallel implementations** — this is the strongest signal of
-   incomplete adoption. The same UI pattern implemented two different
-   ways — one using the framework, one hand-rolled. Grep for both the
-   framework component import and its hand-rolled equivalent.
-
-This is the react-scanner methodology applied manually: scan imports,
-tally usage, cross-reference against the full inventory, identify gaps.
+1. From Stage 1a: which framework components does the project actually use?
+2. Cross-reference against the framework's full component list (fetch docs
+   via MCP server or WebSearch) — what's available but never imported?
+3. From Stage 1b: which custom components have framework equivalents?
+4. From Stage 1c: where do parallel implementations coexist?
 
 ### What to Evaluate
 
@@ -338,3 +412,24 @@ That's usability territory — interaction discovery, not framework usage.
 **Wrong portfolio:** "The app should use a different component library."
 That's architecture territory — build-vs-buy decisions. You evaluate
 usage of whatever framework is already chosen.
+
+## Historically Problematic Patterns
+
+Two sources — read both and merge at runtime:
+
+1. **This section** (upstream, CC-owned) — universal patterns that apply to
+   any project. Grows when consuming projects promote recurring findings
+   via field-feedback.
+2. **`patterns-project.md`** in this skill's directory — project-specific
+   patterns discovered during audits of this particular project. Project-
+   owned, never overwritten by CC upgrades.
+
+If `patterns-project.md` exists, read it alongside this section. Both
+inform your analysis equally.
+
+**How patterns get here:** A consuming project's audit finds a real issue.
+If the same pattern recurs across projects, it gets promoted upstream via
+field-feedback. The CC maintainer adds it to this section. Project-specific
+patterns that don't generalize stay in `patterns-project.md`.
+
+<!-- Universal patterns below this line -->
