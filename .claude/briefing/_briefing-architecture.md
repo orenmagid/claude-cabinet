@@ -14,7 +14,7 @@ Single-layer Node CLI with no build step:
 - `install.sh` — shell installer (no Node.js required, downloads from npm registry)
 - `templates/` — all skill definitions, phase files, hooks, scripts, cabinet members
 
-No data store. No server. One runtime dependency (`prompts` for interactive CLI).
+No server. Two runtime dependencies (`prompts` for interactive CLI, `better-sqlite3` for work tracking).
 Two install paths: `npx create-claude-cabinet` (Node.js) or `curl | bash` (shell).
 Published to npm as `create-claude-cabinet`.
 

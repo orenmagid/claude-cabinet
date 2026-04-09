@@ -42,7 +42,10 @@
 - Historian memory health measurement: growth, connectivity, contradictions, retrieval quality
 - Dogfooded: installed on itself (full install, all 9 modules)
 - Split briefing files for dogfood install: identity, architecture, jurisdictions, cabinet, work-tracking
-- Skill index (`_index.json`): generated at install time, caches metadata for all 49 skills
+- Skill index (`_index.json`): generated at install time, caches metadata for all 50 skills
+- Plugin skill indexing: `generateSkillIndex()` reads `.claude-plugin/plugin.json` and indexes plugin skills with `type: "plugin"` and `source` field
+- `/cc-feedback` skill: file upstream feedback mid-session without waiting for debrief (lifecycle module)
+- Menu skill: third "Plugins" group for plugin-type skills, grouped by source
 - `/cabinet` skill: front door to browse and consult expert cabinet members
 - `/work-tracker` skill: opens work tracking UI interactively
 - Standing mandates in frontmatter: 23 cabinet members declare which contexts they activate in
@@ -63,8 +66,8 @@
 
 ## What's Active
 
-- Published at v0.13.0 on npm as `create-claude-cabinet`
-- Two downstream consumers: Flow (v0.12.1), multiShopper (v0.5.4, experiment)
+- Published at v0.13.1 on npm as `create-claude-cabinet`
+- Three downstream consumers: Flow (v0.13.1), article-rewriter (v0.13.1), CC dogfood (v0.13.1)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
