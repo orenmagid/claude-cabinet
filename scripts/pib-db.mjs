@@ -44,9 +44,16 @@ function getDb() {
     db.pragma('journal_mode = WAL');
     db.pragma('foreign_keys = ON');
     return db;
-  } catch {
-    console.error('Error: better-sqlite3 not found. Install it:');
-    console.error('  npm install better-sqlite3');
+  } catch (err) {
+    if (err.code === 'ERR_DLOPEN_FAILED') {
+      console.error('Error: better-sqlite3 native module version mismatch.');
+      console.error('  Rebuild it for your current Node version:');
+      console.error('  npm rebuild better-sqlite3');
+    } else {
+      console.error('Error: better-sqlite3 not found. Install it:');
+      console.error('  npm install better-sqlite3');
+    }
+    if (err.message) console.error(`  (${err.message.split('\n')[0]})`);
     process.exit(1);
   }
 }
