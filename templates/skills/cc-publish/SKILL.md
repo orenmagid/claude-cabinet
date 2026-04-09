@@ -78,3 +78,21 @@ With user confirmation:
   no unexpected fields were added or existing fields changed.
 - Update `system-status.md` if it exists
 - Report the published version and npm URL
+
+### 6. Update Local Consumers
+
+Read `~/.claude/cc-registry.json` for all registered CC projects. For
+each project that is NOT the CC source repo itself:
+
+1. Check its current version (`cat <path>/.ccrc.json | jq -r .version`)
+2. If it's older than the just-published version, update it:
+   - `cd <path> && npx create-claude-cabinet@latest --yes`
+   - Verify the install succeeded (`.ccrc.json` version matches)
+3. Report which consumers were updated and which were already current
+
+**Important:**
+- Never force-install or pass flags beyond `--yes` — the installer
+  reads the existing `.ccrc.json` to determine install type
+- If a consumer's path doesn't exist, note it (stale registry entry)
+  but don't error — mention it in the report
+- If an install fails, report the error but continue with other consumers

@@ -139,6 +139,12 @@ initialized, skip gracefully.
    sqlite3 pib.db "UPDATE actions SET completed = 1, completed_at = date('now') WHERE fid = '<fid>'"
    ```
 
+**Field feedback resolution:** After closing actions, check `feedback/`
+for `.md` files from consuming projects. For each, compare the described
+friction against this session's commits. If the friction was addressed,
+propose deleting the feedback file (it's a queue, not a ledger — the
+fix lives in git history). Partially addressed feedback stays open.
+
 **Project completion scan:** After closing actions, check for projects
 where all actions are now done:
 

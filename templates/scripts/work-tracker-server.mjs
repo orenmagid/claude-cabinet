@@ -7,13 +7,13 @@
 
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import Database from 'better-sqlite3';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const PORT = parseInt(process.env.PORT || process.argv.find((_, i, a) => a[i - 1] === '--port') || '3458');
+const PREFERRED_PORT = parseInt(process.env.PORT || process.argv.find((_, i, a) => a[i - 1] === '--port') || '3458');
 const DB_PATH = resolve(process.argv.find((_, i, a) => a[i - 1] === '--db') || 'pib.db');
 
 if (!existsSync(DB_PATH)) {
@@ -21,6 +21,18 @@ if (!existsSync(DB_PATH)) {
   console.error('Run: node scripts/pib-db.mjs init');
   process.exit(1);
 }
+
+// Derive project name from .ccrc.json, package.json, or directory name
+function getProjectName() {
+  for (const file of ['.ccrc.json', 'package.json']) {
+    try {
+      const data = JSON.parse(readFileSync(resolve(file), 'utf-8'));
+      if (file === 'package.json' && data.name) return data.name;
+    } catch {}
+  }
+  return basename(resolve('.'));
+}
+const PROJECT_NAME = getProjectName();
 
 const db = new Database(DB_PATH, { readonly: false });
 db.pragma('journal_mode = WAL');
@@ -42,7 +54,7 @@ async function readBody(req) {
 }
 
 const server = createServer(async (req, res) => {
-  const url = new URL(req.url, `http://localhost:${PORT}`);
+  const url = new URL(req.url, `http://localhost:${server.address()?.port || PREFERRED_PORT}`);
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
@@ -159,6 +171,11 @@ const server = createServer(async (req, res) => {
       return json(res, { ok: true });
     }
 
+    // GET /api/meta — project name and server info
+    if (req.method === 'GET' && url.pathname === '/api/meta') {
+      return json(res, { projectName: PROJECT_NAME });
+    }
+
     // GET /api/stats — dashboard summary
     if (req.method === 'GET' && url.pathname === '/api/stats') {
       const projects = db.prepare(`
@@ -182,7 +199,23 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`Work tracker at http://localhost:${PORT}`);
+server.listen(PREFERRED_PORT, () => {
+  const actualPort = server.address().port;
+  console.log(`Work tracker at http://localhost:${actualPort}`);
   console.log(`Database: ${DB_PATH}`);
+  console.log(`Project: ${PROJECT_NAME}`);
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`Port ${PREFERRED_PORT} in use, finding a free port...`);
+    server.listen(0, () => {
+      const actualPort = server.address().port;
+      console.log(`Work tracker at http://localhost:${actualPort}`);
+      console.log(`Database: ${DB_PATH}`);
+      console.log(`Project: ${PROJECT_NAME}`);
+    });
+  } else {
+    throw err;
+  }
 });

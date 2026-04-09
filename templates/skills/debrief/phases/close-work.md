@@ -87,6 +87,33 @@ notes, create new items for each. Known work that lives only in completed
 items' notes will be forgotten. There is no "later" — create it now.
 -->
 
+## Resolve Field Feedback
+
+After closing actions, check the `feedback/` directory for field feedback
+files from consuming projects. For each file, evaluate whether this
+session's work addressed the friction described.
+
+**How to check:**
+1. Scan `feedback/` for `.md` files (skip `.gitkeep`)
+2. For each file, read the `component` from frontmatter and the friction
+   description
+3. Cross-reference against this session's git log and changed files —
+   did the session fix or address the reported friction?
+4. For each resolved item, present to the user:
+   > "Field feedback resolved: [title] from [source] — [one-line summary
+   > of what fixed it]. Delete the feedback file? (yes/no)"
+5. On confirmation, delete the feedback file. It served its purpose —
+   the friction was addressed and the fix is in the commit history.
+
+**Why delete rather than mark resolved?** Feedback files are a queue, not
+a ledger. The commit history records what was fixed and when. Keeping
+resolved feedback files around creates stale noise that orient has to
+filter through every session.
+
+**Partially addressed feedback** stays open. If the session fixed one
+aspect but not another, note what was fixed in the file (append a
+`## Partial resolution` section) but don't delete it.
+
 ## Project Completion Scan
 
 After closing individual actions, check for projects that may be ready
