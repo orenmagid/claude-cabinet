@@ -1,14 +1,14 @@
 ---
-name: extract
+name: cc-extract
 description: |
   Analyze non-CC skills, cabinet members, and other artifacts in a consuming
   project and propose candidates for upstreaming into Claude Cabinet as
   generic templates. Does not perform the extraction — files a proposal
   that surfaces during orient in the CC repo. Use when: "extract",
-  "upstream this", "should this be in CC?", "/extract".
+  "upstream this", "should this be in CC?", "/cc-extract".
 ---
 
-# /extract — Propose Artifacts for Upstreaming to CC
+# /cc-extract — Propose Artifacts for Upstreaming to CC
 
 ## Purpose
 
@@ -154,9 +154,9 @@ After filing, summarize:
 
 The user can target specific artifacts:
 
-- `/extract` — scan everything
-- `/extract skills/my-skill` — evaluate a specific skill
-- `/extract cabinet-members` — evaluate all custom cabinet members
+- `/cc-extract` — scan everything
+- `/cc-extract skills/my-skill` — evaluate a specific skill
+- `/cc-extract cabinet-members` — evaluate all custom cabinet members
 
 ## What This Does NOT Do
 

@@ -15,9 +15,9 @@
 # Format:
 #
 #   cabinet-record-keeper:
-#     standing-mandate: [publish]
+#     standing-mandate: [cc-publish]
 #     directives:
-#       publish: >
+#       cc-publish: >
 #         Check all docs for staleness and missing additions
 #         before the version is published.
 #

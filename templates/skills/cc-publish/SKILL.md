@@ -1,13 +1,13 @@
 ---
-name: publish
+name: cc-publish
 description: |
   Publish a new version of Claude Cabinet to npm. Analyzes changes since
   last release, suggests a version bump (patch/minor/major), updates
   package.json, commits, tags, and publishes. Use when: "publish",
-  "release", "ship it", "/publish".
+  "release", "ship it", "/cc-publish".
 ---
 
-# /publish — Release to npm
+# /cc-publish — Release to npm
 
 ## Purpose
 

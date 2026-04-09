@@ -19,7 +19,7 @@ one narrow question: **was there friction with anything CC provided?**
 - A missing capability that required a workaround
 - An unclear SKILL.md that led to wasted time
 
-This is NOT the same as `/extract` (which looks for generalizable
+This is NOT the same as `/cc-extract` (which looks for generalizable
 artifacts to upstream). This is field feedback — "this thing you shipped
 hurt when I used it."
 
@@ -75,7 +75,7 @@ friction points (rare), present each separately.
 ### 4. Deliver
 
 If the user confirms, deliver the feedback. Detection and delivery
-follow the same pattern as `/extract`:
+follow the same pattern as `/cc-extract`:
 
 **If linked** (the CC package resolves to a local directory — check
 if `node -e "console.log(require.resolve('create-claude-cabinet'))"`

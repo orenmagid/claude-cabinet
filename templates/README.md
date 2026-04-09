@@ -40,20 +40,20 @@ templates, see [EXTENSIONS.md](EXTENSIONS.md).
 | `skills/debrief-quick/` | Quick debrief variant — core phases only, skip presentation. |
 | `skills/execute/` | Execute a plan with cabinet member checkpoints. 3-checkpoint protocol (pre-implementation, per-file-group, pre-commit). 5 phase files. |
 | `skills/execute-plans/` | Batch execution of multiple plans with conflict detection. |
-| `skills/extract/` | Analyze project artifacts and propose upstream extraction candidates for Claude Cabinet. |
+| `skills/cc-extract/` | Analyze project artifacts and propose upstream extraction candidates for Claude Cabinet. |
 | `skills/investigate/` | Structured codebase exploration: frame, observe, hypothesize, test, conclude. |
-| `skills/link/` | Set up local development linking for Claude Cabinet source repo work. |
+| `skills/cc-link/` | Set up local development linking for Claude Cabinet source repo work. |
 | `skills/memory/` | Browse, search, and manage semantic memory via omega. |
 | `skills/menu/` | Dynamically discover and display all available skills. Reads from `_index.json`. |
 | `skills/onboard/` | Conversational onboarding. Interviews you, generates briefings, wires the session loop. Re-runnable. 8 phase files. |
 | `skills/orient/` | Session start. Load context, sync data, scan work, run health checks, spawn cabinet consultations, show skills menu. 7 phase files. |
 | `skills/orient-quick/` | Quick orient variant — core phases only, skip presentation. |
 | `skills/plan/` | Structured planning with cabinet critique. Research, overlap check, draft, critique, completeness, present, file. 9 phase files. |
-| `skills/publish/` | Publish workflow (CC source repo only, not shipped to consumers). |
+| `skills/cc-publish/` | Publish workflow (CC source repo only, not shipped to consumers). |
 | `skills/pulse/` | Self-description accuracy check. Count freshness, dead references, staleness. 3 phase files. |
 | `skills/seed/` | Recruit new cabinet members. Detect technology signals, propose expertise, build collaboratively. 4 phase files. |
 | `skills/triage-audit/` | Audit finding triage via local web UI or CLI. Load, present, apply verdicts. 3 phase files. |
-| `skills/unlink/` | Remove local development linking. Returns to published npm package. |
+| `skills/cc-unlink/` | Remove local development linking. Returns to published npm package. |
 | `skills/validate/` | Run structural validation checks. Validators defined in phase files. |
 | `skills/work-tracker/` | Open the work tracking UI interactively. Starts local server. |
 

@@ -1,12 +1,12 @@
 ---
-name: unlink
+name: cc-unlink
 description: |
   Remove local development linking for Claude Cabinet. Returns the
   project to using the published npm version. Use when: "unlink",
-  "stop using local CC", "use published version", "/unlink".
+  "stop using local CC", "use published version", "/cc-unlink".
 ---
 
-# /unlink — Remove Local Development Link
+# /cc-unlink — Remove Local Development Link
 
 ## Purpose
 

@@ -307,7 +307,7 @@ it in the report for the user to confirm, edit, or dismiss. If
 confirmed, the feedback is delivered to the CC repo (via local link
 or GitHub issue). If nothing — the phase is silent.
 
-This is different from `/extract` (which proposes generalizable
+This is different from `/cc-extract` (which proposes generalizable
 artifacts for upstreaming). This captures field friction: what hurt,
 what was confusing, what needed a workaround.
 
@@ -341,7 +341,7 @@ If the user says no, move on.
 **Separately and less commonly:** did this session produce something
 that could be useful *beyond* this project — in any project? A
 generalizable pattern, cabinet member, or convention? If so, mention
-`/extract` as an option for proposing it upstream to CC. This is
+`/cc-extract` as an option for proposing it upstream to CC. This is
 rarer than project-specific skills.
 
 ### 11. Cabinet Check (core)

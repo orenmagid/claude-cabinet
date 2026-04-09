@@ -16,7 +16,7 @@
 - Feedback outbox for non-developers (`~/.claude/cc-feedback-outbox.json`)
 - GitHub setup guide for non-developer feedback delivery
 - Conversational onboard, seed, and cc-upgrade skills
-- Link/unlink skills for local dev workflow
+- cc-link/cc-unlink skills for local dev workflow
 - Publish skill (CC-source-repo only, not shipped to consumers)
 - Record-keeper handles doc freshness during debrief cabinet consultations (Step 3)
 - cc-health Check 6 has concrete cross-references (ccrc vs briefing, pib-db vs claims)
