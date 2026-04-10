@@ -71,8 +71,8 @@
 
 ## What's Active
 
-- Published at v0.14.0 on npm as `create-claude-cabinet`
-- Three downstream consumers: Flow (v0.14.0), article-rewriter (v0.14.0), CC dogfood (v0.14.0)
+- Published at v0.14.2 on npm as `create-claude-cabinet`
+- Three downstream consumers: Flow (v0.14.1), article-rewriter (v0.14.2), CC dogfood (v0.14.2)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
