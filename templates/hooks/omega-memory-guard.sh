@@ -28,7 +28,7 @@ fi
 
 # Only care about memory directory paths
 case "$FILE_PATH" in
-  */.claude/memory/*|*/.claude/projects/*/memory/*)
+  *.claude/memory/*|*.claude/projects/*/memory/*)
     ;;
   *)
     echo '{"decision":"allow"}'
