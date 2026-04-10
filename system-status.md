@@ -63,11 +63,16 @@
 - better-sqlite3 error handling: distinguishes version mismatch from missing module
 - settings-merge.js: MEMORY_HOOKS constant and `includeMemory` param for memory module hook injection
 - db-setup.js: no longer injects `type:module` into package.json (removed to prevent CLI breakage)
+- Work-tracker: auto-detects a free port at startup (no hardcoded port conflicts)
+- Work-tracker UI: displays project name in header and browser tab (reads from package.json)
+- Work-tracker: `/api/meta` endpoint exposes project name and other metadata to the UI
+- Debrief close-work phase: resolves field feedback from the feedback queue (queue-not-ledger pattern)
+- cc-publish Step 6: automatically updates all registered local consumers from cc-registry after publish
 
 ## What's Active
 
-- Published at v0.13.1 on npm as `create-claude-cabinet`
-- Three downstream consumers: Flow (v0.13.1), article-rewriter (v0.13.1), CC dogfood (v0.13.1)
+- Published at v0.14.0 on npm as `create-claude-cabinet`
+- Three downstream consumers: Flow (v0.14.0), article-rewriter (v0.14.0), CC dogfood (v0.14.0)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)

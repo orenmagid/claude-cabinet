@@ -410,7 +410,7 @@
 </head>
 <body>
   <header>
-    <h1>Work Tracker</h1>
+    <h1><span id="project-name" style="color: #7048e8;"></span> <span style="color: #5c5f66; font-weight: 400;">Work Tracker</span></h1>
     <div class="stats" id="stats"></div>
   </header>
 
@@ -456,14 +456,20 @@
     // Fetch data
     async function load() {
       try {
-        const [projRes, actRes, statsRes] = await Promise.all([
+        const [projRes, actRes, statsRes, metaRes] = await Promise.all([
           fetch(`/api/projects?status=${currentStatus}`),
           fetch('/api/actions?status=all'),
           fetch('/api/stats'),
+          fetch('/api/meta'),
         ]);
         projects = await projRes.json();
         actions = await actRes.json();
         const stats = await statsRes.json();
+        const meta = await metaRes.json();
+        if (meta.projectName) {
+          document.title = `${meta.projectName} — Work Tracker`;
+          document.getElementById('project-name').textContent = meta.projectName;
+        }
         renderStats(stats);
         document.getElementById('loading').style.display = 'none';
         render();
