@@ -8,7 +8,7 @@
 // Usage:
 //   node scripts/pib-db.mjs init                        # Create/migrate DB
 //   node scripts/pib-db.mjs query "SELECT * FROM ..."   # Run a query
-//   node scripts/pib-db.mjs create-action "Do the thing" --area dev
+//   node scripts/pib-db.mjs create-action "Do the thing" --projectFid prj:abc --area dev
 //   node scripts/pib-db.mjs list-actions [--status X]   # Open actions (or filtered)
 //   node scripts/pib-db.mjs update-action act:abc --status in-progress
 //   node scripts/pib-db.mjs complete-action act:abc123
@@ -356,7 +356,7 @@ switch (command) {
 Commands:
   init                              Create/migrate the database
   query "SQL"                       Run a SQL query
-  create-action "text" [--area X]   Create an action
+  create-action "text" [--projectFid X] [--area X] [--due X] [--notes X]  Create an action
   list-actions [--status X] [--project X]  List actions (default: open)
   update-action <fid> [--status X] [--text X] [--tags X] [--notes X]
   complete-action <fid>             Mark action complete (status=done)
