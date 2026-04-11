@@ -79,8 +79,13 @@
 
 ## What's Active
 
-- Published at v0.15.0 on npm as `create-claude-cabinet`
-- Three downstream consumers: Flow (v0.15.0), article-rewriter (v0.15.0), CC dogfood (v0.15.0)
+- Published at v0.16.0 on npm as `create-claude-cabinet`
+- Three downstream consumers: Flow (v0.16.0), article-rewriter (v0.16.0), CC dogfood (v0.16.0)
+- MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
+- anthropic-insider has verification mandate (verify platform features before recommending)
+- organized-mind scoped to human cognition (cognitive load ≠ AI load)
+- cc-feedback/debrief dogfood routing fixed (package.json name check)
+- plan skill enforces Surface Area format in step 6b
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
