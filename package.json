@@ -1,6 +1,6 @@
 {
   "name": "create-claude-cabinet",
-  "version": "0.14.2",
+  "version": "0.15.0",
   "description": "Claude Cabinet — opinionated process scaffolding for Claude Code projects",
   "bin": {
     "create-claude-cabinet": "bin/create-claude-cabinet.js"
