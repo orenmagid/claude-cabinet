@@ -88,7 +88,12 @@ each project that is NOT the CC source repo itself:
 2. If it's older than the just-published version, update it:
    - `cd <path> && npx create-claude-cabinet@latest --yes`
    - Verify the install succeeded (`.ccrc.json` version matches)
-3. Report which consumers were updated and which were already current
+3. After a successful update, commit the CC-managed files in the consumer:
+   - `git -C <path> add .claude/ .mcp.json scripts/pib-db*.mjs scripts/pib-db-schema.sql scripts/*.cjs .ccrc.json`
+   - Commit with message: `chore: update claude-cabinet to v<version>`
+   - Only stage files that are actually modified (`git -C <path> diff --name-only` to check)
+   - Do NOT push — leave that to the user
+4. Report which consumers were updated, committed, and which were already current
 
 **Important:**
 - Never force-install or pass flags beyond `--yes` — the installer
@@ -96,3 +101,5 @@ each project that is NOT the CC source repo itself:
 - If a consumer's path doesn't exist, note it (stale registry entry)
   but don't error — mention it in the report
 - If an install fails, report the error but continue with other consumers
+- The commit in step 3 should only include CC-managed files, not any
+  project-owned files that happen to be dirty in the working tree

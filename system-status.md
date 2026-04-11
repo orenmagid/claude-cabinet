@@ -68,11 +68,20 @@
 - Work-tracker: `/api/meta` endpoint exposes project name and other metadata to the UI
 - Debrief close-work phase: resolves field feedback from the feedback queue (queue-not-ledger pattern)
 - cc-publish Step 6: automatically updates all registered local consumers from cc-registry after publish
+- $ARGUMENTS support: 7 skills (audit, plan, cabinet, investigate, execute, orient, debrief) accept arguments via `argument-hint` frontmatter
+- `resolve-arguments.cjs`: resolves raw argument strings against cabinet member names and committees.yaml
+- Compaction hooks: PreCompact prompt hook saves state to `.claude/compaction-state.md`, SessionStart command hook recovers it
+- settings-merge.js: handles prompt hooks alongside command hooks in dedup logic
+- pib-db shared library: `pib-db-lib.mjs` exports all db operations, consumed by both CLI and MCP server
+- pib-db MCP server: JSON-RPC 2.0 over stdio, 10 tools (pib_create_action enforces Surface Area format)
+- MCP config merge: installer adds pib-db server to `.mcp.json` when work-tracking module is selected
+- `templates/mcp/pib-db.json`: MCP server configuration template
+- `templates/cabinet/pib-db-access.md`: protocol doc for MCP-first, CLI-fallback db access
 
 ## What's Active
 
-- Published at v0.14.2 on npm as `create-claude-cabinet`
-- Three downstream consumers: Flow (v0.14.2), article-rewriter (v0.14.2), CC dogfood (v0.14.2)
+- Published at v0.15.0 on npm as `create-claude-cabinet`
+- Three downstream consumers: Flow (v0.15.0), article-rewriter (v0.15.0), CC dogfood (v0.15.0)
 - install.sh fetches latest version dynamically from npm (no more hardcoded version)
 - install.sh manifest builder only tracks upstream template files (not all project files)
 - cc-health has v0.5→v0.6 content audit (7B) and structural integrity checks (7C)
