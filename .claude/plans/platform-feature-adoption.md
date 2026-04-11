@@ -214,7 +214,13 @@ Same as orient.
 
 ---
 
-### Workstream 2: PreCompact Prompt Hook
+### Workstream 2: PreCompact Prompt Hook — REMOVED (fundamentally broken)
+
+> **Removed 2026-04-10.** PreCompact prompt hooks cannot take actions —
+> they are single-turn policy evaluations with no tool access. Feature
+> was built, shipped in v0.15.0, discovered non-functional. All code,
+> templates, settings, and manifest entries removed from source and all
+> 3 consumers. See feedback/claude-cabinet-2026-04-11-anthropic-insider-compaction-hooks.md.
 
 New prompt hook on PreCompact. Claude writes a handoff note before
 context compaction destroys conversation history.
@@ -282,7 +288,10 @@ settings.json during install/upgrade.
 
 ---
 
-### Workstream 3: SessionStart Command Hook (compact matcher)
+### Workstream 3: SessionStart Command Hook (compact matcher) — REMOVED (dependent on WS2)
+
+> **Removed 2026-04-10.** Recovery hook had nothing to recover because
+> WS2 (PreCompact) never wrote state files. Removed alongside WS2.
 
 Shell script that reads back what PreCompact wrote, re-injecting
 context when the session resumes after compaction.

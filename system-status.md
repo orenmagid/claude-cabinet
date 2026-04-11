@@ -70,8 +70,7 @@
 - cc-publish Step 6: automatically updates all registered local consumers from cc-registry after publish
 - $ARGUMENTS support: 7 skills (audit, plan, cabinet, investigate, execute, orient, debrief) accept arguments via `argument-hint` frontmatter
 - `resolve-arguments.cjs`: resolves raw argument strings against cabinet member names and committees.yaml
-- Compaction hooks: PreCompact prompt hook saves state to `.claude/compaction-state.md`, SessionStart command hook recovers it
-- settings-merge.js: handles prompt hooks alongside command hooks in dedup logic
+- settings-merge.js: dedup logic uses `h.command || h.prompt` key (handles both hook types if needed)
 - pib-db shared library: `pib-db-lib.mjs` exports all db operations, consumed by both CLI and MCP server
 - pib-db MCP server: JSON-RPC 2.0 over stdio, 10 tools (pib_create_action enforces Surface Area format)
 - MCP config merge: installer adds pib-db server to `.mcp.json` when work-tracking module is selected
