@@ -35,9 +35,18 @@ related:
   - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
+argument-hint: "mode — e.g., 'quick'"
 ---
 
 # /orient — Session Briefing
+
+## Arguments
+
+If `$ARGUMENTS` is provided:
+- **'quick'**: Use Quick Mode — run core phases only, skip presentation
+  phases. Equivalent to `/orient-quick`.
+- **Any other value**: Ignored; run normal full orientation.
+- **Empty**: Run normal full orientation.
 
 ## Purpose
 

@@ -42,9 +42,30 @@ related:
   - type: file
     path: scripts/pib-db.mjs
     role: "Reference data layer for finding persistence"
+argument-hint: "member, committee, or topic — e.g., 'security', 'health', 'hooks'"
 ---
 
 # /audit — Convene the Cabinet
+
+## Arguments
+
+If `$ARGUMENTS` is provided, run `node scripts/resolve-arguments.cjs "$ARGUMENTS"`
+to parse the input. The script returns `{ members, topics, source }`.
+
+- **Direct member matches** (e.g., "security", "architecture"): Run ONLY
+  those named members. Cross-portfolio members (anti-confirmation, qa,
+  debugger, organized-mind) do NOT auto-include when $ARGUMENTS explicitly
+  names members — only the named members run.
+- **Committee matches** (e.g., "health"): Expand to the committee's member
+  list and run those members. Cross-portfolio members still auto-include
+  for committee-scoped runs.
+- **Topic fallback** (e.g., "hooks"): Confirm with the user before
+  launching — "No member or committee matches 'hooks'. Want me to run a
+  full audit focused on that topic?"
+- **Mixed** (e.g., "security, hooks"): Direct matches proceed; topics
+  require confirmation.
+- **Empty $ARGUMENTS**: Use the normal workflow below (discover all,
+  present committees, let user choose).
 
 ## Purpose
 

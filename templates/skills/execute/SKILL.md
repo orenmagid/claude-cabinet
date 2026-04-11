@@ -27,9 +27,20 @@ related:
   - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
+argument-hint: "plan reference — e.g., 'act:abc123' or plan title"
 ---
 
 # /execute — Plan Execution with Cabinet Checkpoints
+
+## Arguments
+
+If `$ARGUMENTS` is provided, use it to identify which plan to execute.
+Match against pib-db action fids (e.g., "act:abc123") or search action
+text for a title match. If a unique match is found, load that plan. If
+multiple matches, present them and ask the user to pick. If no match,
+tell the user and ask which plan to execute.
+
+Empty $ARGUMENTS: Ask the user which plan to execute (default workflow).
 
 ## Purpose
 

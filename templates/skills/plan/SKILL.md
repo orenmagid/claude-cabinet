@@ -38,9 +38,26 @@ related:
   - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
+argument-hint: "what to plan — e.g., 'refactor the hook system --critics architecture, process'"
 ---
 
 # /plan — Structured Planning with Cabinet Critique
+
+## Arguments
+
+If `$ARGUMENTS` is provided, split on `--critics`:
+
+- **Before `--critics`** (or all of $ARGUMENTS if no `--critics`): The
+  planning topic. Use as the problem statement — skip asking "what do you
+  want to plan?"
+- **After `--critics`**: A comma-separated critic list. Run
+  `node scripts/resolve-arguments.cjs "<critic-list>"` to resolve into
+  members and topics. Resolved members become the cabinet critique panel
+  (step 5) instead of auto-selecting by convening criteria. Unresolved
+  tokens (topics) are passed as focus areas to whichever critics are
+  selected.
+- **Empty $ARGUMENTS**: Use the normal workflow below (ask what to plan,
+  auto-select critics).
 
 ## Purpose
 

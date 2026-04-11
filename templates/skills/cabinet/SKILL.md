@@ -5,9 +5,19 @@ description: |
   what they specialize in, and lets you call on a specific expert.
   Use when: "cabinet", "who's on the cabinet", "ask the architect",
   "what experts do I have", "/cabinet", "get me the [member]".
+argument-hint: "member name — e.g., 'architect', 'security'"
 ---
 
 # /cabinet — Your Expert Cabinet
+
+## Arguments
+
+If `$ARGUMENTS` is provided and matches a cabinet member name (without
+the `cabinet-` prefix), invoke that member directly — skip the roster
+display. If $ARGUMENTS doesn't match any member, show the roster and
+note which name didn't match.
+
+Empty $ARGUMENTS: Show the full roster and ask who to consult.
 
 ## Purpose
 

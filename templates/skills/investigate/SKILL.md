@@ -18,9 +18,16 @@ related:
     path: cabinet/_briefing.md
     role: "System briefing for investigation scope"
 model: opus
+argument-hint: "what to investigate — e.g., 'why orient fails on fresh installs'"
 ---
 
 # /investigate — Structured Codebase Exploration
+
+## Arguments
+
+If `$ARGUMENTS` is provided, use it as the investigation question —
+proceed directly to step 1 (Frame the Question) with this as the
+question text. If empty, ask the user what they want to investigate.
 
 ## Purpose
 

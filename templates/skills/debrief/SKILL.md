@@ -42,9 +42,18 @@ related:
   - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
+argument-hint: "mode — e.g., 'quick'"
 ---
 
 # /debrief — Session Close
+
+## Arguments
+
+If `$ARGUMENTS` is provided:
+- **'quick'**: Use Quick Mode — run core phases only, skip presentation
+  phases. Equivalent to `/debrief-quick`.
+- **Any other value**: Ignored; run normal full debrief.
+- **Empty**: Run normal full debrief.
 
 ## Purpose
 
