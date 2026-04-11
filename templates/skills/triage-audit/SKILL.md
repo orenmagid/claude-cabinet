@@ -105,9 +105,14 @@ for a cabinet member is signal that the cabinet member's calibration is off.
 Read `phases/load-findings.md` for where to get the findings to triage.
 
 **Default (absent/empty):** Query the reference data layer (pib-db) for
-findings with `triage_status = 'open'`. If pib-db is not initialized or
-has no findings, fall back to reading the most recent
+findings with `triage_status = 'open'`. Use `pib_query` (or
+`node scripts/pib-db.mjs query`) with the appropriate SQL. If pib-db is
+not initialized or has no findings, fall back to reading the most recent
 `reviews/*/run-summary.json` file.
+
+**Access method:** Use `pib_*` MCP tools when available (see
+`.claude/cabinet/pib-db-access.md`), fall back to `node scripts/pib-db.mjs`
+CLI.
 
 Present a summary before triage: how many findings, breakdown by
 severity and cabinet member, how many are new vs previously seen.
@@ -142,27 +147,32 @@ decisions.
 **Default (absent/empty):** For each verdict:
 
 **Fix verdicts:**
-1. Update finding's triage_status to 'approved' in pib-db
+1. Update finding's triage_status to 'approved' via `pib_triage`
+   (or `node scripts/pib-db.mjs triage`)
 2. If the finding is marked `autoFixable: true`, attempt the fix
    immediately. Verify the fix works before marking it done.
-3. If not auto-fixable, create an action in pib-db with:
+3. If not auto-fixable, create an action via `pib_create_action`
+   (or `node scripts/pib-db.mjs create-action`) with:
    - Text: the finding title
    - Notes: finding description, evidence, suggested fix
    - Area: derived from cabinet member or finding metadata
 
 **Defer verdicts:**
-1. Update finding's triage_status to 'deferred' in pib-db
+1. Update finding's triage_status to 'deferred' via `pib_triage`
+   (or `node scripts/pib-db.mjs triage`)
 2. Record the user's reason in triage_notes
 3. The finding will be suppressed in future audit runs
 
 **Reject verdicts:**
-1. Update finding's triage_status to 'rejected' in pib-db
+1. Update finding's triage_status to 'rejected' via `pib_triage`
+   (or `node scripts/pib-db.mjs triage`)
 2. Record the user's reason in triage_notes
 3. The finding will be permanently suppressed in future audit runs
 
 **Question verdicts:**
 1. Finding stays open (triage_status remains 'open')
-2. Record the question in triage_notes
+2. Record the question in triage_notes via `pib_triage`
+   (or `node scripts/pib-db.mjs triage`)
 3. The finding will appear again in the next triage
 
 If pib-db is not initialized, write verdicts to

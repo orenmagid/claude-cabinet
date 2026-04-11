@@ -54,16 +54,19 @@ Phase files have three states:
 Read `phases/fetch-plans.md` for where plans come from.
 
 **Default (absent/empty):** Query pib-db for open actions that have
-surface area declarations:
+surface area declarations.
 
-```bash
-node scripts/pib-db.mjs query "
-  SELECT a.fid, a.text, a.notes
-  FROM actions a
-  WHERE a.completed = 0 AND a.deleted_at IS NULL
-    AND a.notes LIKE '%## Surface Area%'
-  ORDER BY a.sort_order
-"
+**Access method:** Use `pib_*` MCP tools when available (see
+`.claude/cabinet/pib-db-access.md`), fall back to `node scripts/pib-db.mjs`
+CLI.
+
+Use `pib_query` (or `node scripts/pib-db.mjs query`) with:
+```sql
+SELECT a.fid, a.text, a.notes
+FROM actions a
+WHERE a.completed = 0 AND a.deleted_at IS NULL
+  AND a.notes LIKE '%## Surface Area%'
+ORDER BY a.sort_order
 ```
 
 Projects using external APIs, different databases, or filtered project
@@ -198,7 +201,8 @@ and validated (and post-group actions complete, if defined).
 
 Read `phases/completion.md` for how to mark plans as done after execution.
 
-**Default (absent/empty):** Mark completed plans via pib-db:
+**Default (absent/empty):** Mark completed plans via pib-db. Use
+`pib_complete_action` (or CLI fallback):
 ```bash
 node scripts/pib-db.mjs complete-action <fid>
 ```

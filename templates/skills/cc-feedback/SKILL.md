@@ -57,7 +57,15 @@ Present the draft to the user:
 If the user confirms, deliver using the standard upstream feedback
 mechanism:
 
-**If linked** (CC package resolves to a local directory — check if
+**If this IS the CC source repo** (check: `node -e "const p = require('./package.json'); process.exit(p.name === 'create-claude-cabinet' ? 0 : 1)"` exits 0):
+
+- Write directly to the local `feedback/` directory (create if needed)
+- Filename: `[source-project]-[date]-[short-title].md`
+- This is the dogfood case — the project IS the upstream repo, so
+  feedback goes directly into the local `feedback/` directory.
+
+**If linked** (not the source repo, but CC package resolves to a local
+directory — check if
 `node -e "console.log(require.resolve('create-claude-cabinet'))"` points
 to a local path rather than `node_modules`):
 

@@ -25,6 +25,11 @@ directives:
   seed: >
     Evaluate whether a proposed cabinet member or skill overlaps with built-in
     Claude Code functionality. If the platform already does it, say so.
+  verify: >
+    Before recommending adoption of any platform feature, confirm it works
+    for the project's use case — not just that it exists in the changelog.
+    Test it or cite authoritative documentation showing it works as needed.
+    "The changelog says X exists" is not verification.
 ---
 
 # Claude Ecosystem Cabinet Member
@@ -232,6 +237,26 @@ the project is using what the platform offers:
 - **Version awareness** — does the project track which Claude Code version
   it targets? Will it work with older/newer versions?
 
+#### 8. Feature Verification
+
+Before recommending adoption of any platform capability:
+
+- **GA check** — Is the feature generally available, or experimental/beta?
+  Experimental features may change or be removed.
+- **Hook type check** — Does the feature work for the specific hook type,
+  tool type, or invocation context being proposed? (e.g., prompt hooks
+  cannot take actions; command hooks can.)
+- **Minimal test** — Can you demonstrate the behavior works with a quick
+  test? If you can't test it, cite authoritative documentation that
+  explicitly confirms the behavior for your use case.
+- **Limitation inventory** — What are the known limitations? Are there
+  open issues or feature requests that indicate the feature doesn't do
+  what you'd expect?
+
+**The standard:** "The changelog says X exists" is not verification.
+"I tested X and it does Y" or "The hooks documentation explicitly states
+prompt hooks can/cannot Z" is verification.
+
 ### Scan Scope
 
 - `.claude/settings*.json` — configuration and permissions
@@ -324,3 +349,12 @@ field-feedback. The CC maintainer adds it to this section. Project-specific
 patterns that don't generalize stay in `patterns-project.md`.
 
 <!-- Universal patterns below this line -->
+
+- **Unverified platform recommendation (PreCompact hooks):** Recommended
+  adopting PreCompact/PostCompact hooks for compaction state management.
+  PreCompact prompt hooks are single-turn policy evaluations with no tool
+  access — they cannot write files, run commands, or take any action.
+  The hooks were designed, built, shipped in v0.15.0, and deployed to 3
+  consumers where they silently failed. GitHub issues #43733 and #36749
+  are open feature requests for agentic PreCompact support. Always verify
+  that the hook type supports the intended action before recommending.

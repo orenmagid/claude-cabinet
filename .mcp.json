@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "pib-db": {
+      "command": "node",
+      "args": [
+        "scripts/pib-db-mcp-server.mjs"
+      ],
+      "env": {
+        "PIB_DB_PATH": "./pib.db"
+      }
+    }
+  }
+}

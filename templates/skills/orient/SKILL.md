@@ -136,55 +136,55 @@ whatever the project uses to track work: a backlog, task list, inbox,
 queue, or issue tracker.
 
 **Default (absent/empty):** If `scripts/pib-db.mjs` exists, run the
-standard work scan:
+standard work scan.
+
+**Access method:** Use `pib_*` MCP tools when available (see
+`.claude/cabinet/pib-db-access.md`), fall back to `node scripts/pib-db.mjs`
+CLI.
 
 1. **Active projects and open actions:**
-   ```bash
-   node scripts/pib-db.mjs query "
-     SELECT p.fid, p.name,
-       (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) as open_actions
-     FROM projects p
-     WHERE p.status = 'active' AND p.deleted_at IS NULL
-     ORDER BY open_actions DESC
-   "
+   Use `pib_query` (or `node scripts/pib-db.mjs query`) with:
+   ```sql
+   SELECT p.fid, p.name,
+     (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) as open_actions
+   FROM projects p
+   WHERE p.status = 'active' AND p.deleted_at IS NULL
+   ORDER BY open_actions DESC
    ```
 
 2. **Flagged actions** (prioritized items needing attention):
-   ```bash
-   node scripts/pib-db.mjs query "
-     SELECT a.fid, a.text, p.name as project
-     FROM actions a
-     LEFT JOIN projects p ON a.project_fid = p.fid
-     WHERE a.flagged = 1 AND a.completed = 0 AND a.deleted_at IS NULL
-   "
+   Use `pib_query` (or `node scripts/pib-db.mjs query`) with:
+   ```sql
+   SELECT a.fid, a.text, p.name as project
+   FROM actions a
+   LEFT JOIN projects p ON a.project_fid = p.fid
+   WHERE a.flagged = 1 AND a.completed = 0 AND a.deleted_at IS NULL
    ```
 
 3. **Staleness detection** — flag projects that need attention:
 
    **Completion candidates** — active projects where all actions are done:
-   ```bash
-   node scripts/pib-db.mjs query "
-     SELECT p.fid, p.name
-     FROM projects p
-     WHERE p.status = 'active' AND p.deleted_at IS NULL
-       AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid) > 0
-       AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) = 0
-   "
+   Use `pib_query` (or `node scripts/pib-db.mjs query`) with:
+   ```sql
+   SELECT p.fid, p.name
+   FROM projects p
+   WHERE p.status = 'active' AND p.deleted_at IS NULL
+     AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid) > 0
+     AND (SELECT COUNT(*) FROM actions a WHERE a.project_fid = p.fid AND a.completed = 0 AND a.deleted_at IS NULL) = 0
    ```
 
    **Stale projects** — active projects with no action completed in 14+ days:
-   ```bash
-   node scripts/pib-db.mjs query "
-     SELECT p.fid, p.name,
-       MAX(a.completed_at) as last_completion
-     FROM projects p
-     LEFT JOIN actions a ON a.project_fid = p.fid AND a.completed = 1
-     WHERE p.status = 'active' AND p.deleted_at IS NULL
-       AND (SELECT COUNT(*) FROM actions a2 WHERE a2.project_fid = p.fid AND a2.completed = 0 AND a2.deleted_at IS NULL) > 0
-     GROUP BY p.fid
-     HAVING last_completion < date('now', '-14 days')
-       OR last_completion IS NULL
-   "
+   Use `pib_query` (or `node scripts/pib-db.mjs query`) with:
+   ```sql
+   SELECT p.fid, p.name,
+     MAX(a.completed_at) as last_completion
+   FROM projects p
+   LEFT JOIN actions a ON a.project_fid = p.fid AND a.completed = 1
+   WHERE p.status = 'active' AND p.deleted_at IS NULL
+     AND (SELECT COUNT(*) FROM actions a2 WHERE a2.project_fid = p.fid AND a2.completed = 0 AND a2.deleted_at IS NULL) > 0
+   GROUP BY p.fid
+   HAVING last_completion < date('now', '-14 days')
+     OR last_completion IS NULL
    ```
 
    Surface in briefing as actionable signals:

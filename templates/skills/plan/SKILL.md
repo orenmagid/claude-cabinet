@@ -231,7 +231,14 @@ needs to wire it up later" — the plan is incomplete. Dead code is not
 a feature. A callback nobody calls is not a feature.
 
 **b. Surface area completeness.** Every file mentioned in Implementation
-appears in Surface Area. New files are marked `(new)`.
+appears in Surface Area. New files are marked `(new)`. The Surface Area
+section MUST use the exact format that pib-db validates:
+- Section header: `## Surface Area` (not `### Files`, not `### Surface Area`)
+- Each entry: `- files: path/to/file` or `- dirs: path/to/dir/`
+Do NOT use `### Files` with Created/Modified sublists or any other format
+variant. The database rejects non-conforming notes at the API layer
+(`pib-db-lib.mjs` validates structurally). If the plan uses the wrong
+format, rewrite it before filing.
 
 **c. Acceptance criteria are testable.** Every criterion is pass/fail
 with a category tag ([auto], [manual], [deferred]).
@@ -269,8 +276,13 @@ work item in your project's tracking system.
 **Default (absent/empty):** If `scripts/pib-db.mjs` exists, file the
 approved plan as a pib-db action. Use the plan title as the action text
 and the full plan (with surface area, acceptance criteria, etc.) as the
-notes. If the plan belongs to an existing project, associate it:
+notes. If the plan belongs to an existing project, associate it.
 
+**Access method:** Use `pib_*` MCP tools when available (see
+`.claude/cabinet/pib-db-access.md`), fall back to `node scripts/pib-db.mjs`
+CLI.
+
+Use `pib_create_action` (or CLI fallback):
 ```bash
 node scripts/pib-db.mjs create-action --text "<plan title>" --project "<project fid>" --notes "<full plan>"
 ```

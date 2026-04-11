@@ -19,29 +19,38 @@ Define your verdict application strategy:
 
 ## Default Behavior
 
+**Access method:** Use `pib_*` MCP tools when available (see
+`.claude/cabinet/pib-db-access.md`), fall back to `node scripts/pib-db.mjs`
+CLI.
+
 ### Fix Verdicts
-1. Update `triage_status = 'approved'` in pib-db
+1. Update `triage_status = 'approved'` via `pib_triage` (or
+   `node scripts/pib-db.mjs triage`)
 2. If `autoFixable: true`:
    - Attempt the fix based on the finding's `suggestedFix`
    - Verify the fix (run relevant tests or checks)
    - If successful, update `triage_status = 'fixed'`
    - If failed, create an action instead
 3. If not auto-fixable:
-   - Create an action via `node scripts/pib-db.mjs create-action`
+   - Create an action via `pib_create_action` (or
+     `node scripts/pib-db.mjs create-action`)
    - Include finding details in action notes
 
 ### Defer Verdicts
-1. Update `triage_status = 'deferred'` in pib-db
+1. Update `triage_status = 'deferred'` via `pib_triage` (or
+   `node scripts/pib-db.mjs triage`)
 2. Record reason in `triage_notes`
 3. Finding suppressed in future audits via triage history
 
 ### Reject Verdicts
-1. Update `triage_status = 'rejected'` in pib-db
+1. Update `triage_status = 'rejected'` via `pib_triage` (or
+   `node scripts/pib-db.mjs triage`)
 2. Record reason in `triage_notes`
 3. Finding permanently suppressed in future audits
 
 ### Question Verdicts
-1. Finding stays `triage_status = 'open'`
+1. Finding stays `triage_status = 'open'` — record question via
+   `pib_triage` (or `node scripts/pib-db.mjs triage`)
 2. Record question in `triage_notes`
 3. Finding reappears in next triage
 

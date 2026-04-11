@@ -22,10 +22,8 @@ this phase entirely.
 For each cabinet member that produced findings this session, check
 whether the same CLASS of finding has appeared before:
 
-- Check triage history if available:
-  ```bash
-  node scripts/pib-db.mjs triage-history 2>/dev/null
-  ```
+- Check triage history if available: use `pib_triage_history` (or
+  `node scripts/pib-db.mjs triage-history` CLI fallback).
   Look for approved findings from the same cabinet member with similar
   descriptions.
 

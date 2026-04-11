@@ -10,11 +10,15 @@ proposed work. If pib-db is not initialized, skip gracefully.
 
 ## Default Behavior (pib-db)
 
-When no custom overlap check is configured:
+**Access method:** Use `pib_*` MCP tools when available (see
+`.claude/cabinet/pib-db-access.md`), fall back to `node scripts/pib-db.mjs`
+CLI.
 
-```bash
-# Search open actions for keywords related to the proposed work
-node scripts/pib-db.mjs query "SELECT fid, text, substr(notes, 1, 200) as notes_preview FROM actions WHERE completed = 0 AND deleted_at IS NULL AND (text LIKE '%keyword%' OR notes LIKE '%keyword%')"
+When no custom overlap check is configured, use `pib_query` (or
+`node scripts/pib-db.mjs query`) with:
+
+```sql
+SELECT fid, text, substr(notes, 1, 200) as notes_preview FROM actions WHERE completed = 0 AND deleted_at IS NULL AND (text LIKE '%keyword%' OR notes LIKE '%keyword%')
 ```
 
 Search with multiple keywords derived from the proposed plan's problem

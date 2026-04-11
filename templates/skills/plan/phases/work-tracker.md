@@ -10,10 +10,14 @@ via `node scripts/pib-db.mjs init`.
 
 ## Default Behavior (pib-db)
 
-When no custom work tracker is configured:
+**Access method:** Use `pib_*` MCP tools when available (see
+`.claude/cabinet/pib-db-access.md`), fall back to `node scripts/pib-db.mjs`
+CLI.
+
+When no custom work tracker is configured, use `pib_create_action` (or
+CLI fallback):
 
 ```bash
-# Create an action for the approved plan
 node scripts/pib-db.mjs create-action "Short imperative plan title" \
   --area "<area>" \
   --notes "## Problem\n...\n\n## Implementation\n..."

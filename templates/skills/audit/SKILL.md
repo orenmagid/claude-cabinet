@@ -201,11 +201,17 @@ Read `phases/finding-output.md` for how to persist and report the
 audit results.
 
 **Default (absent/empty):**
+
+**Access method:** Use `pib_*` MCP tools when available (see
+`.claude/cabinet/pib-db-access.md`), fall back to `node scripts/pib-db.mjs`
+CLI.
+
 1. Create a timestamped run directory: `reviews/YYYY-MM-DD/HH-MM-SS/`
 2. Write each cabinet member's JSON output to the run directory
 3. Run `scripts/merge-findings.js <run-dir>` to produce `run-summary.json`
-4. Run `scripts/merge-findings.js <run-dir> --db` to also ingest into
-   the reference data layer (if pib-db is initialized)
+4. Ingest into the reference data layer: use `pib_ingest_findings` with
+   the run directory (or `scripts/merge-findings.js <run-dir> --db`) if
+   pib-db is initialized
 5. Present findings summary: total count, breakdown by severity, by
    cabinet member, and highlight any critical findings
 
