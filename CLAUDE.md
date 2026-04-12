@@ -11,7 +11,7 @@ for Claude Code projects. Small codebase: 7 files in `lib/`, templates in
 - `lib/omega-setup.js` — Python discovery, venv creation, omega-memory install
 - `templates/skills/` — skill definitions (SKILL.md) and phase files
 - `templates/skills/onboard/` — conversational onboarding skill
-- `templates/skills/cabinet-*/` — 28 expert cabinet member definitions
+- `templates/skills/cabinet-*/` — 30 expert cabinet member definitions
 - `templates/cabinet/` — cabinet infrastructure (committees, lifecycle, etc.)
 - `templates/briefing/` — project briefing templates
 - `.ccrc.json` — installation metadata and manifest (generated, gitignored)

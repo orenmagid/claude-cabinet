@@ -7,6 +7,12 @@
       "runtimeArgs": ["templates/scripts/work-tracker-server.mjs", "--db", "pib.db"],
       "port": 3458,
       "autoPort": true
+    },
+    {
+      "name": "demo-timeline",
+      "runtimeExecutable": "/usr/bin/python3",
+      "runtimeArgs": ["-m", "http.server", "3459", "--directory", "docs"],
+      "port": 3459
     }
   ]
 }

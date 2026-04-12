@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Built With Claude Cabinet</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>&#x2666;</text></svg>">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #0a0a0f;
+  color: #c8c8d0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Narrative Energy Color Scale ── */
+:root {
+  --ch1-color: #4a6fa5;   /* cool blue — origin, stillness */
+  --ch2-color: #5a7fb5;   /* slightly warmer blue — first structure */
+  --ch3-color: #7a8faa;   /* muted steel — the grind of extraction */
+  --ch4-color: #d4a44a;   /* saturated gold — THE PIVOT */
+  --ch5-color: #9a8a6a;   /* cooling amber — building on the pivot */
+  --ch6-color: #b07a5a;   /* warm earth — friction, testing */
+  --ch7-color: #c08a5a;   /* warm amber — expansion */
+  --ch8-color: #d49a4a;   /* returning gold — resolution */
+  --epilogue-color: #e0b060;
+  --card-bg: rgba(15, 15, 20, 0.85);
+  --text-primary: #e0e0e8;
+  --text-secondary: #8a8a98;
+  --text-dim: #55556a;
+  --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --serif: 'Georgia', 'Times New Roman', serif;
+}
+
+/* ── Canvas Background ── */
+#constellation {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.18;
+}
+
+/* ── Timeline Container ── */
+.timeline {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 10vh 24px;
+}
+
+/* ── Chapter Cards ── */
+.chapter {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 40px;
+  margin-bottom: 10vh;
+  background: var(--card-bg);
+  border: 1px solid var(--chapter-color, #333);
+  border-radius: 12px;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+}
+.chapter.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.chapter:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(-2px);
+}
+.chapter[data-chapter="1"] { --chapter-color: var(--ch1-color); }
+.chapter[data-chapter="2"] { --chapter-color: var(--ch2-color); }
+.chapter[data-chapter="3"] { --chapter-color: var(--ch3-color); }
+.chapter[data-chapter="4"] { --chapter-color: var(--ch4-color); }
+.chapter[data-chapter="5"] { --chapter-color: var(--ch5-color); }
+.chapter[data-chapter="6"] { --chapter-color: var(--ch6-color); }
+.chapter[data-chapter="7"] { --chapter-color: var(--ch7-color); }
+.chapter[data-chapter="8"] { --chapter-color: var(--ch8-color); }
+
+/* Ghost chapter number */
+.chapter-number {
+  position: absolute;
+  top: 24px; right: 32px;
+  font-size: 72px;
+  font-weight: 200;
+  opacity: 0.08;
+  color: var(--chapter-color);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Timestamp */
+.timestamp {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+/* ── Skim Layer (always visible) ── */
+.chapter-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.chapter-number-stat {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--chapter-color);
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+
+/* ── Read Layer (on linger) ── */
+.read-content {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.8s ease 0.2s, max-height 0.6s ease;
+}
+.chapter.lingered .read-content {
+  opacity: 1;
+  max-height: 500px;
+}
+.read-content p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+.micro-gap {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--chapter-color);
+  opacity: 0.85;
+  margin-top: 16px;
+  padding-left: 16px;
+  border-left: 2px solid var(--chapter-color);
+}
+
+/* ── Explore Trigger ── */
+.explore-trigger {
+  display: none;
+  margin-top: 20px;
+  padding: 8px 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: color 0.3s;
+  letter-spacing: 0.05em;
+}
+.explore-trigger:hover { color: var(--chapter-color); }
+.chapter.lingered .explore-trigger { display: inline-block; }
+
+/* ── Explore Overlay ── */
+.explore-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 100;
+  background: #0a0a0f;
+  overflow-y: auto;
+  padding: 60px 24px;
+  animation: fadeIn 0.3s ease;
+}
+.explore-overlay.active { display: block; }
+.explore-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.explore-close {
+  position: fixed;
+  top: 20px; right: 24px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-dim);
+  background: rgba(15,15,20,0.9);
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  z-index: 101;
+  transition: color 0.2s, border-color 0.2s;
+}
+.explore-close:hover { color: var(--text-primary); border-color: #555; }
+
+/* ── Terminal Blocks (staged reveal) ── */
+.terminal {
+  background: #1a1a2e;
+  border-radius: 8px;
+  margin: 24px 0;
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+}
+.terminal-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #333;
+}
+.terminal-dot:nth-child(1) { background: #ff5f57; }
+.terminal-dot:nth-child(2) { background: #febc2e; }
+.terminal-dot:nth-child(3) { background: #28c840; }
+.terminal-body {
+  padding: 16px;
+}
+.terminal-line {
+  opacity: 0.3;
+  transition: opacity 0.5s ease;
+  padding: 2px 0;
+}
+.terminal-line.highlight {
+  opacity: 1;
+  border-left: 2px solid var(--chapter-color, #d4a44a);
+  padding-left: 12px;
+  margin-left: -14px;
+}
+.terminal.revealed .terminal-line { opacity: 1; }
+
+/* ── Comparison Table (Ch6 explore) ── */
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 24px 0;
+}
+.comparison-col h4 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.comparison-col p {
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+.comparison-col.original p { color: #8a7a7a; }
+.comparison-col.rewritten p { color: var(--text-primary); }
+
+/* ── Epilogue ── */
+.epilogue {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.epilogue.visible { opacity: 1; transform: translateY(0); }
+.epilogue-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 32px;
+}
+.epilogue .comparison {
+  max-width: 680px;
+  text-align: left;
+}
+
+/* ── Meta Move ── */
+.meta-move {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.meta-move.visible { opacity: 1; }
+.meta-move p {
+  font-size: 18px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 480px;
+}
+.meta-move p:first-of-type { margin-bottom: 4px; }
+.meta-move .cta {
+  display: inline-block;
+  margin-top: 32px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 8px 20px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  transition: color 0.3s, border-color 0.3s;
+}
+.meta-move .cta:hover { color: var(--epilogue-color); border-color: var(--epilogue-color); }
+
+/* ── Explore content headings ── */
+.explore-inner h3 {
+  font-size: 22px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.explore-inner h4 {
+  font-size: 16px;
+  color: var(--chapter-color);
+  margin: 24px 0 8px;
+}
+.explore-inner p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.explore-inner .footnote {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  line-height: 1.5;
+  margin: 8px 0;
+  padding-left: 16px;
+  border-left: 1px solid #333;
+}
+
+/* ── Utilities ── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@media print {
+  #constellation { display: none; }
+  .chapter { opacity: 1; transform: none; min-height: auto; page-break-inside: avoid; }
+  .read-content { opacity: 1; max-height: none; }
+  .explore-trigger { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="constellation"></canvas>
+
+<div class="timeline">
+
+  <!-- ══ Chapter 1 ══ -->
+  <article class="chapter visible lingered" data-chapter="1" id="ch1">
+    <span class="chapter-number">1</span>
+    <div class="timestamp">The beginning</div>
+    <h2 class="chapter-title">The Problem</h2>
+    <div class="chapter-number-stat">4 source authorities</div>
+    <div class="read-content">
+      <p>A counseling student reads an academic article and can't understand it. Not because the ideas are hard — because the writing is hostile. Dense nominalizations, passive constructions, jargon as gatekeeping. He writes a paper arguing that Rogers's facilitative conditions apply to prose, not just therapy: congruence means no jargon theater, empathy means moment-by-moment attention to meaning, unconditional positive regard means never imposing comprehension as a condition of worth.</p>
+      <p>Four books. Four authorities on clear writing. One framework waiting to be extracted.</p>
+    </div>
+    <button class="explore-trigger" data-explore="1">+ go deeper</button>
+  </article>
+
+  <!-- ══ Chapter 2 ══ -->
+  <article class="chapter" data-chapter="2" id="ch2">
+    <span class="chapter-number">2</span>
+    <div class="timestamp">Day 1 — first session</div>
+    <h2 class="chapter-title">Scaffolding in 20 Minutes</h2>
+    <div class="chapter-number-stat">7-phase plan in one session</div>
+    <div class="read-content">
+      <p>Install Claude Cabinet. Run /onboard — an interview about the project's identity, architecture, and goals. Run /plan — a seven-phase implementation plan, critiqued by a cabinet of experts before a single line of product code exists. QA insists on testable acceptance criteria. Architecture pushes for a settings system. The plan is filed, tracked, and ready to execute.</p>
+      <div class="micro-gap">Expected to start coding. Got a cabinet critique instead.</div>
+    </div>
+    <button class="explore-trigger" data-explore="2">+ go deeper</button>
+  </article>
+
+  <!-- ══ Chapter 3 ══ -->
+  <article class="chapter" data-chapter="3" id="ch3">
+    <span class="chapter-number">3</span>
+    <div class="timestamp">Day 1–2 — two sessions, ~6 hours</div>
+    <h2 class="chapter-title">Reading Four Books</h2>
+    <div class="chapter-number-stat">83 principles from 15MB of PDFs</div>
+    <div class="read-content">
+      <p>Claude reads four source texts cover-to-cover — Sword, Zinsser, Pinker, Williams &amp; Bizup. Fifteen megabytes of PDFs. From each, it extracts not summaries but actionable rewriting operations: specific things you do to a sentence, a paragraph, a document. Eighty-three principles, each tagged to its source authority.</p>
+      <p>Across two sessions and six hours, /orient loads the prior session's context every time. Omega memory preserves extraction decisions across context windows. Nothing is lost between sessions.</p>
+      <div class="micro-gap">Expected summaries. Got actionable operations.</div>
+    </div>
+    <button class="explore-trigger" data-explore="3">+ go deeper</button>
+  </article>
+
+  <!-- ══ Chapter 4 — THE PIVOT ══ -->
+  <article class="chapter" data-chapter="4" id="ch4">
+    <span class="chapter-number">4</span>
+    <div class="timestamp">Day 2 — the synthesis</div>
+    <h2 class="chapter-title">83 Become 56</h2>
+    <div class="chapter-number-stat">4 sequential passes &middot; 56 active principles</div>
+    <div class="read-content">
+      <p>Eighty-three raw principles. Overlapping, conflicting, redundant. The kind of complexity that drowns a project — too many moving parts, no clear execution order, no way to hold it all in your head at once.</p>
+      <p>Then the synthesis: overlapping principles merge into multi-case principles. What was chaos resolves into architecture. Four sequential passes — sentence mechanics first, fidelity last. Twenty-one plus twelve plus ten plus thirteen. Nothing deleted. Everything merged or absorbed. The framework has a shape now.</p>
+      <div class="micro-gap">Expected organization. Got architecture.</div>
+    </div>
+    <button class="explore-trigger" data-explore="4">+ go deeper</button>
+  </article>
+
+  <!-- ══ Chapter 5 ══ -->
+  <article class="chapter" data-chapter="5" id="ch5">
+    <span class="chapter-number">5</span>
+    <div class="timestamp">Day 2 — building on the pivot</div>
+    <h2 class="chapter-title">Three Skills, One Framework</h2>
+    <div class="chapter-number-stat">5 knobs &middot; 4 presets</div>
+    <div class="read-content">
+      <p>Three skills — /rewrite, /summarize, /ask — sharing a single settings system. Five independent knobs (voice, jargon, density, structure, fidelity) and four named presets from light touch to full transformation. A jargon taxonomy that knows the difference between structural terms that must be earned, field shorthand that gets replaced with a footnote, and decorative jargon that gets cut.</p>
+      <div class="micro-gap">Expected one skill. Got three sharing a settings system.</div>
+    </div>
+    <button class="explore-trigger" data-explore="5">+ go deeper</button>
+  </article>
+
+  <!-- ══ Chapter 6 ══ -->
+  <article class="chapter" data-chapter="6" id="ch6">
+    <span class="chapter-number">6</span>
+    <div class="timestamp">Day 2–3 — testing against a real chapter</div>
+    <h2 class="chapter-title">Testing Against Reality</h2>
+    <div class="chapter-number-stat">46 comparison footnotes</div>
+    <div class="read-content">
+      <p>The skills meet a real academic chapter — Corrie &amp; Lane on case formulation in psychological practice. All four presets produce meaningfully different output. The comparison view emerges: original and rewritten side by side, every change annotated with the principle that motivated it. Forty-six footnotes on a single chapter.</p>
+      <p>But annotation quality was only 80% when reconstructed after the fact. That friction gets captured, promoted to a five-action hardening project, and fixed. Capture now happens during the rewriting passes, not after.</p>
+      <div class="micro-gap">Expected it to work. Got 80% annotation quality.</div>
+    </div>
+    <button class="explore-trigger" data-explore="6">+ go deeper</button>
+  </article>
+
+  <!-- ══ Chapter 7 ══ -->
+  <article class="chapter" data-chapter="7" id="ch7">
+    <span class="chapter-number">7</span>
+    <div class="timestamp">Day 3 — the pivot no one planned</div>
+    <h2 class="chapter-title">What Else Could This Be?</h2>
+    <div class="chapter-number-stat">$350/hr undercut</div>
+    <div class="read-content">
+      <p>Plugin becomes platform. Three strategic explorations emerge: a web app (React + Mantine + FastAPI), a medico-legal extension for plaintiff attorneys translating medical literature, and business models. The attorney quote that starts the business case: medical expert witnesses charge $350/hour. An automated system that translates medical literature with the same rigor could undercut that by an order of magnitude.</p>
+      <p>During debrief, the historian catches three uncaptured decisions. The record-keeper notices that two new workstreams exist in docs but aren't reflected in the status file. Both are fixed before the next session — which would have been blind to two strategic directions otherwise.</p>
+      <div class="micro-gap">Expected a plugin. Got a business.</div>
+    </div>
+    <button class="explore-trigger" data-explore="7">+ go deeper</button>
+  </article>
+
+  <!-- ══ Chapter 8 ══ -->
+  <article class="chapter" data-chapter="8" id="ch8">
+    <span class="chapter-number">8</span>
+    <div class="timestamp">Day 3 — closing the loop</div>
+    <h2 class="chapter-title">Hardening</h2>
+    <div class="chapter-number-stat">5 actions &middot; all completed</div>
+    <div class="read-content">
+      <p>Friction-tested against a harder article. Real problems surface: chunking strategy breaks on long chapters, PDF extraction garbles tables, annotation capture misses edge cases. Five hardening actions, all completed. Claude Cabinet upgrades twice mid-project (v0.15.0, v0.16.0) with zero disruption — the infrastructure evolves underneath the work without breaking it.</p>
+      <p>Nine sessions over three days. Thirty-six actions across five projects tracked in pib-db. Three projects completed. Four upstream feedback items filed back to Claude Cabinet itself.</p>
+      <div class="micro-gap">Expected polish. Got five real problems and five fixes.</div>
+    </div>
+    <button class="explore-trigger" data-explore="8">+ go deeper</button>
+  </article>
+
+  <!-- ══ Epilogue ══ -->
+  <section class="epilogue" id="epilogue">
+    <div class="epilogue-label">Before &amp; After</div>
+    <div class="comparison">
+      <div class="comparison-col original">
+        <h4>Original</h4>
+        <p>Formulation is deemed to be a cornerstone of skilled psychological practice and, over the course of our careers, much time will be spent engaged in the process of making sense of the psychological puzzles that confront us. However, the ability to master this skill is confounded by a range of factors.</p>
+      </div>
+      <div class="comparison-col rewritten">
+        <h4>Rewritten</h4>
+        <p>Formulation — building a psychological explanation of a client's problems to guide treatment — is one of the most important skills a psychologist can develop. Over a career, much of a practitioner's time goes to exactly this: making sense of the psychological puzzles clients bring. But formulation is hard to master, for reasons on both sides of the room.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Meta Move ══ -->
+  <section class="meta-move" id="meta-move">
+    <p>This timeline was built with Claude Code.</p>
+    <p>The process that built it was managed by Claude Cabinet.</p>
+    <a class="cta" href="https://www.npmjs.com/package/create-claude-cabinet" target="_blank" rel="noopener">npx create-claude-cabinet</a>
+  </section>
+
+</div>
+
+<!-- ══ Explore Overlays ══ -->
+<div class="explore-overlay" id="explore-1">
+  <button class="explore-close">ESC &times;</button>
+  <div class="explore-inner" style="--chapter-color: var(--ch1-color)">
+    <h3>The Problem</h3>
+    <h4>The Rogers Connection</h4>
+    <p>In a COUN 6000 seminar, a graduate student argued that Carl Rogers's three facilitative conditions — congruence, unconditional positive regard, and empathy — apply to writing as much as therapy. Academic prose that hides behind passive constructions and unnecessary nominalizations isn't just hard to read. It's incongruent — the writer's actual meaning is buried under performance. Jargon used to signal membership rather than convey meaning violates unconditional positive regard: it imposes comprehension as a condition of worth.</p>
+    <h4>Four Source Authorities</h4>
+    <p>Helen Sword — <em>Stylish Academic Writing</em> (2012). William Zinsser — <em>On Writing Well</em> (2006). Steven Pinker — <em>The Sense of Style</em> (2014). Joseph Williams &amp; Joseph Bizup — <em>Style: Lessons in Clarity and Grace</em> (2014). Four different approaches to the same conviction: clear writing is not a compromise with rigor. It's a sign of rigor.</p>
+  </div>
+</div>
+
+<div class="explore-overlay" id="explore-2">
+  <button class="explore-close">ESC &times;</button>
+  <div class="explore-inner" style="--chapter-color: var(--ch2-color)">
+    <h3>Scaffolding in 20 Minutes</h3>
+    <h4>The Onboard Interview</h4>
+    <p>Claude Cabinet asks: What is this project? Who is it for? What's the tech stack? What are the core principles? The answers become briefing files — identity, architecture, jurisdictions — that every future session loads automatically. The project knows what it is before it has any code.</p>
+    <h4>Cabinet Critique on the Plan</h4>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+      <div class="terminal-body">
+        <div class="terminal-line">QA: "Phase 3 acceptance criteria say 'verify extraction quality.'</div>
+        <div class="terminal-line highlight">That's not testable. Define: how many principles per source?</div>
+        <div class="terminal-line highlight">What format? What constitutes 'actionable'?"</div>
+        <div class="terminal-line">&nbsp;</div>
+        <div class="terminal-line">Architecture: "The settings system should be designed</div>
+        <div class="terminal-line highlight">before individual skills, not after. Skills share settings;</div>
+        <div class="terminal-line highlight">designing skills first creates integration friction."</div>
+      </div>
+    </div>
+    <p>Twelve detailed work items replaced paper-thin titles. The plan was filed to pib-db with testable acceptance criteria, surface area declarations, and cabinet critique incorporated.</p>
+  </div>
+</div>
+
+<div class="explore-overlay" id="explore-3">
+  <button class="explore-close">ESC &times;</button>
+  <div class="explore-inner" style="--chapter-color: var(--ch3-color)">
+    <h3>Reading Four Books</h3>
+    <h4>What Extraction Means</h4>
+    <p>Not summaries. Not "key takeaways." Actionable rewriting operations — specific things you do to a sentence. "When the subject of a sentence is an abstract nominalization, rewrite with a human character as the subject and the buried action as the verb." That's a principle. "Zinsser says to cut clutter" is not.</p>
+    <h4>Source Breakdown</h4>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+      <div class="terminal-body">
+        <div class="terminal-line">Sword (2012)  .............. <span style="color:var(--ch3-color)">27 principles</span></div>
+        <div class="terminal-line">Zinsser (2006) ............. <span style="color:var(--ch3-color)">16 principles</span></div>
+        <div class="terminal-line">Pinker (2014)  ............. <span style="color:var(--ch3-color)">26 principles</span></div>
+        <div class="terminal-line">Williams &amp; Bizup (2014) ... <span style="color:var(--ch3-color)">14 principles</span></div>
+        <div class="terminal-line highlight">Total ...................... 83 principles</div>
+        <div class="terminal-line highlight">Raw extraction file ........ 127KB</div>
+      </div>
+    </div>
+    <p>Six hours across two sessions. /orient loaded the prior session's full context each time — extraction decisions, naming conventions, what had been covered, what remained. Nothing was re-explained. Nothing was lost.</p>
+  </div>
+</div>
+
+<div class="explore-overlay" id="explore-4">
+  <button class="explore-close">ESC &times;</button>
+  <div class="explore-inner" style="--chapter-color: var(--ch4-color)">
+    <h3>83 Become 56</h3>
+    <h4>The Synthesis</h4>
+    <p>Eighty-three raw principles, many overlapping across sources. Sword's advice on nominalizations and Williams &amp; Bizup's character/action principle are the same insight from different angles. Zinsser's "cut clutter" and Pinker's "omit needless words" converge. The synthesis merges these into multi-case principles — single operations that handle the overlapping cases.</p>
+    <h4>Four Sequential Passes</h4>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+      <div class="terminal-body">
+        <div class="terminal-line highlight">Pass 1: Sentence Mechanics .... 21 principles</div>
+        <div class="terminal-line highlight">Pass 2: Paragraph Coherence ... 12 principles</div>
+        <div class="terminal-line highlight">Pass 3: Document Structure .... 10 principles</div>
+        <div class="terminal-line highlight">Pass 4: Fidelity &amp; Ethics .... 13 principles</div>
+        <div class="terminal-line">&nbsp;</div>
+        <div class="terminal-line">+ 5 meta-principles (apply across all passes)</div>
+        <div class="terminal-line">&nbsp;</div>
+        <div class="terminal-line" style="color:var(--ch4-color)">Nothing deleted. Everything merged or absorbed.</div>
+      </div>
+    </div>
+    <p>This is where complexity became architecture. The framework has a shape: start at the sentence, zoom out to the paragraph, then the document, then check you haven't broken anything. Each pass builds on the last. The execution order isn't arbitrary — it's earned.</p>
+  </div>
+</div>
+
+<div class="explore-overlay" id="explore-5">
+  <button class="explore-close">ESC &times;</button>
+  <div class="explore-inner" style="--chapter-color: var(--ch5-color)">
+    <h3>Three Skills, One Framework</h3>
+    <h4>The Settings System</h4>
+    <p>Five independent knobs, each with a vocabulary of values:</p>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+      <div class="terminal-body">
+        <div class="terminal-line highlight">voice:     preserve | blend | translate</div>
+        <div class="terminal-line highlight">jargon:    preserve | selective | replace</div>
+        <div class="terminal-line highlight">density:   preserve | tighten | compress</div>
+        <div class="terminal-line highlight">structure: preserve | refine | restructure</div>
+        <div class="terminal-line highlight">fidelity:  strict | charitable | liberal</div>
+        <div class="terminal-line">&nbsp;</div>
+        <div class="terminal-line">Presets:</div>
+        <div class="terminal-line">  copyedit   — lightest touch</div>
+        <div class="terminal-line">  clarify    — readable but recognizable</div>
+        <div class="terminal-line">  rewrite    — full transformation</div>
+        <div class="terminal-line">  reimagine  — rebuild from meaning</div>
+      </div>
+    </div>
+    <h4>Jargon Taxonomy</h4>
+    <p><strong>Structural</strong> terms (like "formulation" in psychology) must be earned — defined on first use, then used precisely. <strong>Field shorthand</strong> (like "evidence-based") gets replaced with plain language and a footnote preserving the original. <strong>Decorative</strong> jargon (like "the process of making sense of") gets cut. Three categories, three different treatments.</p>
+  </div>
+</div>
+
+<div class="explore-overlay" id="explore-6">
+  <button class="explore-close">ESC &times;</button>
+  <div class="explore-inner" style="--chapter-color: var(--ch6-color)">
+    <h3>Testing Against Reality</h3>
+    <h4>Before &amp; After</h4>
+    <div class="comparison">
+      <div class="comparison-col original">
+        <h4>Original</h4>
+        <p>Formulation is deemed to be a cornerstone of skilled psychological practice and, over the course of our careers, much time will be spent engaged in the process of making sense of the psychological puzzles that confront us. However, the ability to master this skill is confounded by a range of factors. These include the myriad and often complex reasons for which clients seek help, implicit agendas driving the request for help of which the practitioner may not be aware, and the extent to which individuals are able to identify, describe, and address their needs within a psychological framework.</p>
+      </div>
+      <div class="comparison-col rewritten">
+        <h4>Rewritten</h4>
+        <p>Formulation — building a psychological explanation of a client's problems to guide treatment — is one of the most important skills a psychologist can develop. Over a career, much of a practitioner's time goes to exactly this: making sense of the psychological puzzles clients bring. But formulation is hard to master, for reasons on both sides of the room. Clients seek help for complicated, overlapping reasons. They may carry hidden agendas they aren't aware of themselves. They differ in how well they can name what's wrong and what they need.</p>
+      </div>
+    </div>
+    <div class="footnote">S1: "is deemed to be" — passive nominalization hiding the claim. "the process of making sense" — nominalization burying the action. S3: passive voice ("is deemed," "will be spent"). S9: "over the course of our careers" → "over a career." Structural jargon "formulation" earned with inline definition on first use.</div>
+    <div class="footnote">S1: "the ability to master" / "the extent to which individuals are able to" — nominalizations replaced with characters doing things. S7: one 87-word sentence → five shorter sentences, each one thought. S9: "a range of factors," "play a critical role in decision making" — clutter cut.</div>
+    <h4>What the Footnotes Mean</h4>
+    <p>Every change is annotated with the principle code that motivated it. S1 is the character/action principle (make a human the subject, make their action the verb). S7 is sentence length. S9 is clutter. Forty-six footnotes on a single chapter — not arbitrary edits, but principled transformations with a paper trail.</p>
+  </div>
+</div>
+
+<div class="explore-overlay" id="explore-7">
+  <button class="explore-close">ESC &times;</button>
+  <div class="explore-inner" style="--chapter-color: var(--ch7-color)">
+    <h3>What Else Could This Be?</h3>
+    <h4>Three Directions</h4>
+    <p><strong>Web app.</strong> React + Mantine v8 frontend, FastAPI backend, direct Claude API integration. Password-protected, model toggle, PDF generation. Deployed on Railway. Seven planned actions.</p>
+    <p><strong>Medico-legal extension.</strong> An orthogonal mode for translating medical literature for plaintiff attorneys. UMLS API for terminology, Gigerenzer rules for statistical translation, study design classification. Medical expert witnesses charge $350/hour. An automated system with the same rigor could undercut that by an order of magnitude.</p>
+    <p><strong>Business models.</strong> From Claude Code plugin to consulting platform. The framework is the product; the tooling is the delivery mechanism.</p>
+    <h4>What the Cabinet Caught</h4>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+      <div class="terminal-body">
+        <div class="terminal-line">During debrief, Session 9:</div>
+        <div class="terminal-line">&nbsp;</div>
+        <div class="terminal-line highlight">Historian: "3 of 8 session decisions not persisted</div>
+        <div class="terminal-line highlight">anywhere. Flagging before context is lost."</div>
+        <div class="terminal-line">&nbsp;</div>
+        <div class="terminal-line highlight">Record-keeper: "Medico-legal extension and business</div>
+        <div class="terminal-line highlight">model docs exist but aren't reflected in status.</div>
+        <div class="terminal-line highlight">Next orient would be blind to two new workstreams."</div>
+        <div class="terminal-line">&nbsp;</div>
+        <div class="terminal-line">Both fixed before the session ended.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="explore-overlay" id="explore-8">
+  <button class="explore-close">ESC &times;</button>
+  <div class="explore-inner" style="--chapter-color: var(--ch8-color)">
+    <h3>Hardening</h3>
+    <h4>Five Problems, Five Fixes</h4>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+      <div class="terminal-body">
+        <div class="terminal-line highlight">1. Chunking: long chapters exceeded context window</div>
+        <div class="terminal-line">   → Intelligent section-based chunking</div>
+        <div class="terminal-line highlight">2. PDF extraction: tables garbled on import</div>
+        <div class="terminal-line">   → Dedicated PDF extraction step with validation</div>
+        <div class="terminal-line highlight">3. Annotations: 80% capture rate after the fact</div>
+        <div class="terminal-line">   → Capture during passes, not after</div>
+        <div class="terminal-line highlight">4. Comparison format: footnotes lost structure</div>
+        <div class="terminal-line">   → Structured comparison grid with principle codes</div>
+        <div class="terminal-line highlight">5. Preset differentiation: too similar on edge cases</div>
+        <div class="terminal-line">   → Calibration against multiple article types</div>
+      </div>
+    </div>
+    <h4>The Numbers</h4>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+      <div class="terminal-body">
+        <div class="terminal-line">9 sessions over 3 days</div>
+        <div class="terminal-line">5 opened with /orient</div>
+        <div class="terminal-line highlight">36 actions across 5 projects tracked</div>
+        <div class="terminal-line highlight">3 projects completed (all actions done)</div>
+        <div class="terminal-line">1 enforcement pattern from 3+ observations</div>
+        <div class="terminal-line highlight">4 upstream feedback items filed to Claude Cabinet</div>
+      </div>
+    </div>
+    <p>Claude Cabinet upgraded twice during the project — v0.15.0 and v0.16.0 — with zero disruption to work in progress. The infrastructure evolved underneath the work without breaking it.</p>
+  </div>
+</div>
+
+<script>
+// ── Constellation ──
+const canvas = document.getElementById('constellation');
+const ctx = canvas.getContext('2d');
+let nodes = [];
+let edges = [];
+let activeChapter = 0;
+let constellationState = 0; // 0-1 progress
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Generate node positions (seeded for consistency)
+function generateNodes(count) {
+  const n = [];
+  for (let i = 0; i < count; i++) {
+    n.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * 3, // spread across scroll height
+      baseX: 0, baseY: 0,
+      size: 1 + Math.random() * 2,
+      chapter: Math.floor(i / (count / 8)) + 1,
+      opacity: 0,
+      targetOpacity: 0,
+    });
+  }
+  n.forEach(node => { node.baseX = node.x; node.baseY = node.y; });
+  return n;
+}
+
+function generateEdges(nodes) {
+  const e = [];
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].baseX - nodes[j].baseX;
+      const dy = nodes[i].baseY - nodes[j].baseY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 200 && Math.random() < 0.3) {
+        e.push({ from: i, to: j, opacity: 0, targetOpacity: 0 });
+      }
+    }
+  }
+  return e;
+}
+
+nodes = generateNodes(120);
+edges = generateEdges(nodes);
+
+function updateConstellation() {
+  const progress = constellationState;
+  nodes.forEach(node => {
+    const chapterProgress = Math.max(0, Math.min(1, (progress * 8 - (node.chapter - 1)) / 1));
+    node.targetOpacity = chapterProgress * 0.8;
+  });
+  edges.forEach(edge => {
+    const fromNode = nodes[edge.from];
+    const toNode = nodes[edge.to];
+    edge.targetOpacity = Math.min(fromNode.targetOpacity, toNode.targetOpacity) * 0.5;
+  });
+  // Smooth
+  nodes.forEach(n => { n.opacity += (n.targetOpacity - n.opacity) * 0.05; });
+  edges.forEach(e => { e.opacity += (e.targetOpacity - e.opacity) * 0.05; });
+}
+
+function drawConstellation() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const scrollY = window.scrollY;
+  const parallaxFactor = 0.15;
+
+  // Edges
+  edges.forEach(edge => {
+    if (edge.opacity < 0.01) return;
+    const from = nodes[edge.from];
+    const to = nodes[edge.to];
+    const yOff = -scrollY * parallaxFactor;
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y % canvas.height + yOff);
+    ctx.lineTo(to.x, to.y % canvas.height + yOff);
+    ctx.strokeStyle = `rgba(100, 120, 180, ${edge.opacity * 0.3})`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  });
+
+  // Nodes
+  nodes.forEach(node => {
+    if (node.opacity < 0.01) return;
+    const yOff = -scrollY * parallaxFactor;
+    const y = node.y % canvas.height + yOff;
+    ctx.beginPath();
+    ctx.arc(node.x, y, node.size, 0, Math.PI * 2);
+    const colors = ['#4a6fa5','#5a7fb5','#7a8faa','#d4a44a','#9a8a6a','#b07a5a','#c08a5a','#d49a4a'];
+    const color = colors[node.chapter - 1] || '#888';
+    ctx.fillStyle = color.replace(')', `, ${node.opacity})`).replace('rgb', 'rgba');
+    // Simple hex to rgba
+    ctx.globalAlpha = node.opacity;
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+}
+
+function animateConstellation() {
+  updateConstellation();
+  drawConstellation();
+  requestAnimationFrame(animateConstellation);
+}
+animateConstellation();
+
+// ── Scroll Observation ──
+const chapters = document.querySelectorAll('.chapter');
+const epilogue = document.getElementById('epilogue');
+const metaMove = document.getElementById('meta-move');
+const lingerTimers = {};
+
+// Catch-up: cards already scrolled past should be instantly visible
+function revealScrolledPast() {
+  const viewportBottom = window.scrollY + window.innerHeight;
+  chapters.forEach(ch => {
+    if (ch.classList.contains('visible') && ch.classList.contains('lingered')) return;
+    const rect = ch.getBoundingClientRect();
+    // If the card's top is above the viewport center, it's been scrolled past
+    if (rect.top < window.innerHeight * 0.75) {
+      ch.style.transition = 'none';
+      ch.classList.add('visible', 'lingered');
+      // Re-enable transition for future hover effects
+      requestAnimationFrame(() => { ch.style.transition = ''; });
+      // Update constellation
+      const chNum = parseInt(ch.dataset.chapter);
+      if (chNum && chNum > activeChapter) {
+        activeChapter = chNum;
+        constellationState = activeChapter / 8;
+      }
+    }
+  });
+}
+window.addEventListener('scroll', revealScrolledPast, { passive: true });
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const el = entry.target;
+    const id = el.id;
+
+    if (entry.isIntersecting && entry.intersectionRatio > 0.25) {
+      el.classList.add('visible');
+      // Linger detection
+      if (!lingerTimers[id]) {
+        lingerTimers[id] = setTimeout(() => {
+          el.classList.add('lingered');
+        }, 400);
+      }
+      // Track active chapter for constellation
+      const chNum = parseInt(el.dataset.chapter);
+      if (chNum && chNum > activeChapter) {
+        activeChapter = chNum;
+        constellationState = activeChapter / 8;
+      }
+    } else {
+      if (lingerTimers[id]) {
+        clearTimeout(lingerTimers[id]);
+        delete lingerTimers[id];
+      }
+    }
+  });
+}, { threshold: [0, 0.25, 0.5, 0.75, 1.0] });
+
+chapters.forEach(ch => observer.observe(ch));
+
+// Epilogue + meta observer
+const endObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && entry.intersectionRatio > 0.25) {
+      entry.target.classList.add('visible');
+      if (entry.target.id === 'epilogue') constellationState = 1;
+    }
+  });
+}, { threshold: [0, 0.25] });
+endObserver.observe(epilogue);
+endObserver.observe(metaMove);
+
+// ── Explore Overlays ──
+document.querySelectorAll('.explore-trigger').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.explore;
+    const overlay = document.getElementById('explore-' + id);
+    if (overlay) {
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      // Staged reveal: highlight terminal lines on scroll
+      const terminals = overlay.querySelectorAll('.terminal');
+      terminals.forEach(term => {
+        const termObserver = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              e.target.querySelectorAll('.terminal-line.highlight').forEach((line, i) => {
+                setTimeout(() => { line.style.opacity = '1'; }, i * 150);
+              });
+            }
+          });
+        }, { threshold: 0.3 });
+        termObserver.observe(term);
+      });
+    }
+  });
+});
+
+document.querySelectorAll('.explore-close').forEach(btn => {
+  btn.addEventListener('click', closeExplore);
+});
+
+function closeExplore() {
+  document.querySelectorAll('.explore-overlay.active').forEach(o => {
+    o.classList.remove('active');
+  });
+  document.body.style.overflow = '';
+}
+
+// ── Keyboard Navigation ──
+document.addEventListener('keydown', (e) => {
+  // Escape closes explore overlay
+  if (e.key === 'Escape') {
+    closeExplore();
+    return;
+  }
+
+  // j/k navigate chapters (only when no overlay is open)
+  if (document.querySelector('.explore-overlay.active')) return;
+
+  const visible = Array.from(chapters).filter(ch => ch.classList.contains('visible'));
+  if (e.key === 'j' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    const next = visible.length > 0
+      ? visible[visible.length - 1].nextElementSibling
+      : chapters[0];
+    if (next && next.classList.contains('chapter')) {
+      next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else if (next) {
+      next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+  if (e.key === 'k' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const first = visible[0];
+    if (first) {
+      const prev = first.previousElementSibling;
+      if (prev && prev.classList.contains('chapter')) {
+        prev.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }
+});
+
+// Terminal click-to-reveal
+document.querySelectorAll('.terminal').forEach(term => {
+  term.style.cursor = 'pointer';
+  term.addEventListener('click', () => {
+    term.classList.add('revealed');
+  });
+});
+</script>
+</body>
+</html>

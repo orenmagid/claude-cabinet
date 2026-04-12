@@ -10,7 +10,7 @@
 - Safe reset via `--reset` (manifest-aware, won't delete customized files)
 - Settings merge (hooks into `.claude/settings.json`)
 - Optional SQLite work tracker setup
-- 28 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
+- 30 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
 - Cabinet member template: `_cabinet-member-template.md` defines required structure for /seed
 - Tiered Investigation Protocol: Stage 1 (Instrument — automated tools with fallbacks) → Stage 2 (Analyze — manual reasoning informed by Stage 1)
 - `tools:` frontmatter on all 28 members declares tool dependencies (informational, not hard deps)
