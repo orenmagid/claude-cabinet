@@ -10,7 +10,7 @@
 - Safe reset via `--reset` (manifest-aware, won't delete customized files)
 - Settings merge (hooks into `.claude/settings.json`)
 - Optional SQLite work tracker setup
-- 27 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
+- 28 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
 - Cabinet member template: `_cabinet-member-template.md` defines required structure for /seed
 - Tiered Investigation Protocol: Stage 1 (Instrument — automated tools with fallbacks) → Stage 2 (Analyze — manual reasoning informed by Stage 1)
 - `tools:` frontmatter on all 27 members declares tool dependencies (informational, not hard deps)
@@ -79,8 +79,8 @@
 
 ## What's Active
 
-- Published at v0.16.0 on npm as `create-claude-cabinet`
-- Three downstream consumers: Flow (v0.16.0), article-rewriter (v0.16.0), CC dogfood (v0.16.0)
+- Published at v0.17.0 on npm as `create-claude-cabinet`
+- Four downstream consumers: Flow, article-rewriter, theater-cheater, CC dogfood
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)
 - organized-mind scoped to human cognition (cognitive load ≠ AI load)

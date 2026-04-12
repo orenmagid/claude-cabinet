@@ -243,6 +243,38 @@ format, rewrite it before filing.
 **c. Acceptance criteria are testable.** Every criterion is pass/fail
 with a category tag ([auto], [manual], [deferred]).
 
+**d. Cold-start readiness.** "Could a session with no prior context
+execute this plan without re-investigating?" Walk the implementation
+steps and ask what implicit knowledge they require:
+
+- **Investigation findings that didn't persist.** If a prior
+  `/investigate` session discovered DOM selectors, API behavior,
+  environment quirks, or deployment constraints — are those specifics
+  in the plan, or does the plan just reference the high-level flow?
+  A step like "navigate the calendar to the target date" is incomplete
+  if the investigation found specific navigation mechanics (click
+  patterns, wait conditions, selector paths) that aren't recorded.
+- **Environment assumptions.** State persistence across runs, required
+  volumes/mounts, timezone handling, cron scheduling details, network
+  access requirements. If the plan assumes something about the runtime
+  that isn't documented, a cold-start session will discover it the
+  hard way.
+- **Build/execution order.** If multiple files share dependencies or
+  must be created in a specific sequence, that order must be explicit.
+  "Shared files" listed without noting which phase creates them and
+  which phases consume them will cause ambiguous execution.
+- **External system specifics.** API response formats, auth flows,
+  rate limits, UI quirks (e.g., "no time picker — only date selection")
+  discovered during investigation. These are the details most likely
+  to be lost between sessions.
+
+For each gap found, either add the missing detail to the plan or add
+an explicit "[investigate]" tag to the relevant step acknowledging
+that re-investigation is required. Without this tag, the executing
+session will assume the plan is complete and flail when it hits an
+undocumented assumption — guessing at selectors, API formats, or
+environment behavior instead of knowing it needs to look first.
+
 If any check fails, revise the plan before presenting.
 
 ### 7. Present to User
@@ -316,6 +348,7 @@ declared position.
 
 - **Plans are self-contained.** A future session should be able to
   execute the plan without needing context from this conversation.
+  The cold-start readiness check (6d) enforces this structurally.
 - **Plans deliver complete features.** No dead code, no unwired
   callbacks, no half-built infrastructure.
 - **Surface areas are conservative.** Declare everything you might touch.
