@@ -13,7 +13,7 @@
 - 30 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
 - Cabinet member template: `_cabinet-member-template.md` defines required structure for /seed
 - Tiered Investigation Protocol: Stage 1 (Instrument — automated tools with fallbacks) → Stage 2 (Analyze — manual reasoning informed by Stage 1)
-- `tools:` frontmatter on all 28 members declares tool dependencies (informational, not hard deps)
+- `tools:` frontmatter on all 30 members declares tool dependencies (informational, not hard deps)
 - Historically Problematic Patterns: two-file overlay — upstream SKILL.md (CC-owned) + `patterns-project.md` (project-owned)
 - Pattern lifecycle: audit finding → recurs → debrief writes patterns-project.md → universal patterns promoted upstream → cc-upgrade deduplicates
 - Audit pattern capture: debrief phase detects recurring findings and writes to patterns-project.md
@@ -76,10 +76,12 @@
 - MCP config merge: installer adds pib-db server to `.mcp.json` when work-tracking module is selected
 - `templates/mcp/pib-db.json`: MCP server configuration template
 - `templates/cabinet/pib-db-access.md`: protocol doc for MCP-first, CLI-fallback db access
+- Two new cabinet members: `narrative-architect` (story structure analyst) and `interactive-storyteller` (interactive medium craft analyst)
+- Interactive timeline demo: `docs/demo-timeline.html` — 967-line standalone HTML showcase of CC's development history
 
 ## What's Active
 
-- Published at v0.17.0 on npm as `create-claude-cabinet`
+- Published at v0.18.0 on npm as `create-claude-cabinet`
 - Four downstream consumers: Flow, article-rewriter, theater-cheater, CC dogfood
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)

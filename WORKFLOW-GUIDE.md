@@ -68,7 +68,7 @@ something actionable, the next step is `/plan`.
 
 ### You want a quality check
 
-**Use `/audit`.** This convenes your full cabinet — all 27 experts
+**Use `/audit`.** This convenes your full cabinet — all 30 experts
 review your project from their perspective. Security checks for
 vulnerabilities. Accessibility checks for usability. Architecture
 checks for structural problems. The record-keeper checks if your docs
@@ -111,7 +111,7 @@ what something does, start here.
 
 ## What the Cabinet Does (Without You Asking)
 
-The 27 cabinet members aren't just for audits. They activate
+The 30 cabinet members aren't just for audits. They activate
 automatically at key moments:
 
 **During planning** — When you `/plan`, relevant experts critique your
