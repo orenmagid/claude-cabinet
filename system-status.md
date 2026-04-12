@@ -13,7 +13,7 @@
 - 28 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
 - Cabinet member template: `_cabinet-member-template.md` defines required structure for /seed
 - Tiered Investigation Protocol: Stage 1 (Instrument — automated tools with fallbacks) → Stage 2 (Analyze — manual reasoning informed by Stage 1)
-- `tools:` frontmatter on all 27 members declares tool dependencies (informational, not hard deps)
+- `tools:` frontmatter on all 28 members declares tool dependencies (informational, not hard deps)
 - Historically Problematic Patterns: two-file overlay — upstream SKILL.md (CC-owned) + `patterns-project.md` (project-owned)
 - Pattern lifecycle: audit finding → recurs → debrief writes patterns-project.md → universal patterns promoted upstream → cc-upgrade deduplicates
 - Audit pattern capture: debrief phase detects recurring findings and writes to patterns-project.md

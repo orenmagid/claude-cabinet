@@ -2,7 +2,7 @@
 
 ## Active Cabinet Members
 
-All 27 generic cabinet members are installed. Most relevant for this project:
+All 28 generic cabinet members are installed. Most relevant for this project:
 
 - **architecture** — CLI structure, module boundaries, template/runtime separation
 - **workflow-cop** — the meta-process layer (CC's own session loop, onboarding flow)

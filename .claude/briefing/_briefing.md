@@ -7,7 +7,7 @@ Split briefing files for this project:
 | `_briefing-identity.md` | What CC is, core principles, user context |
 | `_briefing-architecture.md` | Single-layer Node CLI, codebase layout, tech stack |
 | `_briefing-jurisdictions.md` | Where code, templates, docs, and data live |
-| `_briefing-cabinet.md` | 27 active cabinet members, portfolio rules, invocation |
+| `_briefing-cabinet.md` | 28 active cabinet members, portfolio rules, invocation |
 | `_briefing-work-tracking.md` | pib-db (SQLite), query/mutation via pib-db.mjs |
 
 No `_briefing-api.md` — this project has no API.
