@@ -10,10 +10,10 @@
 - Safe reset via `--reset` (manifest-aware, won't delete customized files)
 - Settings merge (hooks into `.claude/settings.json`)
 - Optional SQLite work tracker setup
-- 30 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
+- 31 expert cabinet members for audit system (all professionalized with Investigation Protocol pattern)
 - Cabinet member template: `_cabinet-member-template.md` defines required structure for /seed
 - Tiered Investigation Protocol: Stage 1 (Instrument — automated tools with fallbacks) → Stage 2 (Analyze — manual reasoning informed by Stage 1)
-- `tools:` frontmatter on all 30 members declares tool dependencies (informational, not hard deps)
+- `tools:` frontmatter on all 31 members declares tool dependencies (informational, not hard deps)
 - Historically Problematic Patterns: two-file overlay — upstream SKILL.md (CC-owned) + `patterns-project.md` (project-owned)
 - Pattern lifecycle: audit finding → recurs → debrief writes patterns-project.md → universal patterns promoted upstream → cc-upgrade deduplicates
 - Audit pattern capture: debrief phase detects recurring findings and writes to patterns-project.md
@@ -59,6 +59,7 @@
 - Plugin format exploration: project `prj:plugin-format` filed in pib-db with 4 actions; exploring whether skills/cabinet members can be distributed as installable plugins
 - ESM rename: `pib-db.js` → `pib-db.mjs` across 37+ files (fixes ESM import issues without type:module in package.json)
 - Omega memory guard: `omega-memory-guard.sh` PreToolUse hook blocks flat markdown memory writes when omega is active
+- Template source guard: `template-source-guard.sh` PreToolUse hook (Edit|Write) blocks edits to installed copies when a template upstream exists; CC-source-repo-only (prevents template/source divergence, root cause of v0.19.2)
 - Orient briefing strengthened: default orient now requires 5 sections (State of the World, What's Active, Decision Queue, Health, Suggested Focus)
 - better-sqlite3 error handling: distinguishes version mismatch from missing module
 - settings-merge.js: MEMORY_HOOKS constant and `includeMemory` param for memory module hook injection
@@ -81,7 +82,7 @@
 
 ## What's Active
 
-- Published at v0.18.0 on npm as `create-claude-cabinet`
+- Published at v0.19.2 on npm as `create-claude-cabinet`
 - Four downstream consumers: Flow, article-rewriter, theater-cheater, CC dogfood
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)

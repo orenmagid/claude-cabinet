@@ -1,7 +1,7 @@
 # Claude Cabinet
 
 A cabinet of expert advisors for your Claude Code project. One command
-gives Claude a memory, 30 domain experts, a planning process, and the
+gives Claude a memory, 31 domain experts, a planning process, and the
 habit of starting sessions informed and ending them properly.
 
 Built by a guy who'd rather talk to Claude than write code. Most of it
@@ -12,7 +12,7 @@ was built by Claude. I just complained until it worked.
 Your project gets a cabinet — specialist advisors who each own a domain
 and weigh in when their expertise matters:
 
-- **Cabinet members** — 30 domain experts (security, accessibility,
+- **Cabinet members** — 31 domain experts (security, accessibility,
   architecture, QA, etc.) who review your project and surface what
   you'd miss alone
 - **Briefings** — project context members read before weighing in
@@ -78,7 +78,7 @@ left off.
 
 ### The Cabinet (included in lean)
 
-30 expert cabinet members who each own a domain and stay in their lane.
+31 expert cabinet members who each own a domain and stay in their lane.
 **Speed-freak** watches performance. **Boundary-man** catches edge cases.
 **Record-keeper** flags when docs drift from code. **Workflow-cop**
 evaluates whether your process actually works. Each member has a
@@ -176,7 +176,7 @@ source code.
 ```
 .claude/
 ├── skills/          # orient, debrief, plan, execute, audit, etc.
-│   └── cabinet-*/   # 30 cabinet member definitions
+│   └── cabinet-*/   # 31 cabinet member definitions
 ├── cabinet/         # committees, lifecycle, composition patterns
 ├── briefing/        # project briefing templates
 ├── hooks/           # git guardrails, telemetry

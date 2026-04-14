@@ -27,7 +27,7 @@ templates, see [EXTENSIONS.md](EXTENSIONS.md).
 | `rules/enforcement-pipeline.md` | Generic enforcement pipeline: capture, classify, promote, encode, monitor. Describes the compliance stack and promotion criteria. |
 | `rules/memory-capture.md` | When and how to capture memories to omega. What to capture, what not to, cadence guidance. |
 
-### Skills (22 workflow + 30 cabinet members)
+### Skills (22 workflow + 31 cabinet members)
 
 **Workflow Skills:**
 
