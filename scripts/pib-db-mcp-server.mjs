@@ -109,6 +109,17 @@ const TOOLS = [
     },
   },
   {
+    name: 'pib_get_action',
+    description: 'Get full details of a single action by fid, including complete notes, all fields.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        fid: { type: 'string', description: 'Action fid (e.g. act:abc12345)' },
+      },
+      required: ['fid'],
+    },
+  },
+  {
     name: 'pib_ingest_findings',
     description: 'Ingest audit findings from a run directory containing run-summary.json.',
     inputSchema: {
@@ -177,6 +188,8 @@ function handleToolCall(name, args) {
       return lib.updateAction(d, args);
     case 'pib_complete_action':
       return lib.completeAction(d, args);
+    case 'pib_get_action':
+      return lib.getAction(d, args);
     case 'pib_ingest_findings':
       return lib.ingestFindings(d, args);
     case 'pib_triage':

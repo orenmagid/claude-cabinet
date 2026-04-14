@@ -101,22 +101,66 @@ sessions, and project-specific context.
 - `.claude/memory/patterns/` — enforcement patterns from prior sessions.
   Scan the directory, read each pattern file. These are project-level
   feedback that guides behavior (what to avoid, what to keep doing).
-- **Omega semantic memory** — omega's native SessionStart hook
-  automatically surfaces recalled memories. During orient, query for
-  additional project-scoped context via the adapter:
+- **Omega semantic memory (MANDATORY if configured)**
+
+  If `~/.claude-cabinet/omega-venv/bin/omega` exists, execute this
+  query — do NOT skip, do NOT paraphrase, execute the command:
+
   ```bash
-  echo '{"text": "session context project status recent decisions", "limit": 10}' | \
-    ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
+  ~/.claude-cabinet/omega-venv/bin/omega query \
+    "session context for $(basename $(pwd)): recent decisions, active constraints, known issues" \
+    --limit 10 2>/dev/null || echo "OMEGA_QUERY_FAILED"
   ```
-  Surface any relevant memories (decisions, lessons, constraints) that
-  inform the current session. If omega is unavailable, run `omega hooks
-  doctor` to diagnose. If the venv is missing but `.ccrc.json` lists
-  the memory module as installed, warn the user:
-  > ⚠ Memory module is installed but omega venv is missing.
-  > Run `npx create-claude-cabinet` to restore it.
+
+  If the command outputs OMEGA_QUERY_FAILED or returns empty:
+  > ⚠ Omega context not loaded — prior session decisions may be
+  > missing. Run: `omega hooks doctor`
+
+  If the venv is missing but `.ccrc.json` lists memory module as
+  installed:
+  > ⚠ Memory module installed but omega venv missing.
+  > Run: `npx create-claude-cabinet` to restore.
+
+  **Known limitation:** The omega `surface_memories` hook (PostToolUse)
+  searches by file path, not behavioral context. Memories like "never
+  guess in browser automation" won't surface when editing
+  `tests/login.spec.ts`. The domain-memories PreToolUse hook addresses
+  this for known high-risk domains.
+
+  **Unmigrated memory files:** If omega is configured and
+  `.claude/memory/*.md` files exist (excluding MEMORY.md and
+  patterns/), surface:
+  > ⚠ Found N unmigrated memory files in .claude/memory/.
+  > Run: `python3 scripts/migrate-memory-to-omega.py --dry-run`
 
 The goal: build a mental model of where things stand before doing
 anything else.
+
+### Feedback pipeline check
+
+1. **Flush outbox.** Read `~/.claude/cc-feedback-outbox.json`:
+   ```bash
+   cat ~/.claude/cc-feedback-outbox.json 2>/dev/null || echo '[]'
+   ```
+   If items exist with `"delivered": false`:
+   - If this is the CC source repo (check `package.json` name is
+     `create-claude-cabinet`): copy items to `feedback/` directory
+     as individual .md files, mark as delivered in the outbox.
+   - If this is a consuming project with `~/.claude/cc-registry.json`:
+     read the CC source path from registry and copy items to that
+     path's `feedback/` directory.
+   - Error handling: wrap JSON.parse in try/catch. If the outbox is
+     malformed, log warning and reset to `[]`. Write atomically: write
+     to `~/.claude/cc-feedback-outbox.json.tmp`, then rename over
+     the original. On successful flush, reset to `[]` — don't
+     accumulate delivered markers.
+
+2. **Scan wrong-write locations.** Check these paths for CC-scoped
+   feedback that got written to the wrong place:
+   - `.claude/memory/feedback/*.md`
+   - `.claude/feedback/*.md`
+   If found: "Found N feedback files in [path] that may be CC
+   upstream feedback written to the wrong location. Move to outbox?"
 
 ### 2. Sync Data (core)
 
@@ -209,6 +253,29 @@ other registry entries point to paths that no longer exist, silently
 note it — mention during briefing only if the user might care (e.g.,
 "Your old project 'deal-v1' seems to have been deleted — want me to
 remove it from the registry?").
+
+### LSP plugin check
+
+Detect the project's tech stack and verify matching LSP plugins:
+
+| Indicator | Language | Plugin | Install command |
+|---|---|---|---|
+| tsconfig.json or *.ts files | TypeScript | typescript-lsp | `claude plugins install typescript-lsp` |
+| pyproject.toml, requirements.txt, *.py | Python | pyright-lsp | `claude plugins install pyright-lsp` |
+| Cargo.toml | Rust | rust-analyzer-lsp | `claude plugins install rust-analyzer-lsp` |
+| go.mod | Go | gopls-lsp | `claude plugins install gopls-lsp` |
+
+For each detected language, check if the plugin is installed:
+```bash
+claude plugins list 2>/dev/null | grep -q "<plugin-name>" || echo "NOT INSTALLED"
+```
+
+Surface missing plugins as health warnings:
+> ⚠ TypeScript detected but typescript-lsp not installed. This plugin
+> catches missing imports, type errors, and invalid props automatically
+> after every edit. Install: `claude plugins install typescript-lsp`
+
+Advisory only — do not block orient for missing plugins.
 
 > **Orient vs Pulse vs Audit:** Orient health checks verify *operational*
 > state — is the system running, is data fresh, are processes alive?

@@ -77,7 +77,11 @@ Implement the promoted rule at its target layer:
   `.claude/rules/` file
 - **Hook promotion:** Add to `.claude/settings.json` hooks section.
   Command hooks for deterministic checks, prompt hooks for semantic
-  evaluation.
+  evaluation. **Tooling:** The `hookify` plugin (`claude plugins install
+  hookify`) can generate hooks from natural language — run `/hookify`
+  with a description or let it auto-generate rules from corrected
+  behaviors in the current session. Useful for rapid promotion without
+  hand-writing shell scripts.
 - **Structural encoding:** Modify API, schema, or validation to reject
   invalid states directly
 

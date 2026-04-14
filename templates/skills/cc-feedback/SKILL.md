@@ -5,7 +5,6 @@ description: |
   with CC-provided skills, phases, or conventions without waiting for debrief.
   Use when: "cc-feedback", "feedback for CC", "file upstream feedback",
   "this CC skill is broken", "report CC friction".
-disable-model-invocation: 'true'
 ---
 
 # /cc-feedback — File Upstream Feedback

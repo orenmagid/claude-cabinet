@@ -101,6 +101,33 @@ Identify from the plan:
 - **Plan type** — code plan (has file changes) or walkthrough plan
   (manual setup, configuration, purchase)
 
+#### Load full spec and write breadcrumb
+
+After identifying the action to execute:
+
+1. Call `pib_get_action` with the action's fid to get complete notes.
+   If unavailable, use `pib_query` with:
+   `SELECT * FROM actions WHERE fid = '<fid>'`
+2. Read the FULL notes. Do not proceed if notes appear truncated.
+3. Create the verification breadcrumb:
+
+```bash
+mkdir -p .claude/verification
+cat > .claude/verification/<fid>.json << 'BREADCRUMB'
+{
+  "fid": "<fid>",
+  "spec_read": true,
+  "spec_read_at": "<ISO timestamp>",
+  "ac_verified": false,
+  "verification_summary": null,
+  "deviations": []
+}
+BREADCRUMB
+```
+
+The completion hook blocks marking this action done without this
+breadcrumb. Do NOT skip this step.
+
 #### Walkthrough Plans (non-code)
 
 If the plan has no code changes, skip the file-group implementation
@@ -245,11 +272,40 @@ Criteria: N total (X auto, Y verified-via-tools, Z needs-user, W deferred)
 **If any [auto] criterion fails: STOP.** Fix the issue before proceeding.
 Do not mark the work item complete with failing AC.
 
+#### Update verification breadcrumb
+
+After verifying all ACs, update the breadcrumb:
+
+```bash
+cat > .claude/verification/<fid>.json << 'BREADCRUMB'
+{
+  "fid": "<fid>",
+  "spec_read": true,
+  "spec_read_at": "<original timestamp>",
+  "ac_verified": true,
+  "ac_verified_at": "<ISO timestamp>",
+  "verification_summary": "<1-2 sentence summary>",
+  "deviations": ["<any deviations, or empty array>"]
+}
+BREADCRUMB
+```
+
+If deviations is non-empty, do NOT mark action complete. Address
+deviations or escalate to user first.
+
 ### 8. Close the Loop
 
 Mark the work item as complete (if your project has a work tracker).
 Run debrief if this was a full session. At minimum, ensure the work
 is committed, validated, and verified before considering it done.
+
+#### Check downstream impact
+
+If deviations were found:
+1. List remaining actions in the same project: `pib_list_actions --project <project_fid>`
+2. For each, check if its surface area overlaps with files you modified
+   (use `git diff --name-only` from before this action)
+3. Flag overlapping actions: "Action [fid] may need spec updates"
 
 ### 9. Discover Custom Phases
 

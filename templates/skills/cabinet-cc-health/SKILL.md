@@ -465,6 +465,15 @@ entropy.
 - Telemetry JSONL files (location varies by project)
 - `package.json`, project root configs — drift detection baselines
 
+### LSP Plugin Coverage
+
+For each language detected in the project, verify the matching LSP plugin
+is installed. Missing LSP plugins are a WARNING-level finding:
+
+"[Language] detected (via [indicator file]) but [plugin] not installed.
+LSP plugins provide automatic diagnostics after edits — they catch missing
+imports, type mismatches, and invalid props without manual compiler runs."
+
 ## Portfolio Boundaries
 
 Do not cross into adjacent cabinet members' territory:

@@ -275,6 +275,25 @@ session will assume the plan is complete and flail when it hits an
 undocumented assumption — guessing at selectors, API formats, or
 environment behavior instead of knowing it needs to look first.
 
+**e. QA completeness review.** Convene the QA cabinet member for a
+plan-level completeness review. QA evaluates each action against:
+
+- Can a developer reading ONLY this action's notes implement without
+  asking questions?
+- Does every action have testable acceptance criteria (not vague)?
+- Are implementation details specific (exact files, methods, formats)
+  not abstract ("update the API")?
+- Is the surface area (files to change) explicitly listed with the
+  correct format (## Surface Area with - files: entries)?
+- If the plan defines multiple endpoints/components/interfaces, is
+  there a Phase 0 action defining shared conventions (response format,
+  error codes, naming)?
+
+QA returns a verdict per action: PASS, NEEDS DETAIL, or BLOCK.
+BLOCK means the action is unimplementable as written — do not
+proceed to Phase 7 until all actions pass or the user explicitly
+overrides.
+
 If any check fails, revise the plan before presenting.
 
 ### 7. Present to User
@@ -300,10 +319,79 @@ a formatted document.
 needs to see and approve the specifics. This step always runs regardless
 of phase file content.
 
+### Present critique for human review
+
+When cabinet critique has been collected and needs human review:
+
+1. Start the review server:
+   ```bash
+   node scripts/review-server.mjs --port 3459 &
+   ```
+
+2. Format each critique finding as a review item with fields:
+   - id: "<critic-name>-<n>" (e.g., "architecture-1")
+   - group: critic name
+   - severity: high/moderate/advisory
+   - title: finding summary
+   - detail: full finding text with context (rendered as markdown)
+
+3. POST items to http://localhost:3459/api/session:
+   ```json
+   {
+     "title": "Plan Critique — <plan name>",
+     "verdictLabels": "critique",
+     "items": [<formatted items>]
+   }
+   ```
+   Note: verdictLabels can be a string preset ("critique", "plan",
+   "review", "audit") or a custom object mapping keys to button labels.
+
+4. Tell user: "Review critique at http://localhost:3459"
+
+5. When user confirms submission, GET http://localhost:3459/api/verdicts
+   and process per verdict:
+   - **adopt**: incorporate finding into plan revision
+   - **reject**: drop, note reason from user feedback
+   - **revise**: modify based on user's notes field
+   - **defer**: track for future, exclude from current plan
+   - **question**: answer the question, re-present if needed
+
+6. All items must reach terminal state before plan is finalized.
+   Use "Close Remaining" for bulk resolution.
+
+Read `phases/review-ui.md` for project-specific overrides.
+
+**Default (absent/empty):** Use the generic review UI as described above.
+
+**Flow override:** Flow creates phases/review-ui.md with skip:true for
+skills where Flow's own app provides a richer review experience (action
+review, work item inspection). Flow uses the generic review UI for
+critique and plan review.
+
 ### 8. Create the Work Item
 
 Read `phases/work-tracker.md` for how to file the approved plan as a
 work item in your project's tracking system.
+
+### Compliance stack check
+
+Before filing actions, verify each action's enforcement layer matches
+the problem severity:
+
+For each action in the plan, ask:
+- **Is this SKILL.md prose fixing something that already failed as
+  SKILL.md prose?** If yes, flag: "Compliance-layer fix for compliance-
+  layer failure. Consider: can this be a hook instead?"
+- **Is this a hook?** Good — verify it's mechanically checkable.
+- **Is this structural encoding (tool, script, schema)?** Ideal.
+
+Surface the analysis to the user:
+> **Enforcement analysis:** N actions are structural, M are hooks,
+> K are compliance-layer. Compliance-layer items that may need
+> promotion: [list with reasons]
+
+The user decides whether to promote or accept the compliance risk.
+Do not block filing over this — it's advisory.
 
 **Default (absent/empty):** If `scripts/pib-db.mjs` exists, file the
 approved plan as a pib-db action. Use the plan title as the action text

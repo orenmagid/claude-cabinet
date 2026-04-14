@@ -188,6 +188,18 @@ export function completeAction(db, { fid }) {
   return { fid, message: `Completed ${fid}` };
 }
 
+export function getAction(db, { fid }) {
+  if (!fid) return { error: 'fid is required' };
+  const row = db.prepare(`
+    SELECT a.*, p.name as project_name
+    FROM actions a
+    LEFT JOIN projects p ON a.project_fid = p.fid
+    WHERE a.fid = ? AND a.deleted_at IS NULL
+  `).get(fid);
+  if (!row) return { error: `No action found with fid: ${fid}` };
+  return row;
+}
+
 // ---------------------------------------------------------------------------
 // Projects
 // ---------------------------------------------------------------------------

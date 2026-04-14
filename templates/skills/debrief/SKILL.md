@@ -235,6 +235,17 @@ operations that decay if left to human memory.
 
 **Skip (absent/empty).**
 
+### Memory migration check
+
+If omega is configured and .claude/memory/*.md files were written or
+modified this session (check via git status for memory dir changes):
+```bash
+python3 scripts/migrate-memory-to-omega.py
+```
+This migrates any flat memory files to omega, tags them with the
+project name, checks for duplicates, and renames migrated files
+to .md.migrated.
+
 ### 6. Update State (core)
 
 Read `phases/update-state.md` for what state files and documentation
@@ -449,6 +460,21 @@ work — manual tasks, purchases, emails, configuration changes. If
 these aren't captured somewhere, they rely on human memory.
 
 **Skip (absent/empty).**
+
+### Orient contract
+
+Debrief MUST record these for the next session's orient to function:
+
+1. **Session summary** — what was accomplished, stored in omega
+   (if configured) or in .claude/memory/ as fallback
+2. **Open items** — any unfinished work, with fids if tracked in pib-db
+3. **Active constraints** — anything discovered this session that limits
+   future work (API limits, broken dependencies, blocked paths)
+4. **Feedback filed** — count of cc-feedback items filed this session
+
+Orient will query omega for items 1-3. Item 4 is checked via the
+outbox. If debrief skips any of these, orient starts the next session
+blind on that dimension.
 
 ### 14. Discover Custom Phases
 
