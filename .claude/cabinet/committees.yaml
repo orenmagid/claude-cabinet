@@ -28,6 +28,7 @@ committees:
     members:
       - technical-debt
       - architecture
+      - automation
       - boundary-man
 
   health:

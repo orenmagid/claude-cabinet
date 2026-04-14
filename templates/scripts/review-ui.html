@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review</title>
+  <meta name="color-scheme" content="light dark">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      padding: 20px 24px;
+      color: #c1c2c5;
+      background: #1a1b1e;
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #373a40;
+    }
+    h1 { font-size: 18px; color: #fff; font-weight: 600; }
+    .run-info { color: #909296; font-size: 12px; }
+
+    /* Groups */
+    .group {
+      margin-bottom: 16px;
+      border: 1px solid #373a40;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #25262b;
+      cursor: pointer;
+      user-select: none;
+    }
+    .group-header:hover { background: #2c2e33; }
+    .group-name { font-weight: 600; color: #e9ecef; font-size: 14px; }
+    .group-stats { display: flex; gap: 8px; align-items: center; font-size: 12px; color: #909296; }
+    .group-body { padding: 0; }
+    .group-body.collapsed { display: none; }
+
+    /* Items */
+    .item {
+      padding: 12px 14px;
+      border-top: 1px solid #2c2e33;
+      transition: background 0.1s;
+    }
+    .item:hover { background: #25262b; }
+    .item-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .badge-critical, .badge-blocking { background: #e03131; color: #fff; }
+    .badge-high { background: #e8590c; color: #fff; }
+    .badge-moderate, .badge-warn, .badge-conditional { background: #f08c00; color: #fff; }
+    .badge-low, .badge-info { background: #1c7ed6; color: #fff; }
+    .badge-advisory { background: #7048e8; color: #fff; }
+    .badge-positive { background: #2b8a3e; color: #fff; }
+    .item-title { color: #e9ecef; font-weight: 500; flex: 1; }
+    .item-id { color: #5c5f66; font-size: 11px; font-family: monospace; flex-shrink: 0; }
+
+    /* Commentary with simple markdown */
+    .commentary {
+      color: #a6a7ab;
+      font-size: 12px;
+      margin: 6px 0 10px 0;
+      padding: 8px 10px;
+      background: #25262b;
+      border-radius: 4px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .commentary code {
+      background: #373a40;
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-size: 11px;
+    }
+    .commentary strong { color: #e9ecef; }
+
+    /* Source tag */
+    .source-tag {
+      display: inline-block;
+      padding: 0px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      background: #373a40;
+      color: #909296;
+      margin-right: 4px;
+    }
+
+    /* Verdict controls */
+    .controls {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .verdict-btn {
+      padding: 4px 12px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #2c2e33;
+      color: #909296;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      transition: all 0.12s;
+    }
+    .verdict-btn:hover { background: #373a40; color: #c1c2c5; }
+
+    /* Verdict colors — class names are sel-{verdictKey} */
+    .verdict-btn.sel-approve, .verdict-btn.sel-fix { background: #2b8a3e; color: #fff; border-color: #2b8a3e; }
+    .verdict-btn.sel-modify { background: #f08c00; color: #fff; border-color: #f08c00; }
+    .verdict-btn.sel-defer { background: #5c5f66; color: #fff; border-color: #5c5f66; }
+    .verdict-btn.sel-reject { background: #e03131; color: #fff; border-color: #e03131; }
+    .verdict-btn.sel-question { background: #1c7ed6; color: #fff; border-color: #1c7ed6; }
+
+    .feedback-input {
+      flex: 1;
+      min-width: 180px;
+      padding: 4px 8px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #1a1b1e;
+      color: #c1c2c5;
+      font-size: 12px;
+    }
+    .feedback-input::placeholder { color: #5c5f66; }
+    .feedback-input.highlight { border-color: #1c7ed6; }
+    .feedback-input.highlight-modify { border-color: #f08c00; }
+
+    /* Bulk bar */
+    .bulk-bar {
+      display: flex;
+      gap: 8px;
+      padding: 8px 14px;
+      background: #2c2e33;
+      border-top: 1px solid #373a40;
+      align-items: center;
+      font-size: 12px;
+    }
+    .bulk-bar label { color: #909296; }
+    .bulk-btn {
+      padding: 3px 10px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #25262b;
+      color: #c1c2c5;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .bulk-btn:hover { background: #373a40; }
+
+    /* Group-level notes */
+    .group-controls {
+      padding: 8px 14px;
+      background: #2c2e33;
+      border-top: 1px solid #373a40;
+    }
+    .group-input {
+      width: 100%;
+      padding: 4px 8px;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      background: #1a1b1e;
+      color: #c1c2c5;
+      font-size: 12px;
+    }
+    .group-input::placeholder { color: #5c5f66; }
+
+    /* Bottom bar */
+    .bottom-bar {
+      position: sticky;
+      bottom: 0;
+      background: #1a1b1e;
+      border-top: 1px solid #373a40;
+      padding: 14px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+    }
+    .progress { color: #909296; font-size: 13px; }
+    .progress strong { color: #e9ecef; }
+    .submit-btn {
+      padding: 8px 28px;
+      background: #7048e8;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .submit-btn:hover { background: #6741d9; }
+    .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .close-remaining-btn {
+      padding: 8px 16px;
+      background: #373a40;
+      color: #c1c2c5;
+      border: 1px solid #5c5f66;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    .close-remaining-btn:hover { background: #5c5f66; }
+    .bottom-actions { display: flex; align-items: center; gap: 4px; }
+
+    #status {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: #2b8a3e22;
+      border: 1px solid #2b8a3e;
+      border-radius: 6px;
+      color: #51cf66;
+      font-weight: 600;
+      display: none;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #909296;
+    }
+    #loading .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #373a40;
+      border-top-color: #7048e8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #5c5f66;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .stat-approve, .stat-fix { background: #2b8a3e33; color: #51cf66; }
+    .stat-modify { background: #f08c0033; color: #fcc419; }
+    .stat-defer { background: #5c5f6633; color: #909296; }
+    .stat-reject { background: #e0313133; color: #ff6b6b; }
+    .stat-question { background: #1c7ed633; color: #74c0fc; }
+    .stat-pending { background: #373a40; color: #909296; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">Review</h1>
+    <span class="run-info" id="run-info"></span>
+  </header>
+
+  <div class="stats-bar" id="stats-bar" style="display:none"></div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>Loading items...</div>
+  </div>
+
+  <div id="items-root"></div>
+
+  <div class="bottom-bar" id="bottom-bar" style="display:none">
+    <span class="progress" id="progress"></span>
+    <span class="bottom-actions">
+      <select id="close-action" style="padding:6px 8px; border:1px solid #373a40; border-radius:4px; background:#2c2e33; color:#c1c2c5; font-size:12px; margin-right:4px;">
+        <option value="approve">Approve</option>
+        <option value="defer">Defer</option>
+      </select>
+      <button class="close-remaining-btn" id="close-remaining-btn">Close Remaining</button>
+      <button class="submit-btn" id="submit-btn" disabled>Submit</button>
+    </span>
+  </div>
+
+  <div id="status"></div>
+
+  <script>
+    let session = null;
+    let items = [];
+    let verdictLabels = {};
+    const verdicts = {};
+    const groupNotes = {};
+
+    // Default verdict sets
+    const VERDICT_PRESETS = {
+      audit:   { fix: 'Fix', defer: 'Defer', reject: 'Reject', question: '?' },
+      plan:    { approve: 'Approve', modify: 'Modify', reject: 'Reject', defer: 'Defer', question: '?' },
+      review:  { approve: 'Approve', modify: 'Modify', reject: 'Reject', defer: 'Defer', question: '?' },
+      critique:{ approve: 'Adopt', modify: 'Modify', reject: 'Reject', defer: 'Defer', question: '?' },
+    };
+
+    // Fetch session from server
+    fetch('/api/session')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(data => {
+        if (data.active) loadSession(data);
+        else showEmpty();
+      })
+      .catch(() => showEmpty());
+
+    // Public API for Claude (preview_eval / javascript_tool)
+    window.loadSession = loadSession;
+    window.getVerdicts = function() {
+      return JSON.stringify(buildVerdictPayload());
+    };
+
+    function loadSession(data) {
+      session = data;
+      items = data.items || [];
+      // Resolve verdict labels: string → preset lookup, object → use directly, missing → fallback
+      const vl = data.verdictLabels;
+      verdictLabels = (typeof vl === 'string' ? VERDICT_PRESETS[vl] : vl) || VERDICT_PRESETS[data.type] || VERDICT_PRESETS.review;
+
+      document.getElementById('title').textContent = data.title || 'Review';
+      document.title = data.title || 'Review';
+
+      // Pre-populate verdicts from recommendations
+      items.forEach(item => {
+        if (item.recommendation && !verdicts[item.id]) {
+          verdicts[item.id] = { verdict: item.recommendation, feedback: '' };
+        }
+      });
+
+      render();
+    }
+
+    function showEmpty() {
+      document.getElementById('loading').innerHTML =
+        '<div class="empty-state">No review session active.<br>Claude will start a session.</div>';
+    }
+
+    function buildVerdictPayload() {
+      const counts = {};
+      Object.keys(verdictLabels).forEach(k => counts[k] = 0);
+      counts.pending = 0;
+
+      items.forEach(item => {
+        const v = verdicts[item.id]?.verdict;
+        if (v && counts[v] !== undefined) counts[v]++;
+        else counts.pending++;
+      });
+
+      return {
+        title: session?.title,
+        total: items.length,
+        reviewed: items.length - counts.pending,
+        submitted: !!window._submitted,
+        counts,
+        groupNotes: Object.fromEntries(
+          Object.entries(groupNotes).filter(([_, v]) => v)
+        ),
+        verdicts: items.map(item => ({
+          id: item.id,
+          group: item.group,
+          severity: item.severity,
+          title: item.title,
+          verdict: verdicts[item.id]?.verdict || null,
+          feedback: verdicts[item.id]?.feedback || '',
+        }))
+      };
+    }
+
+    function render() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('bottom-bar').style.display = 'flex';
+      document.getElementById('stats-bar').style.display = 'flex';
+
+      // Group items
+      const groups = {};
+      items.forEach(item => {
+        const g = item.group || 'Items';
+        if (!groups[g]) groups[g] = [];
+        groups[g].push(item);
+      });
+
+      const root = document.getElementById('items-root');
+      root.innerHTML = '';
+
+      const groupNames = Object.keys(groups);
+      // Sort: use session.groups order if provided, otherwise alphabetical
+      if (session?.groups) {
+        groupNames.sort((a, b) => {
+          const ia = session.groups.indexOf(a);
+          const ib = session.groups.indexOf(b);
+          if (ia === -1 && ib === -1) return a.localeCompare(b);
+          if (ia === -1) return 1;
+          if (ib === -1) return -1;
+          return ia - ib;
+        });
+      } else {
+        groupNames.sort();
+      }
+
+      groupNames.forEach(groupName => {
+        const groupItems = groups[groupName];
+        const triaged = groupItems.filter(i => verdicts[i.id]?.verdict).length;
+
+        const group = document.createElement('div');
+        group.className = 'group';
+
+        // Header
+        const header = document.createElement('div');
+        header.className = 'group-header';
+        header.innerHTML = `
+          <span class="group-name">${esc(groupName)} (${groupItems.length})</span>
+          <span class="group-stats">${triaged}/${groupItems.length} reviewed</span>
+        `;
+        header.addEventListener('click', () => body.classList.toggle('collapsed'));
+        group.appendChild(header);
+
+        // Body
+        const body = document.createElement('div');
+        body.className = 'group-body';
+
+        groupItems.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'item';
+          const v = verdicts[item.id]?.verdict || '';
+
+          let badges = '';
+          if (item.severity) badges += `<span class="badge badge-${item.severity}">${esc(item.severity)}</span>`;
+          if (item.source) badges += `<span class="source-tag">${esc(item.source)}</span>`;
+
+          let commentaryHtml = '';
+          const bodyText = item.commentary || item.detail || '';
+          if (bodyText) {
+            commentaryHtml = `<div class="commentary">${renderMarkdown(bodyText)}</div>`;
+          }
+
+          // Build verdict buttons from labels
+          const btns = Object.entries(verdictLabels).map(([key, label]) =>
+            `<button class="verdict-btn ${v === key ? 'sel-' + key : ''}" data-id="${item.id}" data-v="${key}">${esc(label)}</button>`
+          ).join('');
+
+          const inputClass = v === 'question' ? 'feedback-input highlight'
+            : v === 'modify' ? 'feedback-input highlight-modify'
+            : 'feedback-input';
+          const placeholder = v === 'question' ? 'your question...'
+            : v === 'modify' ? 'how to modify...'
+            : 'notes...';
+
+          row.innerHTML = `
+            <div class="item-top">
+              ${badges}
+              <span class="item-title">${esc(item.title)}</span>
+              ${item.id ? `<span class="item-id">${esc(item.id)}</span>` : ''}
+            </div>
+            ${commentaryHtml}
+            <div class="controls">
+              ${btns}
+              <input class="${inputClass}" data-id="${item.id}" placeholder="${placeholder}" value="${esc(verdicts[item.id]?.feedback || '')}">
+            </div>
+          `;
+          body.appendChild(row);
+        });
+
+        // Bulk actions
+        const bulk = document.createElement('div');
+        bulk.className = 'bulk-bar';
+        const bulkBtns = Object.entries(verdictLabels)
+          .filter(([k]) => k !== 'question')
+          .map(([key, label]) => `<button class="bulk-btn" data-g="${esc(groupName)}" data-v="${key}">All ${esc(label)}</button>`)
+          .join('');
+        bulk.innerHTML = `<label>Bulk:</label>${bulkBtns}`;
+        body.appendChild(bulk);
+
+        // Group-level notes
+        const gc = document.createElement('div');
+        gc.className = 'group-controls';
+        gc.innerHTML = `<input class="group-input" data-group="${esc(groupName)}" placeholder="Notes on ${esc(groupName)}..." value="${esc(groupNotes[groupName] || '')}">`;
+        body.appendChild(gc);
+
+        group.appendChild(body);
+        root.appendChild(group);
+      });
+
+      updateProgress();
+      updateStats();
+      document.getElementById('run-info').textContent = `${items.length} items`;
+    }
+
+    function updateProgress() {
+      const reviewed = Object.values(verdicts).filter(v => v.verdict).length;
+      document.getElementById('progress').innerHTML = `<strong>${reviewed}</strong> / ${items.length} reviewed`;
+      // Enable submit when all reviewed (or allow partial submit)
+      document.getElementById('submit-btn').disabled = reviewed === 0;
+      if (reviewed === items.length) {
+        document.getElementById('submit-btn').textContent = 'Submit All';
+      } else {
+        document.getElementById('submit-btn').textContent = `Submit (${reviewed}/${items.length})`;
+      }
+    }
+
+    function updateStats() {
+      const counts = {};
+      Object.keys(verdictLabels).forEach(k => counts[k] = 0);
+      counts.pending = 0;
+      items.forEach(item => {
+        const v = verdicts[item.id]?.verdict;
+        if (v && counts[v] !== undefined) counts[v]++;
+        else counts.pending++;
+      });
+
+      const bar = document.getElementById('stats-bar');
+      bar.innerHTML = Object.entries(counts)
+        .filter(([_, n]) => n > 0)
+        .map(([k, n]) => {
+          const label = k === 'pending' ? 'Pending' : verdictLabels[k] || k;
+          return `<span class="stat stat-${k}">${label}: ${n}</span>`;
+        }).join('');
+    }
+
+    function renderMarkdown(text) {
+      if (!text) return '';
+      return esc(text)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+    }
+
+    function esc(s) {
+      if (!s) return '';
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // Save all in-flight input values before re-rendering (prevents note loss on verdict click)
+    function captureInputs() {
+      document.querySelectorAll('.feedback-input').forEach(el => {
+        const id = el.dataset.id;
+        if (id && el.value) {
+          if (!verdicts[id]) verdicts[id] = { verdict: '', feedback: '' };
+          verdicts[id].feedback = el.value;
+        }
+      });
+      document.querySelectorAll('.group-input').forEach(el => {
+        const g = el.dataset.group;
+        if (g && el.value) groupNotes[g] = el.value;
+      });
+    }
+
+    // Event delegation
+    document.addEventListener('click', e => {
+      if (e.target.classList.contains('verdict-btn')) {
+        captureInputs();
+        const id = e.target.dataset.id;
+        const v = e.target.dataset.v;
+        if (!verdicts[id]) verdicts[id] = { verdict: '', feedback: '' };
+        verdicts[id].verdict = v;
+        render();
+      }
+      if (e.target.classList.contains('bulk-btn')) {
+        captureInputs();
+        const groupName = e.target.dataset.g;
+        const v = e.target.dataset.v;
+        items.filter(i => (i.group || 'Items') === groupName).forEach(i => {
+          if (!verdicts[i.id]) verdicts[i.id] = { verdict: '', feedback: '' };
+          verdicts[i.id].verdict = v;
+        });
+        render();
+      }
+    });
+
+    document.addEventListener('input', e => {
+      if (e.target.classList.contains('feedback-input')) {
+        const id = e.target.dataset.id;
+        if (!verdicts[id]) verdicts[id] = { verdict: '', feedback: '' };
+        verdicts[id].feedback = e.target.value;
+      }
+      if (e.target.classList.contains('group-input')) {
+        groupNotes[e.target.dataset.group] = e.target.value;
+      }
+    });
+
+    // Close remaining — apply default verdict to all unreviewed items
+    document.getElementById('close-remaining-btn').addEventListener('click', () => {
+      const action = document.getElementById('close-action').value;
+      items.forEach(item => {
+        if (!verdicts[item.id] || !verdicts[item.id].verdict) {
+          verdicts[item.id] = { verdict: action, feedback: '' };
+        }
+      });
+      render();
+    });
+
+    // Submit
+    document.getElementById('submit-btn').addEventListener('click', async () => {
+      window._submitted = true;
+      const payload = buildVerdictPayload();
+
+      try {
+        await fetch('/api/verdicts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch {}
+
+      document.getElementById('status').style.display = 'block';
+      document.getElementById('status').textContent = 'Verdicts submitted. Return to Claude.';
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('submit-btn').textContent = 'Submitted';
+    });
+  </script>
+</body>
+</html>
