@@ -1,36 +1,54 @@
 # Validators
 
-Define your project-specific validation checks here. Each validator is
-a named check with a command to run. The /validate skill reads this file
-and executes each check in sequence.
+Each validator is a named check with a command. The /validate skill
+reads this file and executes each check in sequence, collating pass/fail
+summary at the end.
 
 ## Format
 
-For each validator, provide:
+For each validator:
 - **Name** — short label for the summary table
 - **Command** — shell command that returns exit 0 on success, non-zero on failure
-- **What it catches** — brief description of what this validator detects
+- **What it catches** — brief description
 
-## Example Validators
+## Active Validators
 
-Uncomment and adapt these for your project:
+### skill-structure
 
-### Cabinet Member Structure
 ```bash
-# Check all cabinet members for required sections and frontmatter
+bash scripts/skill-validator.sh templates/skills/*/SKILL.md .claude/skills/*/SKILL.md
+```
+
+Catches SKILL.md files that violate the best practices encoded in
+`.claude/cabinet/skill-best-practices.md` — line count over 500, missing
+or malformed name/description, broken reference depth, backslash paths,
+and skill-type-specific rules (workflow vs cabinet). Fast (<5s for 50
+skills). Runs every /validate invocation.
+
+### manifest-drift
+
+```bash
+node scripts/cc-drift-check.cjs
+```
+
+Catches files listed in `.ccrc.json` that have been locally modified
+relative to their upstream hashes. Flags files that should be updated
+through the installer rather than edited in place.
+
+### cabinet-structure
+
+```bash
 errors=0
 for skill_dir in .claude/skills/cabinet-*/; do
   file="$skill_dir/SKILL.md"
   [ -f "$file" ] || continue
   name=$(basename "$skill_dir")
 
-  # Required frontmatter: tools field
   if ! grep -q '^tools:' "$file" 2>/dev/null; then
     echo "WARN: $name missing 'tools:' frontmatter"
     errors=$((errors + 1))
   fi
 
-  # Required section: Investigation Protocol (or Research Method for legacy)
   if ! grep -q '## Investigation Protocol' "$file" 2>/dev/null; then
     if ! grep -q '## Research Method' "$file" 2>/dev/null; then
       echo "WARN: $name missing Investigation Protocol or Research Method section"
@@ -38,19 +56,16 @@ for skill_dir in .claude/skills/cabinet-*/; do
     fi
   fi
 
-  # Required section: Portfolio Boundaries
   if ! grep -q '## Portfolio Boundaries' "$file" 2>/dev/null; then
     echo "WARN: $name missing Portfolio Boundaries section"
     errors=$((errors + 1))
   fi
 
-  # Required section: Calibration Examples
   if ! grep -q '## Calibration Examples' "$file" 2>/dev/null; then
     echo "WARN: $name missing Calibration Examples section"
     errors=$((errors + 1))
   fi
 
-  # Required section: Historically Problematic Patterns
   if ! grep -q '## Historically Problematic Patterns' "$file" 2>/dev/null; then
     echo "WARN: $name missing Historically Problematic Patterns section"
     errors=$((errors + 1))
@@ -65,11 +80,14 @@ if [ "$errors" -gt 0 ]; then
 fi
 echo "All cabinet members pass structural validation."
 ```
-Catches cabinet members missing required sections (Investigation Protocol,
-Portfolio Boundaries, Calibration Examples, Historically Problematic
-Patterns) or frontmatter fields (tools). Warns but doesn't block —
-legacy members with Research Method instead of Investigation Protocol
-are accepted.
+
+Catches cabinet members missing required sections (Investigation
+Protocol, Portfolio Boundaries, Calibration Examples, Historically
+Problematic Patterns) or frontmatter fields (tools). Complements
+skill-structure — that one is mechanical; this one checks sectional
+structure specific to cabinet members.
+
+## Example Validators (commented — enable for your project)
 
 <!--
 ### Type Check
@@ -96,14 +114,13 @@ broken deploy.
 ```bash
 ./scripts/validate-structure.sh
 ```
-Project-specific structural checks (e.g., required files exist, cross-references
-are valid, configuration is consistent). Write these scripts for your
-project's invariants.
+Project-specific structural checks (e.g., required files exist,
+cross-references are valid, configuration is consistent).
 
 ### Memory/Docs Validation
 ```bash
 ./scripts/validate-docs.sh
 ```
-Checks that documentation references (memory index, CLAUDE.md links) point
-to files that actually exist.
+Checks that documentation references (memory index, CLAUDE.md links)
+point to files that actually exist.
 -->

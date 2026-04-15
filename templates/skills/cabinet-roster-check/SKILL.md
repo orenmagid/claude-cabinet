@@ -37,6 +37,9 @@ related:
   - type: file
     path: .claude/skills/cabinet-*/_composition-patterns.md
     role: "Pattern definitions for Section 8 (Composition Patterns)"
+  - type: file
+    path: .claude/cabinet/skill-best-practices.md
+    role: "Normative standard for skill quality — cite this when flagging violations"
 ---
 
 # Roster Check
@@ -67,6 +70,28 @@ underutilized. Your job is to evaluate the skill ecosystem holistically:
 - Always active during audit runs
 
 ## Research Method
+
+### Read the normative standard
+
+Before evaluating skill quality, read:
+- `.claude/cabinet/skill-best-practices.md` — **local standard** (adapted
+  from official Anthropic guidance for CC's two-skill-type architecture).
+  This is the normative reference for quality verdicts.
+- Official reference:
+  https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+
+Cite the specific rule when flagging violations (e.g., "description
+missing 'when' component per skill-best-practices.md §Description").
+
+**Mechanical vs judgment-based checks.** The `skill-structure` validator
+(`scripts/skill-validator.sh`, run via `/validate`) handles the
+mechanical checks — line count, name/description format, reference
+depth, path slashes, skill-type rules. Roster-check focuses on the
+**judgment-based** quality dimensions that a script can't evaluate:
+description clarity, scope fit, composition patterns, coverage gaps,
+strategic coherence. If you find a mechanical violation, note it but
+defer to the validator; your job is the reading-comprehension work the
+validator can't do.
 
 ### Knowledge Base
 
@@ -177,9 +202,10 @@ Evaluate the project's skills against ecosystem-standard patterns:
   Max 1024 chars. Is each skill's description trigger-accurate? Test
   with real user phrasings: would "plan this" trigger /plan? Would
   "check the deploy" trigger /verify-deploy?
-- **Size discipline** — Skills over 500 lines lose LLM attention.
-  Check current line counts. If a skill is growing, does it need
-  extraction (REFERENCE.md, EXAMPLES.md) or splitting?
+- **Size discipline** — Per `skill-best-practices.md §Body under 500
+  lines`, SKILL.md bodies must be under 500 lines; the validator warns
+  at 450. If a skill is growing, does it need extraction (reference
+  files linked one level deep from SKILL.md) or splitting?
 - **Hook vs. skill decision tree** — Deterministic + mandatory = hook
   (git guardrails). Judgment + contextual = skill (/plan). Data
   retrieval = MCP (framework-docs). Bundled = plugin. Are any skills
