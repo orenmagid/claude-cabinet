@@ -68,7 +68,14 @@ Read `.claude/cabinet/_cabinet-member-template.md` for the required
 structure. This template defines every required section, frontmatter
 field, and the Investigation Protocol pattern. Follow it exactly.
 
-Write the cabinet member's `SKILL.md` following the template:
+Also read `.claude/cabinet/skill-best-practices.md` — this is the
+**normative quality standard** the new member must meet. The validator
+(`bash scripts/skill-validator.sh`) enforces it mechanically, so a
+member that doesn't follow it will fail `/validate` immediately after
+creation.
+
+Write the cabinet member's `SKILL.md` following both the template and
+the best-practices doc:
 - Place in `.claude/skills/cabinet-{name}/SKILL.md`
 - Include all required sections in order: Identity, Convening Criteria,
   Investigation Protocol (two-stage: instrument → analyze), Scan Scope,
@@ -77,8 +84,20 @@ Write the cabinet member's `SKILL.md` following the template:
 - Include required frontmatter: `name`, `description`, `user-invocable: false`,
   `briefing`, `standing-mandate`, `tools` (list every tool the member uses;
   `tools: []` for pure-reasoning members)
+- **Description must include both "what" and "when"** per
+  `skill-best-practices.md §Cabinet members`. The "when" sentence names
+  the standing-mandate contexts explicitly:
+  `"Activated during {audit|plan|execute|orient|debrief|seed} to {focus}."`
+  Without this sentence, the validator fails with a `description-when`
+  error.
 - Every tool in Stage 1 must have an explicit "if unavailable" fallback
 - The member must produce useful findings even with zero tools available
+
+After writing, validate before moving to Step 4:
+```bash
+bash scripts/skill-validator.sh .claude/skills/cabinet-{name}/SKILL.md
+```
+Fix any failures before wiring the member into committees.
 
 ### Step 4: Wire It Up
 

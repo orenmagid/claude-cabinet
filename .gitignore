@@ -3,13 +3,31 @@ node_modules/
 *.db-shm
 *.db-wal
 
-# Local CC install (dogfooding — not part of the distributable package)
+# Local CC install (dogfooding — not part of the distributable package).
+# The source of truth lives in templates/. Anything the installer drops
+# into working locations (.claude/, scripts/, .ccrc.json) is downstream
+# and shouldn't be committed.
 .claude/skills/
 .claude/hooks/
+.claude/cabinet/
 .claude/settings.json
 .ccrc.json
-scripts/merge-findings.js
+.cc-backup/
+scripts/cabinet-memory-adapter.py
+scripts/cc-drift-check.cjs
+scripts/finding-schema.json
 scripts/load-triage-history.js
+scripts/merge-findings.js
+scripts/migrate-memory-to-omega.py
+scripts/pib-db-lib.mjs
+scripts/pib-db-mcp-server.mjs
+scripts/pib-db-schema.sql
+scripts/pib-db.mjs
+scripts/resolve-committees.cjs
+scripts/review-server.mjs
+scripts/review-ui.html
+scripts/skill-validator.sh
 scripts/triage-server.mjs
 scripts/triage-ui.html
-scripts/finding-schema.json
+scripts/work-tracker-server.mjs
+scripts/work-tracker-ui.html
