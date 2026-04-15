@@ -8,6 +8,8 @@ description: >
   and partial migration residue (old patterns coexisting with framework patterns).
   Works with any UI framework — Mantine, Chakra, Material, Shadcn, Radix, Ant
   Design, or any component library the project adopts.
+  Activated during audit to assess whether the application gets full value
+  from its UI framework.
 user-invocable: false
 briefing:
   - _briefing-architecture.md

@@ -6,6 +6,8 @@ description: >
   used → habitual → load-bearing) and surfaces underused features as contextual
   spotlights. Catches when the user is doing manually what a feature already
   handles.
+  Activated during orient and debrief to surface underused features and track
+  feature adoption.
 user-invocable: false
 briefing:
   - _briefing-identity.md

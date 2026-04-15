@@ -9,6 +9,8 @@ description: >
   inside them. Draws from tldraw, Kosmik, Heptabase, Maggie Appleton's
   Language Model Sketchbook, Vercel Generative UI, Linear's workbench
   model, Nicky Case explorables, and whatever shipped last week.
+  Activated during audit and UI design discussions to propose experimental
+  patterns from emerging tools.
 user-invocable: false
 briefing:
   - _briefing-identity.md

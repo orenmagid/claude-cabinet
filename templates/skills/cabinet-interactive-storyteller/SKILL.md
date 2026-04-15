@@ -10,6 +10,8 @@ description: >
   Jessica Brillhart's spatial attention guidance. Evaluates demos,
   interactive docs, scroll-driven pages, and any artifact where the medium
   is a storytelling decision.
+  Activated during plan and audit on demos, scroll-driven pages, and
+  interactive artifacts.
 user-invocable: false
 briefing:
   - _briefing-identity.md

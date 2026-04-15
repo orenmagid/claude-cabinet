@@ -7,6 +7,8 @@ description: >
   and actual delivery. Uses Teresa Torres's Opportunity Solution Trees
   and North Star metric methodology to evaluate whether work serves
   outcomes, not just output. Any project with a stated mission benefits.
+  Activated during audit to evaluate whether the project is becoming what it
+  is meant to become.
 user-invocable: false
 briefing:
   - _briefing-identity.md

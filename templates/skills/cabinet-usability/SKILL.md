@@ -5,6 +5,8 @@ description: >
   intuitive, and serves the way its user actually works. Conducts user-testing-style
   workflow tracing rather than heuristic checklists, noticing state confusion, dead ends,
   cognitive load, flow interruption, and consistency gaps.
+  Activated during audit to trace user workflows and surface interaction-model
+  incoherence.
 user-invocable: false
 briefing:
   - _briefing-identity.md

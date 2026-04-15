@@ -9,6 +9,8 @@ description: >
   and the deep thesis that externalization doesn't just prevent forgetting —
   it enables things the unaided mind can't do. Flexible: not a checklist but
   a way of seeing what cognitive work the system is creating or relieving.
+  Activated during audit and plan to evaluate cognitive load and information
+  architecture for human operators.
 user-invocable: false
 briefing:
   - _briefing-identity.md

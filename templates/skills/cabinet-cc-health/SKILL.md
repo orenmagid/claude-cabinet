@@ -5,6 +5,8 @@ description: |
   configured correctly for this project — phase file coverage, cabinet member
   activation patterns, skill usage, configuration drift, anti-bloat.
   Different from process-therapist (skill quality) — this checks adoption fitness.
+  Activated during audit to evaluate Claude Cabinet adoption and configuration
+  health.
 user-invocable: false
 briefing:
   - _briefing-identity.md

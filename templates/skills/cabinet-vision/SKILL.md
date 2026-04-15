@@ -8,6 +8,8 @@ description: >
   Researches the technology landscape, adjacent fields, and emerging
   patterns for strategic opportunities. Respects incubation — opens doors
   rather than prescribing destinations.
+  Activated during audit to evaluate strategic direction and emerging
+  opportunities.
 user-invocable: false
 briefing:
   - _briefing-identity.md

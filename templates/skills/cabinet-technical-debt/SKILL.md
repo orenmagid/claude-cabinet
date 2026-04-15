@@ -6,6 +6,8 @@ description: >
   (deliberate vs inadvertent, prudent vs reckless) and Beck's four rules. Notices
   duplication hiding divergence, type safety gaps, dead code, and hack patterns
   where features were simplified instead of properly implemented.
+  Activated during audit to evaluate structural sustainability and absorbable
+  change.
 user-invocable: false
 briefing:
   - _briefing-identity.md

@@ -9,6 +9,8 @@ description: >
   underused hooks, theming inconsistencies, and import boundary violations.
   Uses Mantine's LLM-optimized docs (llms.txt) for always-current
   component knowledge.
+  Activated during audit to assess Mantine framework usage and component
+  selection.
 user-invocable: false
 briefing:
   - _briefing-architecture.md

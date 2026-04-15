@@ -6,6 +6,8 @@ description: >
   interact with. Combines browser automation expertise (Playwright, Puppeteer,
   Camoufox, Patchright) with API reverse engineering, HTTP session management,
   anti-bot evasion, and deployment orchestration for scheduled automations.
+  Activated during audit, plan, and execute to evaluate scraper, integration,
+  and scheduled-task robustness.
 user-invocable: false
 briefing:
   - _briefing-identity.md

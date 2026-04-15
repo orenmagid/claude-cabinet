@@ -5,6 +5,8 @@ description: >
   audit triage, planning, execution, deployment, and session continuity -- runs smoothly.
   Focuses on the human-AI collaboration cycle: whether friction gets addressed, whether
   approved findings become fixes, and whether the human burden is calibrated correctly.
+  Activated during audit to evaluate development lifecycle friction and
+  human-AI collaboration cycles.
 user-invocable: false
 briefing:
   - _briefing-identity.md

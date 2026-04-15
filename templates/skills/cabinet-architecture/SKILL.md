@@ -6,6 +6,8 @@ description: >
   OS layer — to full potential. Brings dual expertise in traditional software architecture
   (layering, separation of concerns, API design, data flow) and Claude Code ecosystem
   architecture (CLAUDE.md hierarchies, skills, hooks, MCP servers, memory, subagents).
+  Activated during audit, plan, and investigate to evaluate system fit and
+  infrastructure leverage.
 user-invocable: false
 briefing:
   - _briefing-identity.md

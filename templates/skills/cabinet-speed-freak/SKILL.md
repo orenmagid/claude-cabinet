@@ -6,6 +6,8 @@ description: >
   UI render performance (unnecessary re-renders, missing memoization, large unvirtualized
   lists), bundle size, network efficiency, and perceived performance. Uses preview tools
   to measure actual behavior rather than guessing from code alone.
+  Activated during audit to identify performance bottlenecks before data
+  growth surfaces them.
 user-invocable: false
 briefing:
   - _briefing-identity.md

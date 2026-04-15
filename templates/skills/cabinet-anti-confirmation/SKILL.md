@@ -7,6 +7,8 @@ description: >
   Activates on high-stakes decisions, tradeoffs, and architectural choices.
   The ONE cabinet member exempted from the strict portfolio rule — its domain is
   reasoning quality, which necessarily touches other domains.
+  Activated during plan and execute on high-stakes decisions, tradeoffs, and
+  architectural choices to stress-test reasoning quality.
 user-invocable: false
 briefing:
   - _briefing-identity.md

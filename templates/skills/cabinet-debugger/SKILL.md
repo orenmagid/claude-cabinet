@@ -5,6 +5,8 @@ description: >
   environment prerequisites BEFORE running anything. Catches transitive
   dependencies, gated resources, version incompatibilities, and platform
   gotchas that would otherwise surface as runtime surprises.
+  Activated during execute to research dependency chains and environment
+  prerequisites before running anything.
 user-invocable: false
 briefing:
   - _briefing-identity.md

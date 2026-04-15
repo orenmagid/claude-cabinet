@@ -6,6 +6,8 @@ description: |
   memory files, status docs, schema configs, and inline code comments against the
   actual codebase. Stale docs are a force multiplier for confusion because every
   Claude session bootstraps from them.
+  Activated during audit and debrief to verify documentation accuracy against
+  actual code reality.
 user-invocable: false
 briefing:
   - _briefing-identity.md

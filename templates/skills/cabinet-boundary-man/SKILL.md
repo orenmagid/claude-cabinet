@@ -6,6 +6,8 @@ description: >
   details. Generates context-specific questions rather than running a
   static checklist. Catches the class of bug where a guard on an optional
   field silently excludes the most common case.
+  Activated during execute to surface boundary conditions and silent
+  exclusions in implementations.
 user-invocable: false
 briefing:
   - _briefing-identity.md

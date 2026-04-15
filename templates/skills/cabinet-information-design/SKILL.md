@@ -9,6 +9,8 @@ description: >
   density, functional adjacency, visual rhythm — not generic aesthetics.
   Works before implementation (design contracts) and evaluates existing
   designs.
+  Activated during plan and audit on UI work to evaluate spatial composition
+  and visual hierarchy.
 user-invocable: false
 briefing:
   - _briefing-identity.md

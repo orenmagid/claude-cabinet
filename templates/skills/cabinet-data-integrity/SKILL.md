@@ -6,6 +6,8 @@ description: >
   integrity, cross-store consistency, API contract fidelity, stable identity
   integrity, and composite entity coherence. Notices orphaned references, dual
   existence risks, and validation gaps.
+  Activated during audit to verify referential integrity and cross-store
+  consistency.
 user-invocable: false
 briefing:
   - _briefing-identity.md

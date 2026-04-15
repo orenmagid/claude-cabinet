@@ -5,6 +5,8 @@ description: >
   protected from accidental exposure. Focuses on the threat model appropriate for a
   personal tool: leaked secrets, unprotected endpoints, misconfigured deploys, and
   dependency vulnerabilities -- not sophisticated attacks or enterprise compliance.
+  Activated during audit, plan, and execute to check authentication, input
+  validation, secret handling, and deployment configuration.
 user-invocable: false
 briefing:
   - _briefing-identity.md

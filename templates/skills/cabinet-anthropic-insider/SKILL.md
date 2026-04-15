@@ -5,6 +5,8 @@ description: >
   Claude Code's capabilities and aligns with the official ecosystem — plugins, skills,
   hooks, MCP, Agent SDK, subagents, memory, scheduled tasks, channels, and the evolving
   platform. The team's go-to expert on what Claude can do and how the ecosystem works.
+  Activated during audit, plan, orient, and seed to assess Claude Code
+  platform alignment and surface ecosystem developments worth adopting.
 user-invocable: false
 briefing:
   - _briefing-identity.md

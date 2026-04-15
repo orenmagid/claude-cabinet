@@ -6,6 +6,8 @@ description: |
   gaps, and infrastructure health across the entire skill ecosystem -- audit
   cabinet members, planning skills, execution skills, and their interaction patterns.
   This is the system's self-improvement loop.
+  Activated during audit and seed to evaluate skill ecosystem health and
+  process effectiveness.
 user-invocable: false
 briefing:
   - _briefing-identity.md

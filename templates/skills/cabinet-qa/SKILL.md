@@ -6,6 +6,8 @@ description: >
   interactions, integration paths, edge cases, and regressions. Uses curl,
   preview tools, and scripts to verify. Reports exactly where AC are met or
   failing. This is the test suite for a system without automated tests.
+  Activated during plan to ensure testable acceptance criteria and during
+  execute to actively test endpoints, UI, and edge cases.
 user-invocable: false
 briefing:
   - _briefing-identity.md

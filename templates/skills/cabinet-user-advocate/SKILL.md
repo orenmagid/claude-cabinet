@@ -10,6 +10,8 @@ description: >
   operator. Four teaching modes: contextual, explanatory, evolutionary,
   and socratic. Draws on Don Norman's conceptual models, Bainbridge's
   automation paradox, and Bret Victor's learnable programming.
+  Activated during orient and UX discussions to champion the end-user
+  perspective.
 user-invocable: false
 briefing:
   - _briefing-identity.md

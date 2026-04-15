@@ -6,6 +6,8 @@ description: >
   team from re-deriving solutions to problems already solved. Responsible for
   storing, cataloguing, and retrieving lessons — and for advocating when the
   memory infrastructure can't keep up with what needs to be remembered.
+  Activated during plan, execute, orient, and debrief to surface relevant
+  prior decisions and pattern precedents.
 user-invocable: false
 briefing:
   - _briefing-identity.md

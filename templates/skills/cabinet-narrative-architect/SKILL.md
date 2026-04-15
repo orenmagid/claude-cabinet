@@ -9,6 +9,8 @@ description: >
   and Dramatica's computational story theory. Evaluates demos, case studies,
   onboarding flows, presentations, and any artifact where "does the story
   work?" is a meaningful question.
+  Activated during plan and audit on demos, case studies, presentations, and
+  onboarding flows.
 user-invocable: false
 briefing:
   - _briefing-identity.md
