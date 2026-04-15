@@ -486,135 +486,22 @@ files in `phases/` that the skeleton doesn't define. These are project-
 specific extensions. Each custom phase file declares its position in
 the workflow. Execute them at their declared position.
 
-## Phase Summary
+## Phase Summary, Triggers, and Extending
 
-| Phase | Absent = | What it customizes |
-|-------|----------|-------------------|
-| `pre-upgrade.md` | Default: read .ccrc.json, note phase files, note _briefing.md | Pre-upgrade state capture |
-| `explain-changes.md` | Default: semantic summary of version jump, changed skeletons, new files | How to present what changed |
-| `adapt.md` | Default: _briefing.md sections, phase implications, schema, new modules | How to handle non-manifest concerns |
-
-## Proactive Trigger
-
-The upgrade skill doesn't have to wait for the user to invoke it.
-Orient can detect when upstream CC has a newer version than what's
-in `.ccrc.json` and surface "CC updates available" in the briefing.
-This is a hint, not a blocker — the user decides when to run /cc-upgrade.
-
-The drift check script (`scripts/cc-drift-check.cjs`) can also detect
-if manifest-tracked files have been modified outside the installer,
-though the upstream guard hook should prevent this during normal
-Claude Code operation.
-
-## Extending
-
-To customize a phase: write content in the corresponding `phases/` file.
-To skip a phase: write only `skip: true`.
-To add a phase the skeleton doesn't define: create a new file in
-`phases/` with a description of when it runs relative to the core
-phases. Claude reads whatever phase files exist at runtime.
-
-Examples of phases mature projects add:
-- Changelog generation (produce a human-readable summary of what changed)
-- Rollback plan (capture how to revert each change if something breaks)
-- Downstream notification (update team members about process changes)
-- Compatibility check (verify that project extensions still work after
-  skeleton updates)
+See [extending.md](extending.md) for the phase summary table, the
+proactive-trigger pattern (orient surfacing version drift), and how
+consuming projects extend or customize this skill.
 
 ## Calibration
 
-**Core failure this targets:** Process improvements published upstream
-never reach adopted projects, or reach them but nobody understands
-what changed.
+See [calibration.md](calibration.md) for the without-skill-vs-with-skill
+illustration of what this skill is for.
 
-### Without Skill (Bad)
+## Safeguards, Invariants, and History
 
-New CC version is out. The user re-runs the installer. Files update
-silently. The user has no idea what changed — was it just bug fixes?
-New features? Did a skill they rely on change its workflow? They also
-don't realize the new debrief skill references a `§ Friction Captures`
-section in _briefing.md that their project doesn't have, so the upstream
-feedback phase silently does nothing. Three weeks later they wonder
-why no friction is being captured.
-
-### With Skill (Good)
-
-New CC version is out. The user runs `/cc-upgrade`. The installer
-updates all upstream files mechanically — fast, deterministic, safe
-(phase files untouched). Then Claude explains: "You went from v0.4.1
-to v0.5.0. The big change: debrief now has an upstream feedback phase
-that captures CC friction. It references `_briefing.md § Friction
-Captures` — let's add that section to your briefing file." "The plan
-skill's critique step now uses three cabinet members instead of one. Your
-existing phase files are fine — this is a default behavior change."
-"There's a new `investigate` skill for deep-dive debugging. Want to
-try it?" Everything is explained. Non-manifest concerns are handled.
-The project gets better without confusion.
-
-## Safeguards
-
-The installer's cleanup loop — the code that removes files no longer in
-the upstream manifest — is the single most dangerous code path in CC.
-Six safeguards prevent it from destroying project-owned files:
-
-1. **Classification (S1).** Before removing a file, verify it maps to a
-   known CC template path. Build the complete template path set across ALL
-   modules. If a file in the old manifest doesn't correspond to any current
-   template, it's either project-created or a renamed path — don't delete.
-
-2. **Module scoping (S2).** Only delete files from modules the user
-   selected for this install. Running `--lean` on a full installation does
-   NOT purge non-lean module files. Deselected module files stay untouched.
-
-3. **Itemization (S3).** All files that would be removed are listed with
-   their paths before any deletion occurs. Without `--yes`, the user must
-   explicitly confirm. `--dry-run` lists what would be removed without
-   touching anything.
-
-4. **Backup (S4).** Before any deletion, all targeted files are copied to
-   `.cc-backup/<timestamp>/`. If something goes wrong, the backup is a
-   complete recovery point.
-
-5. **Manifest key migration.** When CC renames directories (e.g.,
-   `perspectives/` → `cabinet-*/`), old manifest keys are migrated to new
-   keys BEFORE the cleanup loop runs. This prevents the loop from treating
-   every renamed file as "removed upstream."
-
-6. **Project-skill guard.** Any skill directory not in the CC template set
-   is project-owned. The cleanup loop will never delete files inside
-   project-created skills, even if they somehow appear in the manifest.
-
-Additionally, **phase files** have independent protection in the copy
-logic: if a phase file on disk has been customized (content differs from
-the template and isn't empty), it is never overwritten — regardless of
-the `skipPhases` flag.
-
-## Invariants
-
-These contracts must never be violated by the installer:
-
-- **The installer ONLY modifies files it can prove came from CC templates.**
-  If a file can't be traced to a template path, it's hands-off.
-- **Phase files are NEVER overwritten if they contain custom content.**
-  The `skipPhases` flag is the primary guard; the content-comparison guard
-  in `copy.js` is the independent backup.
-- **Project-created skill directories are NEVER deleted.** Any skill
-  directory not in the CC template set belongs to the project.
-- **All destructive operations are itemized and require confirmation.**
-  The user sees exactly what will be deleted before it happens.
-- **Backups are created before any deletion.** `.cc-backup/<timestamp>/`
-  preserves every file before removal.
-- **Manifest keys are migrated before cleanup.** Directory renames in new
-  versions trigger key migration so the cleanup loop sees continuity.
-
-## Lessons Learned
-
-**v0.6.8 migration incident (2026-04-06).** The `perspectives/` →
-`cabinet-*/` directory rename changed manifest keys, causing the cleanup
-loop to see every old key as "not in new manifest." The loop deleted 25
-project-specific skills, overwrote 43 phase customizations, and deleted
-10 phase files in a consuming project. Root cause: the cleanup loop had
-no concept of project-owned files — it treated any old manifest key not
-in the new manifest as deletable, and the only guard was a `/phases/`
-regex. Fixed by adding classification, scoping, itemization, backup,
-manifest key migration, project-skill guard, and phase file guard.
+See [safeguards.md](safeguards.md) for the six safeguards that protect
+project-owned files during the installer's cleanup loop, the invariants
+those safeguards enforce, and the v0.6.8 incident that taught us why
+they're needed. The cleanup loop is CC's most dangerous code path;
+read this before changing anything in `lib/copy.js` or the installer's
+manifest handling.
