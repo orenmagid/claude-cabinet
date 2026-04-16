@@ -36,7 +36,7 @@
 - Drift detection: `cc-drift-check.cjs` compares file hashes against manifest
 - Semantic memory module: omega-memory backend, project-scoped tiered retrieval, /memory skill
 - Python venv setup: auto-discovers Python 3.11+, creates venv at ~/.claude-cabinet/omega-venv/
-- Memory: omega native hooks (5 hooks in global settings), slimmed adapter (4 commands)
+- Memory: omega native hooks (4 hooks in global settings), slimmed adapter (4 commands)
 - Memory maintenance: consolidate (every session), compact + discover_connections + backup (weekly)
 - Knowledge graph: traverse, link, contradiction detection, auto-relate on store
 - Historian memory health measurement: growth, connectivity, contradictions, retrieval quality
@@ -79,6 +79,14 @@
 - `templates/cabinet/pib-db-access.md`: protocol doc for MCP-first, CLI-fallback db access
 - Two new cabinet members: `narrative-architect` (story structure analyst) and `interactive-storyteller` (interactive medium craft analyst)
 - Interactive timeline demo: `docs/demo-timeline.html` — 967-line standalone HTML showcase of CC's development history
+- Omega MCP server: omega-setup.js auto-registers omega MCP server in global ~/.claude/settings.json; installs omega-memory[server] extra; enables omega_store(), omega_query() as MCP tools
+- pib-db MCP worktree resolution: server detects git worktrees and resolves to canonical pib.db
+- Validate auto-discover: skeleton scans for scripts/*-validator.sh when phases/validators.md is absent
+- Orient: deployment detection, unmerged branch health check, phase separation guidance
+- Debrief: pre-exit unmerged commits check, feedback resolution trigger improvements
+- Execute: post-extraction type checking, .d.ts verification mandate
+- cc-feedback: outbox-only delivery for non-dogfood consumers (removed linked direct-write)
+- cc-publish: staging reset before consumer commits, mandatory Step 6 continuation gate
 
 ## What's Active
 
