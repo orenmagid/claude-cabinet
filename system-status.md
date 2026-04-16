@@ -82,7 +82,7 @@
 
 ## What's Active
 
-- Published at v0.19.2 on npm as `create-claude-cabinet`
+- Published at v0.21.0 on npm as `create-claude-cabinet`
 - Four downstream consumers: Flow, article-rewriter, theater-cheater, CC dogfood
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)
