@@ -63,27 +63,22 @@ mechanism:
 - This is the dogfood case — the project IS the upstream repo, so
   feedback goes directly into the local `feedback/` directory.
 
-**If linked** (not the source repo, but CC package resolves to a local
-directory — check if
-`node -e "console.log(require.resolve('create-claude-cabinet'))"` points
-to a local path rather than `node_modules`):
+**Everything else** (consuming projects, whether linked or not):
 
-- Write to the CC repo's `feedback/` directory
-- Filename: `[source-project]-[date]-[short-title].md`
+Save to `~/.claude/cc-feedback-outbox.json` (create as `[]` if missing).
+Append entry with fields: `source`, `date`, `component`, `title`, `body`,
+`status: "pending"`, `delivered: false`.
 
-**If not linked**, check whether `gh` is available (`gh auth status`):
+The outbox is picked up by orient in the CC source repo next session
+and delivered to `feedback/`. This avoids dirtying the CC repo's working
+tree from consuming projects (which caused confusion when the linked
+direct-write path was used).
 
-- **If `gh` works**, offer the choice:
-  > Send as a GitHub issue, or save locally?
-  > 1. GitHub issue (developer sees it directly)
-  > 2. Save locally
+If `gh` is available (`gh auth status` succeeds), also offer:
+> Also send as a GitHub issue for faster visibility?
 
-  If GitHub: open issue on `orenmagid/claude-cabinet` with title
-  `Field feedback: [short title]` and label `field-feedback`.
-
-- **If no `gh`**: save to `~/.claude/cc-feedback-outbox.json` (create
-  as `[]` if missing). Append entry with fields: `source`, `date`,
-  `component`, `title`, `body`, `status: "pending"`.
+If yes: open issue on `orenmagid/claude-cabinet` with title
+`Field feedback: [short title]` and label `field-feedback`.
 
 ### 4. Confirm
 

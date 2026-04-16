@@ -11,10 +11,53 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { createInterface } from 'node:readline';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import * as lib from './pib-db-lib.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DB_PATH = process.env.PIB_DB_PATH || join(process.cwd(), 'pib.db');
+
+// Resolve pib.db path, handling git worktrees where cwd may not contain
+// the canonical database. Worktrees have a .git *file* (not directory)
+// pointing to the main repo's .git/worktrees/<name>/ directory.
+function resolveDbPath() {
+  if (process.env.PIB_DB_PATH) return process.env.PIB_DB_PATH;
+
+  const cwd = process.cwd();
+  const localDb = join(cwd, 'pib.db');
+
+  // If local pib.db exists and is non-trivial (>8KB), use it
+  if (existsSync(localDb)) {
+    try {
+      const stats = statSync(localDb);
+      if (stats.size > 8192) return localDb;
+    } catch { /* fall through to worktree detection */ }
+  }
+
+  // Check if we're in a git worktree (.git is a file, not a directory)
+  const gitPath = join(cwd, '.git');
+  if (existsSync(gitPath)) {
+    try {
+      const stats = statSync(gitPath);
+      if (stats.isFile()) {
+        // .git file contains: "gitdir: /path/to/main/.git/worktrees/<name>"
+        const content = readFileSync(gitPath, 'utf-8').trim();
+        const match = content.match(/^gitdir:\s*(.+)/);
+        if (match) {
+          // Walk up from .git/worktrees/<name> to find the main repo
+          const gitdir = match[1];
+          const mainGitDir = join(gitdir, '..', '..');
+          const mainRepoDir = dirname(mainGitDir);
+          const mainDb = join(mainRepoDir, 'pib.db');
+          if (existsSync(mainDb)) return mainDb;
+        }
+      }
+    } catch { /* fall through to default */ }
+  }
+
+  return localDb;
+}
+
+const DB_PATH = resolveDbPath();
 
 // ---------------------------------------------------------------------------
 // SQLite setup

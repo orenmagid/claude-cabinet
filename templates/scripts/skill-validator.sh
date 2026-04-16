@@ -231,7 +231,7 @@ check_description() {
   # "When" component: the description must contain an explicit trigger
   # phrase. This is heuristic but catches the common cases of describing
   # only the skill's scope without saying when to invoke it.
-  local when_phrases='(Use when|Use at|Use after|Use before|Use during|Use to |Run when|Run at|Invoke when|Invoke during|Activated during|Activated when|Activates during|Activates when|Activate when|Trigger(s|ed)? (when|during|on)|Call when|Called during|Fires when)'
+  local when_phrases='(Use when|Use at|Use after|Use before|Use during|Use to |Run when|Run at|Invoke when|Invoke during|Activated during|Activated when|Activates during|Activates when|Activate(s|d)?(\s+\S+){0,4}\s+(when|during)|Trigger(s|ed)? (when|during|on)|Call when|Called during|Fires when)'
   if ! printf '%s' "$desc" | grep -qE "$when_phrases"; then
     fail "$file" "description-when" "no explicit trigger phrase" \
       "Add a 'when' component. Workflow skills: 'Use when...'. Cabinet members: 'Activated during audit/plan/execute...'. See $BEST_PRACTICES_DOC §Description."

@@ -42,8 +42,14 @@ Phase files have three states:
 Read `phases/validators.md` for the list of project-specific checks.
 Each validator has a name, command, and description of what it catches.
 
-If `phases/validators.md` is empty or missing, report that no validators
-are configured and suggest the user define some.
+**Default (absent/empty):** Auto-discover validators by scanning for
+`scripts/*-validator.sh` (or `scripts/*-validator.cjs`). For each found,
+treat the filename as the validator name and run it against the
+appropriate targets (e.g., `skill-validator.sh` runs against all
+`templates/skills/*/SKILL.md` files if they exist, or `.claude/skills/*/SKILL.md`).
+
+If no phase file exists AND no validator scripts are discovered, report
+that no validators are configured and suggest the user define some.
 
 ### 2. Run Each Validator
 

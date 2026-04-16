@@ -291,6 +291,11 @@ is in a good state for next time.
 
 ### 8. Persist Work
 
+**Unmerged commits check:** Run `git log --oneline main..HEAD`. If
+non-empty, enumerate the commits and ask: merge to main now, keep the
+branch, or discard? This prevents orphan worktree branches that sit
+unmerged with no surface signal.
+
 Commit and push the session's changes. Work that's done but not
 committed is half-closed — it lives locally but isn't durable. Persist
 before recording lessons, so the commit captures code and doc changes
@@ -389,68 +394,26 @@ rarer than project-specific skills.
 
 ### 12. Cabinet Check (core)
 
-Silently reflect: is this project's expertise coverage still right
-for what it's actually doing?
-
-This is the anti-entropy mechanism for the cabinet. Without
-it, a project can adopt a framework, start handling sensitive data, or
-grow complex enough to need architectural review — and none of the
-relevant expertise ever activates because nobody ran `/seed`.
+Silently check: is this project's expertise coverage still right?
 
 **Two checks, both silent unless they find something:**
 
-**Check A — Uncovered technology.** Quickly scan what this session
-touched. Did the work involve a framework, library, data store, or
-infrastructure that isn't covered by any existing cabinet member? Compare
-against the cabinet members in `.claude/skills/cabinet-*/` and the
-merged committees (run `node scripts/resolve-committees.cjs`).
+**Check A — Uncovered technology.** Did this session touch a framework,
+library, or infrastructure not covered by any cabinet member? Compare
+against `.claude/skills/cabinet-*/` and merged committees
+(`node scripts/resolve-committees.cjs`).
 
-Examples of what to catch:
-- Session used Mantine components but there's no framework-quality
-  cabinet member
-- Session wrote database queries but there's no data-integrity
-  cabinet member
-- Session built UI but accessibility isn't in any active committee
+**Check B — Dormant member that should be active.** Are there installed
+cabinet members not in any committee that the recent work would benefit
+from?
 
-**Check B — Dormant cabinet member that should be active.** Are there
-cabinet members installed in the project that aren't in any committee
-(check merged output from `node scripts/resolve-committees.cjs`), but based on the last few sessions, probably should be? A
-cabinet member sitting dormant while the project does exactly the kind of
-work it's designed to review is a waste.
+**Most sessions: nothing.** Silent when nothing is off.
 
-**Most sessions: nothing.** These checks should be completely silent
-when nothing is off. Don't mention cabinet members if everything is fine.
-
-**When there's a gap:** Explain it plainly — no jargon about
-"cabinet members" or "committees." Talk about what the project is missing
-in terms of what it would DO for them:
-
-> "You've been building UI for the last few sessions, but nothing is
-> checking whether it works well on phones or is usable for people
-> with accessibility needs. I can set that up so it gets checked
-> automatically when you run quality reviews. Want me to?"
-
-or:
-
-> "You're using Mantine a lot now. There's a specialist review that
-> checks whether you're getting the full value from it — catching
-> things like hand-rolling components that Mantine already provides.
-> Want me to turn that on?"
-
-or:
-
-> "This project has gotten complex enough that it might help to have
-> something watching whether the overall architecture still makes
-> sense as it grows. Want me to set that up?"
-
-If the user says yes, either:
-- Activate a dormant cabinet member (add it to `committees-project.yaml`)
-- Run `/seed` to build a new one
-- Install a Tier 3 cabinet member that isn't in the project yet
-
-If the user says no, move on. Don't re-suggest the same gap next
-session. Track declined suggestions in system-status.md or equivalent
-so you don't nag.
+**When there's a gap:** Explain plainly what the project is missing
+in terms of what it would DO for them (no jargon about "cabinet
+members" or "committees"). If the user wants it, activate the member
+via `committees-project.yaml`, `/seed`, or Tier 3 install. Track
+declined suggestions so you don't re-suggest next session.
 
 ### 13. Capture Loose Ends (core)
 

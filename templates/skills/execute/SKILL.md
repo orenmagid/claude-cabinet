@@ -195,11 +195,21 @@ Group the plan's implementation steps by logical file groups
 
 For each group:
 1. Make the changes
-2. **Checkpoint 2: File Group Review** — if cabinet members are active,
+2. **Post-change verification:**
+   - **After component extraction or file splitting:** Immediately run
+     the project's type checker (`tsc --noEmit`, `mypy`, `pyright`, etc.)
+     before writing any further code. Extraction frequently orphans
+     imports — the type checker catches this before it compounds.
+   - **Before using unfamiliar UI component props:** Read the component's
+     `.d.ts` file from `node_modules/<package>/` or check the type
+     definitions. Never guess prop names from memory of prior framework
+     versions — prop APIs change between major versions and guessing
+     wastes build cycles.
+3. **Checkpoint 2: File Group Review** — if cabinet members are active,
    spawn agents for ONLY cabinet members matching the changed files. Each
    receives the git diff for this file group + plan context. Same
    escalation rules as Checkpoint 1.
-3. If all continue, move to the next group
+4. If all continue, move to the next group
 
 File-group granularity keeps reviews focused. A cabinet member reviewing
 3 changed files gives better feedback than one reviewing 30.

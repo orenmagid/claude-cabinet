@@ -27,14 +27,12 @@ if [ -z "$FILE_PATH" ]; then
 fi
 
 # Only care about memory directory paths
-case "$FILE_PATH" in
-  *.claude/memory/*|*.claude/projects/*/memory/*)
-    ;;
-  *)
-    echo '{"decision":"allow"}'
-    exit 0
-    ;;
-esac
+# Note: case patterns with * don't cross / boundaries in some shells,
+# so we use [[ ]] substring matching for absolute path compatibility.
+if [[ "$FILE_PATH" != *"/.claude/memory/"* ]] && [[ "$FILE_PATH" != *"/.claude/projects/"*"/memory/"* ]]; then
+  echo '{"decision":"allow"}'
+  exit 0
+fi
 
 # Allow MEMORY.md index files (structural, not memory content)
 BASENAME=$(basename "$FILE_PATH")

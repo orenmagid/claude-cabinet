@@ -97,12 +97,23 @@ After closing actions, check the `feedback/` directory for field feedback
 files from consuming projects. For each file, evaluate whether this
 session's work addressed the friction described.
 
+**Trigger conditions** (check ALL, not just git-log matching):
+1. **Git-log matching:** Cross-reference feedback files against this
+   session's changed files and commit messages.
+2. **Project-name matching:** If any closed project's name or description
+   contains "feedback", "remediation", or "field feedback", explicitly
+   scan ALL feedback files and present them for resolution — the project
+   was likely created to address them.
+3. **Component matching:** If this session edited files in a component
+   mentioned by a feedback file (e.g., session edited `cc-publish/SKILL.md`
+   and a feedback file has `component: skills/cc-publish`), surface it.
+
 **How to check:**
 1. Scan `feedback/` for `.md` files (skip `.gitkeep`)
 2. For each file, read the `component` from frontmatter and the friction
    description
-3. Cross-reference against this session's git log and changed files —
-   did the session fix or address the reported friction?
+3. Apply all trigger conditions above — any match means the feedback
+   should be presented for resolution
 4. For each resolved item, present to the user:
    > "Field feedback resolved: [title] from [source] — [one-line summary
    > of what fixed it]. Delete the feedback file? (yes/no)"

@@ -76,6 +76,14 @@ The skeleton always does something reasonable when a phase file is absent.
 Phase files customize, not enable. Use `skip: true` when you actively
 don't want a phase to run — not even the default.
 
+**Phase separation principle:** Phases that both gather data and act on
+the results should use clear structural separation. Without it, the
+model tends to treat data-gathering as completion — running a query
+satisfies the "do something" impulse and the acting step gets skipped.
+Use numbered steps with explicit transitions: "1. Query X. 2. **Now
+act on the results above:** [specific action]." If the acting step is
+critical, mark it as `**BLOCKING**` — querying is not processing.
+
 ## Why This Matters
 
 If Claude Code starts a session without reading what happened last time,
@@ -132,6 +140,20 @@ sessions, and project-specific context.
   patterns/), surface:
   > ⚠ Found N unmigrated memory files in .claude/memory/.
   > Run: `python3 scripts/migrate-memory-to-omega.py --dry-run`
+
+- **Deployment method detection:** Check for deployment indicators and
+  surface the deploy command in the briefing so sessions don't default
+  to wrong deployment methods (e.g., `git push` when the project uses
+  `railway up`):
+  - `railway.toml` → Railway (`railway up --detach`)
+  - `fly.toml` → Fly.io (`fly deploy`)
+  - `vercel.json` or `.vercel/` → Vercel (`vercel --prod`)
+  - `netlify.toml` → Netlify (`netlify deploy --prod`)
+  - `.github/workflows/deploy*` → GitHub Actions (push triggers deploy)
+  - `Dockerfile` alone → manual container deploy (surface as "Docker-based,
+    check deployment docs")
+
+  If found, include in the briefing: "**Deployment:** [method] via [command]"
 
 The goal: build a mental model of where things stand before doing
 anything else.
@@ -276,6 +298,34 @@ Surface missing plugins as health warnings:
 > after every edit. Install: `claude plugins install typescript-lsp`
 
 Advisory only — do not block orient for missing plugins.
+
+### Unmerged branch check
+
+Scan for branches with commits ahead of the main branch that may
+represent unmerged work from prior sessions (especially worktree
+sessions that ended without merging):
+
+```bash
+git for-each-ref --format='%(refname:short)' refs/heads/ | while read branch; do
+  ahead=$(git log --oneline main..$branch 2>/dev/null | wc -l | tr -d ' ')
+  if [ "$ahead" -gt 0 ]; then
+    echo "$branch: $ahead commits ahead"
+  fi
+done
+```
+
+Also check `git worktree list` for active worktrees whose branches
+have diverged from main.
+
+Surface as advisory:
+> ⚠ Branch `feature-x` has N commits ahead of main (last touched
+> [date]). Merge, continue working, or discard?
+
+**Known platform limitation:** The Claude Code Agent tool with
+`isolation: "worktree"` branches from the remote tracking ref, not
+local HEAD. Unpushed commits are invisible to worktree agents. Always
+push before spawning worktree agents, or manually review their diffs
+for spurious deletions of unpushed work.
 
 > **Orient vs Pulse vs Audit:** Orient health checks verify *operational*
 > state — is the system running, is data fresh, are processes alive?

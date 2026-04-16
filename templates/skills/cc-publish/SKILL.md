@@ -79,6 +79,9 @@ With user confirmation:
 - Update `system-status.md` if it exists
 - Report the published version and npm URL
 
+**DO NOT stop here.** Step 6 is mandatory — the publish is incomplete
+until all local consumers are updated. Proceed to Step 6 immediately.
+
 ### 6. Update Local Consumers
 
 Read `~/.claude/cc-registry.json` for all registered CC projects. For
@@ -88,10 +91,12 @@ each project that is NOT the CC source repo itself:
 2. If it's older than the just-published version, update it:
    - `cd <path> && npx create-claude-cabinet@latest --yes`
    - Verify the install succeeded (`.ccrc.json` version matches)
-3. After a successful update, commit the CC-managed files in the consumer:
-   - `git -C <path> add .claude/ .mcp.json scripts/pib-db*.mjs scripts/pib-db-schema.sql scripts/*.cjs .ccrc.json`
-   - Commit with message: `chore: update claude-cabinet to v<version>`
+3. After a successful update, commit ONLY CC-managed files in the consumer:
+   - First: `git -C <path> reset HEAD -- .` (clear any pre-staged files —
+     the consumer may have project files staged from a prior session)
+   - Then: `git -C <path> add .claude/ .mcp.json scripts/pib-db*.mjs scripts/pib-db-schema.sql scripts/*.cjs .ccrc.json`
    - Only stage files that are actually modified (`git -C <path> diff --name-only` to check)
+   - Commit with message: `chore: update claude-cabinet to v<version>`
    - Do NOT push — leave that to the user
 4. Report which consumers were updated, committed, and which were already current
 
