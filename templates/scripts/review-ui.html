@@ -152,6 +152,9 @@
       background: #1a1b1e;
       color: #c1c2c5;
       font-size: 12px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 28px;
     }
     .feedback-input::placeholder { color: #5c5f66; }
     .feedback-input.highlight { border-color: #1c7ed6; }
@@ -193,6 +196,9 @@
       background: #1a1b1e;
       color: #c1c2c5;
       font-size: 12px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 28px;
     }
     .group-input::placeholder { color: #5c5f66; }
 
@@ -495,10 +501,13 @@
             ${commentaryHtml}
             <div class="controls">
               ${btns}
-              <input class="${inputClass}" data-id="${item.id}" placeholder="${placeholder}" value="${esc(verdicts[item.id]?.feedback || '')}">
+              <textarea class="${inputClass}" data-id="${item.id}" placeholder="${placeholder}" rows="2">${esc(verdicts[item.id]?.feedback || '')}</textarea>
             </div>
           `;
           body.appendChild(row);
+          row.querySelectorAll('.verdict-btn').forEach(btn => {
+            styleVerdictButton(btn, btn.dataset.v === v);
+          });
         });
 
         // Bulk actions
@@ -514,7 +523,7 @@
         // Group-level notes
         const gc = document.createElement('div');
         gc.className = 'group-controls';
-        gc.innerHTML = `<input class="group-input" data-group="${esc(groupName)}" placeholder="Notes on ${esc(groupName)}..." value="${esc(groupNotes[groupName] || '')}">`;
+        gc.innerHTML = `<textarea class="group-input" data-group="${esc(groupName)}" placeholder="Notes on ${esc(groupName)}..." rows="2">${esc(groupNotes[groupName] || '')}</textarea>`;
         body.appendChild(gc);
 
         group.appendChild(body);
@@ -587,6 +596,60 @@
       });
     }
 
+    // Color resolution for verdict keys. Presets match the hardcoded CSS
+    // for backward compatibility; unknown keys get a stable-hash HSL so
+    // custom verdictLabels (e.g. "issue", "skip") still render a visible
+    // selected-state instead of falling through unstyled.
+    const VERDICT_COLOR_PRESETS = {
+      approve: '#2b8a3e', fix: '#2b8a3e',
+      modify: '#f08c00',
+      defer: '#5c5f66',
+      reject: '#e03131',
+      question: '#1c7ed6',
+    };
+    function verdictColor(key) {
+      if (VERDICT_COLOR_PRESETS[key]) return VERDICT_COLOR_PRESETS[key];
+      let h = 0;
+      for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) & 0xffff;
+      return `hsl(${h % 360}, 62%, 42%)`;
+    }
+    function styleVerdictButton(btn, isSelected) {
+      if (isSelected) {
+        const c = verdictColor(btn.dataset.v);
+        btn.style.backgroundColor = c;
+        btn.style.borderColor = c;
+        btn.style.color = '#fff';
+      } else {
+        btn.style.backgroundColor = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }
+    }
+
+    // In-place DOM update for a single item's verdict — avoids destroying
+    // the textarea (and any in-flight typing) on every button click.
+    function applyVerdictInPlace(id, v) {
+      const anyBtn = document.querySelector(`.verdict-btn[data-id="${CSS.escape(id)}"]`);
+      if (!anyBtn) return;
+      const itemEl = anyBtn.closest('.item');
+      if (!itemEl) return;
+      itemEl.querySelectorAll('.verdict-btn').forEach(btn => {
+        Object.keys(verdictLabels).forEach(k => btn.classList.remove('sel-' + k));
+        const isSelected = btn.dataset.v === v;
+        if (isSelected) btn.classList.add('sel-' + v);
+        styleVerdictButton(btn, isSelected);
+      });
+      const ta = itemEl.querySelector('.feedback-input');
+      if (ta) {
+        ta.className = v === 'question' ? 'feedback-input highlight'
+                     : v === 'modify' ? 'feedback-input highlight-modify'
+                     : 'feedback-input';
+        ta.placeholder = v === 'question' ? 'your question...'
+                       : v === 'modify' ? 'how to modify...'
+                       : 'notes...';
+      }
+    }
+
     // Event delegation
     document.addEventListener('click', e => {
       if (e.target.classList.contains('verdict-btn')) {
@@ -595,7 +658,9 @@
         const v = e.target.dataset.v;
         if (!verdicts[id]) verdicts[id] = { verdict: '', feedback: '' };
         verdicts[id].verdict = v;
-        render();
+        applyVerdictInPlace(id, v);
+        updateProgress();
+        updateStats();
       }
       if (e.target.classList.contains('bulk-btn')) {
         captureInputs();
@@ -604,8 +669,10 @@
         items.filter(i => (i.group || 'Items') === groupName).forEach(i => {
           if (!verdicts[i.id]) verdicts[i.id] = { verdict: '', feedback: '' };
           verdicts[i.id].verdict = v;
+          applyVerdictInPlace(i.id, v);
         });
-        render();
+        updateProgress();
+        updateStats();
       }
     });
 
