@@ -29,7 +29,8 @@ function today() {
 //   1 — added actions.status CHECK constraint
 //   2 — added actions.tags
 //   3 — added trigger_condition on actions/projects + trigger_checks history
-export const SCHEMA_VERSION = 3;
+//   4 — composite index on trigger_checks(target_fid, checked_at DESC) for listTriggered
+export const SCHEMA_VERSION = 4;
 
 // Each entry: { version, sql }. A single version may have multiple SQL
 // statements (e.g. column add + index). Statements run in array order;
@@ -50,6 +51,7 @@ const MIGRATIONS = [
     notes         TEXT
   )` },
   { version: 3, sql: "CREATE INDEX IF NOT EXISTS idx_trigger_checks_fid ON trigger_checks(target_fid)" },
+  { version: 4, sql: "CREATE INDEX IF NOT EXISTS idx_trigger_checks_target_time ON trigger_checks(target_fid, checked_at DESC)" },
 ];
 
 export function migrate(db) {
@@ -342,7 +344,8 @@ export function triageHistory(db) {
 // records each check in trigger_checks (append-only history).
 
 export const TRIGGER_RESULT_VOCABULARY = ['triggered', 'still-waiting', 'needs-info', 'condition-obsolete'];
-const FID_PATTERN = /^(act|prj):[a-f0-9]{8}$/;
+export const FID_PATTERN = /^(act|prj):[a-f0-9]{8}$/;
+const TRIGGER_CONDITION_MAX_LENGTH = 2000;
 
 function validateFid(fid) {
   if (!fid || typeof fid !== 'string') {
@@ -363,6 +366,9 @@ export function deferWithTrigger(db, { fid, triggerCondition, cascade = false } 
   if (fidError) return { error: fidError };
   if (!triggerCondition || typeof triggerCondition !== 'string' || triggerCondition.trim() === '') {
     return { error: { error: 'missing_trigger_condition', message: 'triggerCondition must be a non-empty string' } };
+  }
+  if (triggerCondition.length > TRIGGER_CONDITION_MAX_LENGTH) {
+    return { error: { error: 'trigger_condition_too_long', message: `triggerCondition must be ≤${TRIGGER_CONDITION_MAX_LENGTH} chars, got ${triggerCondition.length}` } };
   }
 
   const table = tableForFid(fid);
@@ -444,8 +450,11 @@ export function markTriggerChecked(db, { fid, result, notes } = {}) {
     };
   }
   const table = tableForFid(fid);
-  const row = db.prepare(`SELECT fid FROM ${table} WHERE fid = ? AND deleted_at IS NULL`).get(fid);
+  const row = db.prepare(`SELECT status, ${table === 'actions' ? 'completed' : "'0' as completed"} FROM ${table} WHERE fid = ? AND deleted_at IS NULL`).get(fid);
   if (!row) return { error: { error: 'not_found', message: `No ${table} row with fid ${fid}` } };
+  if (row.status === 'done' || row.completed === 1) {
+    return { error: { error: 'already_done', message: `${fid} is already done; recording a trigger check on a completed item is not allowed` } };
+  }
 
   const checkedAt = new Date().toISOString();
   db.prepare(`

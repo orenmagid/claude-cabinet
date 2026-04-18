@@ -195,6 +195,9 @@ const server = createServer(async (req, res) => {
     // GET /api/trigger-history/:fid — recent checks for an item
     if (req.method === 'GET' && url.pathname.startsWith('/api/trigger-history/')) {
       const fid = decodeURIComponent(url.pathname.slice('/api/trigger-history/'.length));
+      if (!lib.FID_PATTERN.test(fid)) {
+        return json(res, { error: 'invalid_fid_format', message: `fid must match ${lib.FID_PATTERN}, got "${fid}"` }, 400);
+      }
       const rows = db.prepare(`
         SELECT checked_at, result, notes
         FROM trigger_checks
