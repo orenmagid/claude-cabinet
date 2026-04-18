@@ -13,6 +13,13 @@
       "runtimeExecutable": "/usr/bin/python3",
       "runtimeArgs": ["-m", "http.server", "3459", "--directory", "docs"],
       "port": 3459
+    },
+    {
+      "name": "review-server",
+      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeArgs": ["scripts/review-server.mjs", "--port", "3460"],
+      "port": 3460,
+      "autoPort": true
     }
   ]
 }
