@@ -406,6 +406,91 @@
       border-radius: 2px;
       transition: width 0.3s;
     }
+
+    /* Trigger block — shows when an item has trigger_condition */
+    .trigger-block {
+      margin: 12px 0;
+      padding: 10px 12px;
+      background: rgba(228, 147, 45, 0.08);
+      border-left: 3px solid #e4932d;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .trigger-label { color: #e4932d; font-weight: 600; margin-bottom: 4px; }
+    .trigger-text { color: #c1c2c5; margin-bottom: 6px; }
+    .trigger-history { color: #909296; font-size: 11px; }
+    .mark-checked-btn {
+      margin-top: 8px;
+      padding: 4px 10px;
+      background: #e4932d;
+      color: #1a1b1e;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .mark-checked-btn:hover { background: #f5a94a; }
+
+    /* Mark-checked modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: #25262b;
+      border: 1px solid #373a40;
+      border-radius: 8px;
+      padding: 20px;
+      width: 420px;
+      max-width: 90vw;
+    }
+    .modal h3 { margin-bottom: 12px; color: #c1c2c5; font-size: 14px; }
+    .modal label {
+      display: block;
+      font-size: 11px;
+      color: #909296;
+      margin-bottom: 4px;
+      margin-top: 10px;
+    }
+    .modal select, .modal textarea {
+      width: 100%;
+      background: #1a1b1e;
+      color: #c1c2c5;
+      border: 1px solid #373a40;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    .modal textarea { min-height: 60px; resize: vertical; }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .modal-actions button {
+      padding: 6px 14px;
+      border: 1px solid #373a40;
+      background: transparent;
+      color: #c1c2c5;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .modal-actions button.primary {
+      background: #e4932d;
+      color: #1a1b1e;
+      border-color: #e4932d;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -424,6 +509,7 @@
     <button class="filter-btn active" data-status="active">Active</button>
     <button class="filter-btn" data-status="done">Done</button>
     <button class="filter-btn" data-status="paused">Paused</button>
+    <button class="filter-btn" data-status="waiting">Waiting (triggered)</button>
     <button class="filter-btn" data-status="all">All</button>
     <input class="search-input" id="search" placeholder="Search projects and actions...">
   </div>
@@ -434,6 +520,29 @@
   </div>
 
   <div id="content"></div>
+
+  <div class="modal-backdrop" id="trigger-modal">
+    <div class="modal">
+      <h3>Mark trigger checked — <span id="trigger-modal-fid"></span></h3>
+      <div style="color:#909296; font-size:11px; margin-bottom:8px;">
+        Waiting for: <span id="trigger-modal-condition" style="color:#c1c2c5;"></span>
+      </div>
+      <label for="trigger-result">Result</label>
+      <select id="trigger-result">
+        <option value="still-waiting">Still waiting</option>
+        <option value="triggered">Triggered — condition has fired</option>
+        <option value="needs-info">Needs info — can't tell yet</option>
+        <option value="condition-obsolete">Condition obsolete — remove</option>
+      </select>
+      <label for="trigger-notes">Notes (optional)</label>
+      <textarea id="trigger-notes" placeholder="Why this result?"></textarea>
+      <div class="modal-actions">
+        <button id="trigger-cancel">Cancel</button>
+        <button id="trigger-submit" class="primary">Record</button>
+      </div>
+    </div>
+  </div>
+
   <div class="notes-panel" id="notes-panel">
     <div class="notes-header">
       <span class="notes-title" id="notes-title"></span>
@@ -494,9 +603,61 @@
       const root = document.getElementById('content');
       root.innerHTML = '';
 
-      if (currentView === 'projects') renderProjects(root);
+      if (currentStatus === 'waiting') renderWaiting(root);
+      else if (currentView === 'projects') renderProjects(root);
       else if (currentView === 'actions') renderAllActions(root);
       else if (currentView === 'flagged') renderFlagged(root);
+
+      hydrateProjectTriggerBlocks();
+    }
+
+    function renderWaiting(root) {
+      if (projects.length === 0 && actions.length === 0) {
+        root.innerHTML = '<div class="empty-state">No items waiting on triggers.</div>';
+        return;
+      }
+      if (projects.length > 0) {
+        for (const p of projects) {
+          if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) continue;
+          const card = document.createElement('div');
+          card.className = 'project-card';
+          card.innerHTML = `
+            <div class="project-header" data-fid="${p.fid}">
+              <span class="project-name">${esc(p.name)}</span>
+              <div class="project-meta">
+                ${p.area ? `<span>${esc(p.area)}</span>` : ''}
+                <span class="badge badge-someday" title="waiting">waiting</span>
+                <span class="badge badge-${p.status}">${p.status}</span>
+              </div>
+            </div>
+            <div class="project-body">
+              <div style="padding: 10px 14px 0;" data-project-trigger-slot="${esc(p.fid)}"></div>
+            </div>
+          `;
+          root.appendChild(card);
+        }
+      }
+      if (actions.length > 0) {
+        const section = document.createElement('div');
+        section.className = 'orphan-section';
+        section.innerHTML = `
+          <div class="orphan-header">Waiting Actions (${actions.length})</div>
+          <div class="project-body">${renderActionRows(actions, true)}</div>
+        `;
+        root.appendChild(section);
+      }
+    }
+
+    function hydrateProjectTriggerBlocks() {
+      const slots = document.querySelectorAll('[data-project-trigger-slot]');
+      for (const slot of slots) {
+        const fid = slot.dataset.projectTriggerSlot;
+        const p = projects.find(x => x.fid === fid);
+        if (!p) continue;
+        renderTriggerBlock(p).then(html => {
+          if (slot.isConnected) slot.innerHTML = html;
+        });
+      }
     }
 
     function renderProjects(root) {
@@ -523,10 +684,14 @@
             <div class="project-meta">
               ${p.area ? `<span>${esc(p.area)}</span>` : ''}
               <span>${open.length} open / ${projectActions.length} total</span>
+              ${p.trigger_condition ? `<span class="badge badge-someday" title="${esc(p.trigger_condition)}">waiting</span>` : ''}
               <span class="badge badge-${p.status}">${p.status}</span>
             </div>
           </div>
           <div class="project-body ${expanded ? '' : 'collapsed'}" data-project="${p.fid}">
+            ${p.trigger_condition ? `
+              <div style="padding: 10px 14px 0;" data-project-trigger-slot="${esc(p.fid)}"></div>
+            ` : ''}
             ${projectActions.length > 0 ? `
               <div style="padding: 4px 14px 0;">
                 <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
@@ -692,6 +857,29 @@
     let editingFid = null;
     let editMode = false;
 
+    async function renderTriggerBlock(item) {
+      if (!item || !item.trigger_condition) return '';
+      let historyHtml = 'Never checked';
+      try {
+        const resp = await fetch(`/api/trigger-history/${encodeURIComponent(item.fid)}`);
+        const data = await resp.json();
+        if (data.checks && data.checks.length) {
+          const c = data.checks[0];
+          const when = (c.checked_at || '').slice(0, 10);
+          historyHtml = `Last checked ${esc(when)}: <span style="color:#c1c2c5">${esc(c.result)}</span>`;
+          if (c.notes) historyHtml += ` — ${esc(c.notes)}`;
+        }
+      } catch {}
+      return `
+        <div class="trigger-block">
+          <div class="trigger-label">Waiting for:</div>
+          <div class="trigger-text">${esc(item.trigger_condition)}</div>
+          <div class="trigger-history">${historyHtml}</div>
+          <button class="mark-checked-btn" data-mark-checked="${esc(item.fid)}">Mark trigger checked…</button>
+        </div>
+      `;
+    }
+
     function showNotes(fid) {
       const a = actions.find(x => x.fid === fid);
       if (!a) return;
@@ -710,6 +898,14 @@
       renderEditBar(a);
       document.getElementById('notes-body').innerHTML = renderMarkdown(a.notes);
       document.getElementById('notes-panel').classList.add('open');
+
+      if (a.trigger_condition) {
+        renderTriggerBlock(a).then(html => {
+          if (editingFid !== a.fid) return;
+          const body = document.getElementById('notes-body');
+          body.insertAdjacentHTML('afterbegin', html);
+        });
+      }
     }
 
     function renderEditBar(a) {
@@ -833,18 +1029,29 @@
       btn.classList.add('active');
       currentStatus = btn.dataset.status;
       // Reload projects with new status
-      const statusParam = currentStatus === 'all' ? 'active' : currentStatus;
-      if (currentStatus === 'all') {
+      if (currentStatus === 'waiting') {
+        fetch('/api/triggered').then(r => r.json()).then(data => {
+          projects = data.projects || [];
+          actions = data.actions || [];
+          render();
+        });
+      } else if (currentStatus === 'all') {
         Promise.all(['active', 'done', 'paused', 'dropped', 'someday'].map(s =>
           fetch(`/api/projects?status=${s}`).then(r => r.json())
         )).then(results => {
           projects = results.flat();
-          render();
+          fetch('/api/actions?status=all').then(r => r.json()).then(act => {
+            actions = act;
+            render();
+          });
         });
       } else {
         fetch(`/api/projects?status=${currentStatus}`).then(r => r.json()).then(data => {
           projects = data;
-          render();
+          fetch('/api/actions?status=all').then(r => r.json()).then(act => {
+            actions = act;
+            render();
+          });
         });
       }
     });
@@ -910,6 +1117,77 @@
         showNotes(notes.dataset.notes);
         return;
       }
+
+      // Mark trigger checked
+      const mark = e.target.closest('[data-mark-checked]');
+      if (mark) {
+        openTriggerModal(mark.dataset.markChecked);
+        return;
+      }
+    });
+
+    // Delegate clicks inside the notes panel (trigger block lives here)
+    document.getElementById('notes-body').addEventListener('click', e => {
+      const mark = e.target.closest('[data-mark-checked]');
+      if (mark) openTriggerModal(mark.dataset.markChecked);
+    });
+
+    // Trigger modal
+    let triggerModalFid = null;
+
+    function openTriggerModal(fid) {
+      const item = actions.find(x => x.fid === fid) || projects.find(x => x.fid === fid);
+      if (!item) return;
+      triggerModalFid = fid;
+      document.getElementById('trigger-modal-fid').textContent = fid;
+      document.getElementById('trigger-modal-condition').textContent = item.trigger_condition || '';
+      document.getElementById('trigger-result').value = 'still-waiting';
+      document.getElementById('trigger-notes').value = '';
+      document.getElementById('trigger-modal').classList.add('open');
+      setTimeout(() => document.getElementById('trigger-result').focus(), 50);
+    }
+
+    function closeTriggerModal() {
+      triggerModalFid = null;
+      document.getElementById('trigger-modal').classList.remove('open');
+    }
+
+    document.getElementById('trigger-cancel').addEventListener('click', closeTriggerModal);
+    document.getElementById('trigger-modal').addEventListener('click', e => {
+      if (e.target.id === 'trigger-modal') closeTriggerModal();
+    });
+
+    document.getElementById('trigger-submit').addEventListener('click', async () => {
+      if (!triggerModalFid) return;
+      const result = document.getElementById('trigger-result').value;
+      const notes = document.getElementById('trigger-notes').value.trim();
+      const body = { fid: triggerModalFid, result };
+      if (notes) body.notes = notes;
+      const resp = await fetch('/api/trigger-checked', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: 'Unknown error' }));
+        alert('Error: ' + (err.error?.message || err.error || 'Failed to record check'));
+        return;
+      }
+      const submittedFid = triggerModalFid;
+      closeTriggerModal();
+      // Refresh the notes panel (if this action is open) and project blocks
+      if (editingFid === submittedFid) {
+        const a = actions.find(x => x.fid === submittedFid);
+        if (a && a.trigger_condition) {
+          const body = document.getElementById('notes-body');
+          // Remove any existing trigger block, then re-insert
+          const existing = body.querySelector('.trigger-block');
+          if (existing) existing.remove();
+          const html = await renderTriggerBlock(a);
+          body.insertAdjacentHTML('afterbegin', html);
+        }
+      }
+      hydrateProjectTriggerBlocks();
     });
 
     // Notes panel edit bar events (delegated)
@@ -936,6 +1214,10 @@
     });
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
+        if (triggerModalFid) {
+          closeTriggerModal();
+          return;
+        }
         editMode = false;
         editingFid = null;
         document.getElementById('notes-panel').classList.remove('open');

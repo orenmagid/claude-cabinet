@@ -13,6 +13,9 @@
 //   node scripts/pib-db.mjs complete-action act:abc123
 //   node scripts/pib-db.mjs create-project "My Project" --area dev
 //   node scripts/pib-db.mjs list-projects               # Active projects
+//   node scripts/pib-db.mjs defer-with-trigger act:abc --trigger "<text>" [--cascade]
+//   node scripts/pib-db.mjs list-triggered [--include-done]
+//   node scripts/pib-db.mjs mark-trigger-checked act:abc --result <value> [--notes "<text>"]
 //   node scripts/pib-db.mjs ingest-findings <run-dir>   # Ingest audit findings
 //   node scripts/pib-db.mjs triage <finding-id> <status> [notes]
 //   node scripts/pib-db.mjs triage-history              # Suppression list JSON
@@ -41,6 +44,10 @@ function getDb() {
     db = new Database(DB_PATH);
     db.pragma('journal_mode = WAL');
     db.pragma('foreign_keys = ON');
+    // Apply any pending migrations. Cheap: short-circuits when user_version
+    // is already current. Skipped only for `init` which runs init() itself
+    // (which also calls migrate internally).
+    if (process.argv[2] !== 'init') lib.migrate(db);
     return db;
   } catch (err) {
     if (err.code === 'ERR_DLOPEN_FAILED') {
@@ -122,6 +129,29 @@ switch (command) {
   case 'complete-action':
     printResult(lib.completeAction(getDb(), { fid: args[0] }));
     break;
+  case 'defer-with-trigger': {
+    const { flags, positional } = parseFlags(args);
+    printResult(lib.deferWithTrigger(getDb(), {
+      fid: positional[0],
+      triggerCondition: flags.trigger,
+      cascade: flags.cascade === true,
+    }));
+    break;
+  }
+  case 'list-triggered': {
+    const { flags } = parseFlags(args);
+    printResult(lib.listTriggered(getDb(), { includeDone: flags['include-done'] === true }));
+    break;
+  }
+  case 'mark-trigger-checked': {
+    const { flags, positional } = parseFlags(args);
+    printResult(lib.markTriggerChecked(getDb(), {
+      fid: positional[0],
+      result: flags.result,
+      notes: typeof flags.notes === 'string' ? flags.notes : undefined,
+    }));
+    break;
+  }
   case 'create-project': {
     const { flags, positional } = parseFlags(args);
     printResult(lib.createProject(getDb(), { name: positional[0], ...flags }));
@@ -149,6 +179,11 @@ Commands:
   list-actions [--status X] [--project X]  List actions (default: open)
   update-action <fid> [--status X] [--text X] [--tags X] [--notes X]
   complete-action <fid>             Mark action complete (status=done)
+  defer-with-trigger <fid> --trigger "<text>" [--cascade]
+                                    Defer with a return condition
+  list-triggered [--include-done]   List items waiting on triggers
+  mark-trigger-checked <fid> --result <value> [--notes "<text>"]
+                                    Record trigger evaluation (triggered|still-waiting|needs-info|condition-obsolete)
   create-project "name" [--area X]  Create a project
   list-projects                     List active projects
   ingest-findings <run-dir>         Ingest audit findings from a run directory

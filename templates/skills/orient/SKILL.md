@@ -18,6 +18,9 @@ related:
     path: .claude/skills/orient/phases/work-scan.md
     role: "Project-specific: what work items to check"
   - type: file
+    path: .claude/skills/orient/phases/deferred-check.md
+    role: "Project-specific: evaluate waiting triggers on deferred items"
+  - type: file
     path: .claude/skills/orient/phases/health-checks.md
     role: "Project-specific: system health checks"
   - type: file
@@ -260,7 +263,32 @@ CLI.
 If pib-db doesn't exist, skip with no warning — the project may use
 a different work tracking system configured in `phases/work-scan.md`.
 
-### 4. Health Checks (core)
+### 4. Deferred-Trigger Evaluation (core)
+
+Read `phases/deferred-check.md` for how to surface items waiting on
+specific trigger conditions and evaluate whether any now apply in the
+current session's context.
+
+**Default (absent/empty):** If pib-db is available, call `pib_list_triggered`
+(MCP) or `node scripts/pib-db.mjs list-triggered` (CLI fallback). If zero
+items are returned, skip silently. Otherwise:
+
+1. Surface items in the briefing under a "Deferred (N items with triggers)"
+   heading with each item's fid, text, trigger condition, and
+   last-checked status.
+2. For each item, evaluate the trigger text against current session
+   context (project state, recent git activity, user's stated focus).
+   If unsure, mark `needs-info` rather than guessing `triggered`.
+3. For each item, call `pib_mark_trigger_checked` with result
+   (`triggered | still-waiting | needs-info | condition-obsolete`)
+   and brief reasoning in notes.
+4. Include any items that evaluated to `triggered` in the briefing's
+   **Attention Items** section. Do not auto-reopen — the user decides.
+
+**Cost control:** Cap this phase at 30 seconds total. If N > 10 items,
+evaluate only the 5 least-recently-checked.
+
+### 5. Health Checks (core)
 
 Read `phases/health-checks.md` for system health and validation checks
 to run at session start. These catch problems early — stale data, broken
@@ -335,7 +363,7 @@ for spurious deletions of unpushed work.
 > holding? Orient runs every session; pulse runs inside it; audit runs
 > periodically. Each asks a different question about the same system.
 
-### 5. Auto-Maintenance (core)
+### 6. Auto-Maintenance (core)
 
 Read `phases/auto-maintenance.md` for recurring automated tasks that
 should run every session. These are operations that would decay if left
@@ -347,7 +375,7 @@ dedup), `omega compact` weekly (cluster similar memories), `omega backup`
 weekly. Projects add additional maintenance tasks as they discover operations
 that need regular execution.
 
-### 6. Activate Cabinet Members (core)
+### 7. Activate Cabinet Members (core)
 
 Read `phases/cabinet.md` for which expert cabinet members or lenses
 should be active during this session. Cabinet members watch for specific
@@ -356,7 +384,7 @@ without being explicitly invoked for each decision.
 
 **Skip (absent/empty).**
 
-### 7. Cabinet Consultations (core)
+### 8. Cabinet Consultations (core)
 
 Spawn cabinet members whose `standing-mandate` includes `orient`.
 
@@ -379,7 +407,7 @@ error, not a reason to give the member an open-ended task.
 agent should complete in under 1 minute. Include their output in the
 briefing only when they have something to contribute. Silent is fine.
 
-### 8. Present Briefing (presentation)
+### 9. Present Briefing (presentation)
 
 Read `phases/briefing.md` for how to present the orientation results.
 This phase controls format, sections, tone, and any time-aware or
@@ -401,7 +429,7 @@ Keep sections consistent across sessions. Omit a section only if it
 has literally nothing to report (not "nothing interesting" — nothing
 at all). Use the same section names and order every time.
 
-### 9. Show Available Skills (core)
+### 10. Show Available Skills (core)
 
 After the briefing, show the user what skills are available. This
 serves the same purpose as a menu at a restaurant — you can't order
@@ -417,7 +445,7 @@ Read `phases/skills-menu.md` for project-specific overrides (e.g.,
 highlighting certain skills, suppressing others, or changing the
 presentation format).
 
-### 10. Discover Custom Phases
+### 11. Discover Custom Phases
 
 After running the core phases above, check for any additional phase
 files in `phases/` that the skeleton doesn't define. These are project-
@@ -425,7 +453,7 @@ specific extensions. Each custom phase file declares its position in the
 workflow (e.g., "runs after work scan, before briefing"). Execute them
 at their declared position.
 
-### 11. Name the Session
+### 12. Name the Session
 
 Rename the session so the sidebar is scannable. Every session that starts
 with `/orient` looks identical in the history — naming fixes this.
@@ -441,6 +469,7 @@ stated a focus, ask.
 | `context.md` | Default: read CLAUDE.md, status, memory | What files and state to load |
 | `data-sync.md` | Skip | How to sync remote data |
 | `work-scan.md` | Default: pib-db scan + staleness detection | What work items to check |
+| `deferred-check.md` | Skip silently if no triggered items | Surface waiting items and evaluate triggers |
 | `health-checks.md` | Skip | System health checks |
 | `auto-maintenance.md` | Default: omega memory hygiene | Recurring session-start tasks |
 | `cabinet.md` | Skip | Which cabinet members to activate |
@@ -455,8 +484,8 @@ user already knows what they're doing, skip presentation phases. Core
 phases always run because they keep the system healthy.
 
 - **Core phases** (always run): context, data-sync, work-scan,
-  health-checks, auto-maintenance, cabinet, cabinet-consultations,
-  skills-menu
+  deferred-check, health-checks, auto-maintenance, cabinet,
+  cabinet-consultations, skills-menu
 - **Presentation phases** (skippable): briefing
 
 A project that wants a quick orient variant skips the briefing phase

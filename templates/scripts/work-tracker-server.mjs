@@ -11,6 +11,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { basename, dirname, join, resolve } from 'node:path';
 import Database from 'better-sqlite3';
+import * as lib from './pib-db-lib.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PREFERRED_PORT = parseInt(process.env.PORT || process.argv.find((_, i, a) => a[i - 1] === '--port') || '3458');
@@ -36,6 +37,7 @@ const PROJECT_NAME = getProjectName();
 
 const db = new Database(DB_PATH, { readonly: false });
 db.pragma('journal_mode = WAL');
+lib.migrate(db);
 
 function json(res, data, status = 200) {
   res.writeHead(status, {
@@ -174,6 +176,33 @@ const server = createServer(async (req, res) => {
     // GET /api/meta — project name and server info
     if (req.method === 'GET' && url.pathname === '/api/meta') {
       return json(res, { projectName: PROJECT_NAME });
+    }
+
+    // GET /api/triggered — deferred items with trigger conditions
+    if (req.method === 'GET' && url.pathname === '/api/triggered') {
+      const includeDone = url.searchParams.get('includeDone') === 'true';
+      return json(res, lib.listTriggered(db, { includeDone }));
+    }
+
+    // POST /api/trigger-checked — record a trigger evaluation
+    if (req.method === 'POST' && url.pathname === '/api/trigger-checked') {
+      const body = await readBody(req);
+      const result = lib.markTriggerChecked(db, body);
+      if (result.error) return json(res, result, 400);
+      return json(res, result);
+    }
+
+    // GET /api/trigger-history/:fid — recent checks for an item
+    if (req.method === 'GET' && url.pathname.startsWith('/api/trigger-history/')) {
+      const fid = decodeURIComponent(url.pathname.slice('/api/trigger-history/'.length));
+      const rows = db.prepare(`
+        SELECT checked_at, result, notes
+        FROM trigger_checks
+        WHERE target_fid = ?
+        ORDER BY checked_at DESC
+        LIMIT 20
+      `).all(fid);
+      return json(res, { fid, checks: rows });
     }
 
     // GET /api/stats — dashboard summary
