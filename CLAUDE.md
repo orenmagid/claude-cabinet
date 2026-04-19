@@ -21,6 +21,12 @@ for Claude Code projects. Small codebase: 7 files in `lib/`, templates in
 - Skills use the skeleton/phase pattern: SKILL.md defines orchestration,
   phase files customize behavior. Phase files are absent (use default),
   contain content (override), or contain `skip: true` (disable).
+- Phase files split into two kinds: **instruction phases** (always ship
+  with CC — e.g., `audit-pattern-capture.md`, `methodology-capture.md`,
+  `upstream-feedback.md` — explicitly listed in the module manifest in
+  `lib/cli.js` so they override the default skip-phases rule) and
+  **customization phases** (skipped by default, opt-in per project).
+  Instruction phases must not be omitted when editing module manifests.
 - Templates in `templates/` are the upstream source of truth. Installed
   copies in `.claude/skills/` are downstream (gitignored for this project).
 - Module definitions live in the `MODULES` object in `lib/cli.js`.

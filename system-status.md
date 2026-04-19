@@ -84,6 +84,8 @@
 - Deferred-trigger tracking (pib-db schema v4): actions/projects can carry an explicit trigger condition — orient re-evaluates each trigger every session and surfaces items whose conditions have fired. 3 MCP tools (`pib_defer_with_trigger`, `pib_list_triggered`, `pib_mark_trigger_checked`), 3 CLI subcommands (`defer-with-trigger`, `list-triggered`, `mark-trigger-checked`), 3 REST endpoints on work-tracker, plus `trigger_checks` history table and composite index. Orient phase `deferred-check.md` orchestrates the re-evaluation.
 - Trigger convention doc (`templates/cabinet/pib-db-triggers.md`): result vocabulary (fired/not-fired/obsolete/indeterminate), cascade semantics for project-level triggers, migration guarantees, known limitations. `pib-db-access.md` cross-references it.
 - Work-tracker UI: deferred-trigger fields surfaced (trigger_condition, last_checked_at, trigger_result) with support for recording evaluations.
+- Debrief methodology-capture phase (`templates/skills/debrief/phases/methodology-capture.md`): instruction phase that detects load-bearing methodology work (new skill, multi-phase gate scripts, convention docs, calibration harnesses, multi-subagent choreography) and captures reasoning chain + narrative summary to `.claude/methodology/`. Quietly skips most sessions; surfaces a four-choice question when detection heuristics fire.
+- Instruction-phase convention: phase files in CC-shipped skills now split into "instruction phases" (always ship, override the skip-phases default in copy.js — e.g., `audit-pattern-capture.md`, `methodology-capture.md`, `upstream-feedback.md`) vs "customization phases" (default: skip unless consumer overrides). Installer manifest in `lib/cli.js` explicitly lists instruction phases for the session-loop module.
 - Validate auto-discover: skeleton scans for scripts/*-validator.sh when phases/validators.md is absent
 - Orient: deployment detection, unmerged branch health check, phase separation guidance
 - Debrief: pre-exit unmerged commits check, feedback resolution trigger improvements
@@ -93,7 +95,7 @@
 
 ## What's Active
 
-- Published at v0.21.0 on npm as `create-claude-cabinet`
+- Published at v0.23.1 on npm as `create-claude-cabinet`
 - Four downstream consumers: Flow, article-rewriter, theater-cheater, CC dogfood
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)
