@@ -81,6 +81,9 @@
 - Interactive timeline demo: `docs/demo-timeline.html` — 967-line standalone HTML showcase of CC's development history
 - Omega MCP server: omega-setup.js auto-registers omega MCP server in global ~/.claude/settings.json; installs omega-memory[server] extra; enables omega_store(), omega_query() as MCP tools
 - pib-db MCP worktree resolution: server detects git worktrees and resolves to canonical pib.db
+- Deferred-trigger tracking (pib-db schema v4): actions/projects can carry an explicit trigger condition — orient re-evaluates each trigger every session and surfaces items whose conditions have fired. 3 MCP tools (`pib_defer_with_trigger`, `pib_list_triggered`, `pib_mark_trigger_checked`), 3 CLI subcommands (`defer-with-trigger`, `list-triggered`, `mark-trigger-checked`), 3 REST endpoints on work-tracker, plus `trigger_checks` history table and composite index. Orient phase `deferred-check.md` orchestrates the re-evaluation.
+- Trigger convention doc (`templates/cabinet/pib-db-triggers.md`): result vocabulary (fired/not-fired/obsolete/indeterminate), cascade semantics for project-level triggers, migration guarantees, known limitations. `pib-db-access.md` cross-references it.
+- Work-tracker UI: deferred-trigger fields surfaced (trigger_condition, last_checked_at, trigger_result) with support for recording evaluations.
 - Validate auto-discover: skeleton scans for scripts/*-validator.sh when phases/validators.md is absent
 - Orient: deployment detection, unmerged branch health check, phase separation guidance
 - Debrief: pre-exit unmerged commits check, feedback resolution trigger improvements

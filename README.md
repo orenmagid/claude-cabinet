@@ -178,6 +178,7 @@ source code.
 ├── skills/          # orient, debrief, plan, execute, audit, etc.
 │   └── cabinet-*/   # 31 cabinet member definitions
 ├── cabinet/         # committees, lifecycle, composition patterns
+│                    #   (incl. pib-db-access.md, pib-db-triggers.md)
 ├── briefing/        # project briefing templates
 ├── hooks/           # git guardrails, telemetry
 ├── rules/           # enforcement pipeline
