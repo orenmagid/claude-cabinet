@@ -344,7 +344,27 @@ in the debrief report:
 > different destinations (memory/feedback vs finding database). Both
 > feed the enforcement pipeline, but through different channels.
 
-### 10. Upstream Feedback (core)
+### 10. Methodology Capture (core)
+
+Read `phases/methodology-capture.md`. This is an **instruction phase**
+shipped with CC — it tells Claude to detect when the session produced
+load-bearing methodology (new skill, multi-phase gate scripts, convention
+docs, calibration harnesses, multi-subagent choreography) and capture
+the layer above individual lessons: the reasoning chain with skeptic's
+counters AND a narrateable summary for external audiences.
+
+Most sessions skip silently (detection heuristics fire only on core
+methodology work — not bug fixes or small refactors). When they fire,
+the user gets a single four-choice question (internal record, narrative
+summary, both, or neither). Output lands in `.claude/methodology/` as
+two files (`<date>-<slug>-internal.md` and `<date>-<slug>-narrative.md`)
+and is surfaced in the report.
+
+**This phase should not be skipped.** It's how the project's load-bearing
+methodology accumulates a defensible record instead of living in
+someone's head.
+
+### 11. Upstream Feedback (core)
 
 Read `phases/upstream-feedback.md`. This is an **instruction phase**
 shipped with CC — it tells Claude to reflect on whether the session
@@ -361,7 +381,7 @@ what was confusing, what needed a workaround.
 
 **This phase should not be skipped.** It's how CC learns from use.
 
-### 11. Skill Discovery (core)
+### 12. Skill Discovery (core)
 
 Silently reflect: did this session involve a workflow the user is
 likely to repeat? Not every session produces one — most don't. But
@@ -392,7 +412,7 @@ generalizable pattern, cabinet member, or convention? If so, mention
 `/cc-extract` as an option for proposing it upstream to CC. This is
 rarer than project-specific skills.
 
-### 12. Cabinet Check (core)
+### 13. Cabinet Check (core)
 
 Silently check: is this project's expertise coverage still right?
 
@@ -415,7 +435,7 @@ members" or "committees"). If the user wants it, activate the member
 via `committees-project.yaml`, `/seed`, or Tier 3 install. Track
 declined suggestions so you don't re-suggest next session.
 
-### 13. Capture Loose Ends (core)
+### 14. Capture Loose Ends (core)
 
 Read `phases/loose-ends.md` for non-project items and environmental
 concerns to capture before closing. Sessions generate non-project
@@ -439,14 +459,14 @@ Orient will query omega for items 1-3. Item 4 is checked via the
 outbox. If debrief skips any of these, orient starts the next session
 blind on that dimension.
 
-### 14. Discover Custom Phases
+### 15. Discover Custom Phases
 
 After running the core phases above, check for any additional phase
 files in `phases/` that the skeleton doesn't define. These are project-
 specific extensions. Each custom phase file declares its position in
 the workflow. Execute them at their declared position.
 
-### 15. Present Report (presentation)
+### 16. Present Report (presentation)
 
 Read `phases/report.md` for how to present the debrief summary.
 
@@ -467,6 +487,7 @@ Read `phases/report.md` for how to present the debrief summary.
 | `health-checks.md` | Skip | Session-end health checks |
 | `record-lessons.md` | Default: ask what was learned | How to capture learnings |
 | `audit-pattern-capture.md` | **Instruction: always runs** | Detect recurring audit findings, write to patterns-project.md |
+| `methodology-capture.md` | **Instruction: always runs** | Detect methodology-level work; capture reasoning chain + narrative to `.claude/methodology/` |
 | `upstream-feedback.md` | **Instruction: always runs** | Surface CC friction to source repo |
 | `loose-ends.md` | Skip | Non-project items to capture |
 | `report.md` | Default: brief summary | How to present the report |
@@ -480,7 +501,8 @@ skip presentation phases. Core phases always run.
 - **Core phases** (always run): inventory, close-work,
   cabinet-consultations, audit-pattern-capture, auto-maintenance,
   update-state, health-checks, persist-work, record-lessons,
-  upstream-feedback, skill-discovery, cabinet-check, loose-ends
+  methodology-capture, upstream-feedback, skill-discovery,
+  cabinet-check, loose-ends
 - **Presentation phases** (skippable): report
 
 A project that wants a quick debrief variant skips the report and
