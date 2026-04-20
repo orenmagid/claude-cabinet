@@ -23,24 +23,68 @@ function today() {
 }
 
 // ---------------------------------------------------------------------------
-// Init — create tables from schema
+// Migrations — gated by PRAGMA user_version
+// ---------------------------------------------------------------------------
+// SCHEMA_VERSION history:
+//   1 — added actions.status CHECK constraint
+//   2 — added actions.tags
+//   3 — added trigger_condition on actions/projects + trigger_checks history
+//   4 — composite index on trigger_checks(target_fid, checked_at DESC) for listTriggered
+export const SCHEMA_VERSION = 4;
+
+// Each entry: { version, sql }. A single version may have multiple SQL
+// statements (e.g. column add + index). Statements run in array order;
+// each is wrapped in try/catch so re-running on a DB that already has
+// the column/table is a no-op. The user_version pragma is the primary
+// gate — try/catch is a safety net for pre-pragma DBs.
+const MIGRATIONS = [
+  { version: 1, sql: "ALTER TABLE actions ADD COLUMN status TEXT NOT NULL DEFAULT 'open' CHECK(status IN ('open','in-progress','blocked','deferred','done'))" },
+  { version: 2, sql: "ALTER TABLE actions ADD COLUMN tags TEXT NOT NULL DEFAULT ''" },
+  { version: 3, sql: "ALTER TABLE actions ADD COLUMN trigger_condition TEXT" },
+  { version: 3, sql: "ALTER TABLE projects ADD COLUMN trigger_condition TEXT" },
+  { version: 3, sql: `CREATE TABLE IF NOT EXISTS trigger_checks (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    target_table  TEXT NOT NULL CHECK(target_table IN ('actions','projects')),
+    target_fid    TEXT NOT NULL,
+    checked_at    TEXT NOT NULL,
+    result        TEXT NOT NULL CHECK(result IN ('triggered','still-waiting','needs-info','condition-obsolete')),
+    notes         TEXT
+  )` },
+  { version: 3, sql: "CREATE INDEX IF NOT EXISTS idx_trigger_checks_fid ON trigger_checks(target_fid)" },
+  { version: 4, sql: "CREATE INDEX IF NOT EXISTS idx_trigger_checks_target_time ON trigger_checks(target_fid, checked_at DESC)" },
+];
+
+export function migrate(db) {
+  const current = db.pragma('user_version', { simple: true });
+  if (current >= SCHEMA_VERSION) return { from: current, to: current, applied: 0 };
+
+  // Wrap in a transaction so a real mid-migration failure (disk full,
+  // locked DB, constraint violation) rolls back user_version along with
+  // the partial DDL. Only swallow "already exists" errors from legacy
+  // pre-pragma DBs where columns may have been added before versioning.
+  const tx = db.transaction(() => {
+    let applied = 0;
+    for (const m of MIGRATIONS) {
+      if (m.version <= current) continue;
+      try { db.exec(m.sql); applied++; }
+      catch (e) {
+        if (!/already exists|duplicate column/i.test(e.message || '')) throw e;
+      }
+    }
+    db.pragma(`user_version = ${SCHEMA_VERSION}`);
+    return applied;
+  });
+  const applied = tx();
+  return { from: current, to: SCHEMA_VERSION, applied };
+}
+
+// ---------------------------------------------------------------------------
+// Init — create tables from schema, then migrate
 // ---------------------------------------------------------------------------
 export function init(db, { schemaPath }) {
   const schema = readFileSync(schemaPath, 'utf-8');
   db.exec(schema);
-
-  // Migrate existing DBs — add columns that may not exist yet
-  const migrations = [
-    { table: 'actions', column: 'status', sql: "ALTER TABLE actions ADD COLUMN status TEXT NOT NULL DEFAULT 'open' CHECK(status IN ('open','in-progress','blocked','deferred','done'))" },
-    { table: 'actions', column: 'tags', sql: "ALTER TABLE actions ADD COLUMN tags TEXT NOT NULL DEFAULT ''" },
-  ];
-  for (const m of migrations) {
-    const cols = db.prepare(`PRAGMA table_info(${m.table})`).all();
-    if (!cols.some(c => c.name === m.column)) {
-      try { db.exec(m.sql); } catch { /* column may already exist */ }
-    }
-  }
-
+  migrate(db);
   return { message: `Database initialized` };
 }
 
@@ -290,4 +334,133 @@ export function triageHistory(db) {
     deferredIds: deferred.map(r => r.id),
     deferredFingerprints: deferred.map(r => ({ 'cabinet-member': r.cabinet_member, title: r.title })),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Deferred triggers
+// ---------------------------------------------------------------------------
+// Items (actions or projects) with a trigger_condition are waiting on a
+// specific condition. The orient skill re-evaluates them each session and
+// records each check in trigger_checks (append-only history).
+
+export const TRIGGER_RESULT_VOCABULARY = ['triggered', 'still-waiting', 'needs-info', 'condition-obsolete'];
+export const FID_PATTERN = /^(act|prj):[a-f0-9]{8}$/;
+const TRIGGER_CONDITION_MAX_LENGTH = 2000;
+
+function validateFid(fid) {
+  if (!fid || typeof fid !== 'string') {
+    return { error: 'missing_fid', message: 'fid is required' };
+  }
+  if (!FID_PATTERN.test(fid)) {
+    return { error: 'invalid_fid_format', message: `fid must match ${FID_PATTERN}, got "${fid}"` };
+  }
+  return null;
+}
+
+function tableForFid(fid) {
+  return fid.startsWith('prj:') ? 'projects' : 'actions';
+}
+
+export function deferWithTrigger(db, { fid, triggerCondition, cascade = false } = {}) {
+  const fidError = validateFid(fid);
+  if (fidError) return { error: fidError };
+  if (!triggerCondition || typeof triggerCondition !== 'string' || triggerCondition.trim() === '') {
+    return { error: { error: 'missing_trigger_condition', message: 'triggerCondition must be a non-empty string' } };
+  }
+  if (triggerCondition.length > TRIGGER_CONDITION_MAX_LENGTH) {
+    return { error: { error: 'trigger_condition_too_long', message: `triggerCondition must be ≤${TRIGGER_CONDITION_MAX_LENGTH} chars, got ${triggerCondition.length}` } };
+  }
+
+  const table = tableForFid(fid);
+  const row = db.prepare(`SELECT status, ${table === 'actions' ? 'completed' : "'0' as completed"} FROM ${table} WHERE fid = ? AND deleted_at IS NULL`).get(fid);
+  if (!row) return { error: { error: 'not_found', message: `No ${table} row with fid ${fid}` } };
+  if (row.status === 'done' || row.completed === 1) {
+    return { error: { error: 'already_done', message: `${fid} is already done; cannot defer` } };
+  }
+
+  let cascaded = 0;
+  if (table === 'projects') {
+    // Children with their own trigger_condition already carry their own
+    // return condition; cascade leaves them alone so the parent's trigger
+    // doesn't overwrite their independent wait state.
+    const openChildren = db.prepare(`SELECT fid FROM actions WHERE project_fid = ? AND status NOT IN ('done','deferred') AND trigger_condition IS NULL AND deleted_at IS NULL`).all(fid);
+    if (openChildren.length > 0 && !cascade) {
+      return {
+        error: {
+          error: 'has_open_children',
+          message: `Project ${fid} has ${openChildren.length} open action(s) without their own trigger. Pass cascade: true to defer them alongside.`,
+          openChildren: openChildren.map(c => c.fid),
+        },
+      };
+    }
+    if (cascade) {
+      const appendNote = `\n\n_Deferred alongside parent ${fid} (trigger: ${triggerCondition})_`;
+      const stmt = db.prepare(`UPDATE actions SET status = 'deferred', notes = notes || ? WHERE fid = ?`);
+      for (const child of openChildren) stmt.run(appendNote, child.fid);
+      cascaded = openChildren.length;
+    }
+  }
+
+  const newStatus = table === 'projects' ? 'someday' : 'deferred';
+  db.prepare(`UPDATE ${table} SET status = ?, trigger_condition = ? WHERE fid = ?`).run(newStatus, triggerCondition, fid);
+
+  return { fid, table, triggerCondition, status: newStatus, cascaded, message: `Deferred ${fid} with trigger` };
+}
+
+export function listTriggered(db, { includeDone = false } = {}) {
+  const actionsWhere = includeDone
+    ? 'a.trigger_condition IS NOT NULL AND a.deleted_at IS NULL'
+    : "a.trigger_condition IS NOT NULL AND a.deleted_at IS NULL AND a.status != 'done' AND (a.completed IS NULL OR a.completed = 0)";
+  const projectsWhere = includeDone
+    ? 'p.trigger_condition IS NOT NULL AND p.deleted_at IS NULL'
+    : "p.trigger_condition IS NOT NULL AND p.deleted_at IS NULL AND p.status != 'done'";
+
+  const actions = db.prepare(`
+    SELECT a.fid, a.text, a.trigger_condition, a.status, p.name AS project_name,
+      (SELECT checked_at FROM trigger_checks WHERE target_fid = a.fid ORDER BY checked_at DESC LIMIT 1) AS last_checked,
+      (SELECT result FROM trigger_checks WHERE target_fid = a.fid ORDER BY checked_at DESC LIMIT 1) AS last_result
+    FROM actions a
+    LEFT JOIN projects p ON a.project_fid = p.fid
+    WHERE ${actionsWhere}
+    ORDER BY last_checked IS NOT NULL, last_checked ASC
+  `).all();
+
+  const projects = db.prepare(`
+    SELECT p.fid, p.name, p.trigger_condition, p.status,
+      (SELECT checked_at FROM trigger_checks WHERE target_fid = p.fid ORDER BY checked_at DESC LIMIT 1) AS last_checked,
+      (SELECT result FROM trigger_checks WHERE target_fid = p.fid ORDER BY checked_at DESC LIMIT 1) AS last_result
+    FROM projects p
+    WHERE ${projectsWhere}
+    ORDER BY last_checked IS NOT NULL, last_checked ASC
+  `).all();
+
+  return { actions, projects };
+}
+
+export function markTriggerChecked(db, { fid, result, notes } = {}) {
+  const fidError = validateFid(fid);
+  if (fidError) return { error: fidError };
+  if (!TRIGGER_RESULT_VOCABULARY.includes(result)) {
+    return {
+      error: {
+        error: 'invalid_result',
+        message: `result must be one of: ${TRIGGER_RESULT_VOCABULARY.join(', ')}`,
+        got: result,
+      },
+    };
+  }
+  const table = tableForFid(fid);
+  const row = db.prepare(`SELECT status, ${table === 'actions' ? 'completed' : "'0' as completed"} FROM ${table} WHERE fid = ? AND deleted_at IS NULL`).get(fid);
+  if (!row) return { error: { error: 'not_found', message: `No ${table} row with fid ${fid}` } };
+  if (row.status === 'done' || row.completed === 1) {
+    return { error: { error: 'already_done', message: `${fid} is already done; recording a trigger check on a completed item is not allowed` } };
+  }
+
+  const checkedAt = new Date().toISOString();
+  db.prepare(`
+    INSERT INTO trigger_checks (target_table, target_fid, checked_at, result, notes)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(table, fid, checkedAt, result, notes || null);
+
+  return { fid, checkedAt, result, message: `Recorded trigger check for ${fid}: ${result}` };
 }

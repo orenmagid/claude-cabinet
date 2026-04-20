@@ -7,34 +7,36 @@
 -- Query:      node scripts/pib-db.mjs query "SELECT ..."
 
 CREATE TABLE IF NOT EXISTS projects (
-  fid           TEXT PRIMARY KEY CHECK(fid GLOB 'prj:*'),
-  name          TEXT NOT NULL,
-  area          TEXT,
-  status        TEXT NOT NULL DEFAULT 'active'
-                  CHECK(status IN ('active','paused','done','dropped','someday')),
-  notes         TEXT NOT NULL DEFAULT '',
-  created       TEXT NOT NULL CHECK(created GLOB '????-??-??'),
-  completed_at  TEXT,
-  due           TEXT,
-  deleted_at    TEXT
+  fid                TEXT PRIMARY KEY CHECK(fid GLOB 'prj:*'),
+  name               TEXT NOT NULL,
+  area               TEXT,
+  status             TEXT NOT NULL DEFAULT 'active'
+                       CHECK(status IN ('active','paused','done','dropped','someday')),
+  notes              TEXT NOT NULL DEFAULT '',
+  created            TEXT NOT NULL CHECK(created GLOB '????-??-??'),
+  completed_at       TEXT,
+  due                TEXT,
+  deleted_at         TEXT,
+  trigger_condition  TEXT
 );
 
 CREATE TABLE IF NOT EXISTS actions (
-  fid           TEXT PRIMARY KEY CHECK(fid GLOB 'act:*'),
-  text          TEXT NOT NULL,
-  area          TEXT,
-  project_fid   TEXT REFERENCES projects(fid) ON DELETE SET NULL,
-  due           TEXT,
-  flagged       INTEGER NOT NULL DEFAULT 0 CHECK(flagged IN (0, 1)),
-  completed     INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0, 1)),
-  completed_at  TEXT,
-  status        TEXT NOT NULL DEFAULT 'open'
-                  CHECK(status IN ('open','in-progress','blocked','deferred','done')),
-  tags          TEXT NOT NULL DEFAULT '',
-  sort_order    INTEGER NOT NULL DEFAULT 0,
-  created       TEXT NOT NULL CHECK(created GLOB '????-??-??'),
-  notes         TEXT NOT NULL DEFAULT '',
-  deleted_at    TEXT
+  fid                TEXT PRIMARY KEY CHECK(fid GLOB 'act:*'),
+  text               TEXT NOT NULL,
+  area               TEXT,
+  project_fid        TEXT REFERENCES projects(fid) ON DELETE SET NULL,
+  due                TEXT,
+  flagged            INTEGER NOT NULL DEFAULT 0 CHECK(flagged IN (0, 1)),
+  completed          INTEGER NOT NULL DEFAULT 0 CHECK(completed IN (0, 1)),
+  completed_at       TEXT,
+  status             TEXT NOT NULL DEFAULT 'open'
+                       CHECK(status IN ('open','in-progress','blocked','deferred','done')),
+  tags               TEXT NOT NULL DEFAULT '',
+  sort_order         INTEGER NOT NULL DEFAULT 0,
+  created            TEXT NOT NULL CHECK(created GLOB '????-??-??'),
+  notes              TEXT NOT NULL DEFAULT '',
+  deleted_at         TEXT,
+  trigger_condition  TEXT
 );
 
 CREATE TABLE IF NOT EXISTS audit_runs (
@@ -66,3 +68,16 @@ CREATE TABLE IF NOT EXISTS audit_findings (
   triaged_at          TEXT,
   fix_description     TEXT
 );
+
+-- Append-only history of trigger-condition evaluations.
+-- No foreign key to actions/projects: if the target row is later deleted,
+-- we want the historical record preserved (orphan rows are acceptable).
+CREATE TABLE IF NOT EXISTS trigger_checks (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  target_table  TEXT NOT NULL CHECK(target_table IN ('actions','projects')),
+  target_fid    TEXT NOT NULL,
+  checked_at    TEXT NOT NULL,
+  result        TEXT NOT NULL CHECK(result IN ('triggered','still-waiting','needs-info','condition-obsolete')),
+  notes         TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_trigger_checks_fid ON trigger_checks(target_fid);

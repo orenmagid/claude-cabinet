@@ -163,29 +163,37 @@ anything else.
 
 ### Feedback pipeline check
 
-1. **Flush outbox.** Read `~/.claude/cc-feedback-outbox.json`:
-   ```bash
-   cat ~/.claude/cc-feedback-outbox.json 2>/dev/null || echo '[]'
-   ```
-   If items exist with `"delivered": false`:
-   - If this is the CC source repo (check `package.json` name is
-     `create-claude-cabinet`): copy items to `feedback/` directory
-     as individual .md files, mark as delivered in the outbox.
-   - If this is a consuming project with `~/.claude/cc-registry.json`:
-     read the CC source path from registry and copy items to that
-     path's `feedback/` directory.
-   - Error handling: wrap JSON.parse in try/catch. If the outbox is
-     malformed, log warning and reset to `[]`. Write atomically: write
-     to `~/.claude/cc-feedback-outbox.json.tmp`, then rename over
-     the original. On successful flush, reset to `[]` — don't
-     accumulate delivered markers.
+1. **Flush outbox.** Read `~/.claude/cc-feedback-outbox.json`. Determine
+   destination: if this is the CC source repo (`package.json` name is
+   `create-claude-cabinet`), destination is `./feedback/`; otherwise
+   read CC source path from `~/.claude/cc-registry.json` and use its
+   `feedback/`. For each item with `"delivered": false`:
 
-2. **Scan wrong-write locations.** Check these paths for CC-scoped
-   feedback that got written to the wrong place:
-   - `.claude/memory/feedback/*.md`
-   - `.claude/feedback/*.md`
-   If found: "Found N feedback files in [path] that may be CC
-   upstream feedback written to the wrong location. Move to outbox?"
+   - **Compute destination filename** from `{date}-{slug(title)}-{seq}.md`.
+   - **Skip-if-exists check:** before writing, look for any file in the
+     destination `feedback/` OR `feedback/resolved/` whose name contains
+     the slugified title. If found, the item was already delivered (or
+     already resolved) by a prior session — do not rewrite. Mark the
+     item handled and move on.
+   - Otherwise write the item's `body` to the destination.
+   - After processing all items, atomically rewrite the outbox: write
+     `~/.claude/cc-feedback-outbox.json.tmp`, then rename. On a fully
+     successful pass, reset to `[]` — don't accumulate delivered
+     markers. If some items failed, keep only the failed ones.
+   - Error handling: wrap JSON.parse in try/catch. If the outbox is
+     malformed, log warning and reset to `[]`.
+
+2. **Scan wrong-write locations.** Check `.claude/memory/feedback/*.md`
+   and `.claude/feedback/*.md` for files that may be CC upstream
+   feedback misfiled. **Exclude project-scoped files** — skip any file
+   whose name starts with `feedback-project-` or whose frontmatter
+   contains `scope: project-specific`. Those are intentionally
+   project-scoped decisions/constraints, not CC upstream feedback; they
+   belong in omega memory (decision/constraint types), CLAUDE.md, or a
+   pib-db deferred trigger — not in the outbox.
+   If remaining candidates found: "Found N feedback files in [path]
+   that may be CC upstream feedback written to the wrong location.
+   Move to outbox?"
 
 ### 2. Sync Data (core)
 

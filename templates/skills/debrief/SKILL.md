@@ -306,27 +306,24 @@ Don't silently bundle unrelated changes.
 
 ### 9. Record Lessons (core)
 
-Read `phases/record-lessons.md` for how to capture what was learned.
-This is the second irreducible purpose of debrief — the first is
-closing work, this is ensuring the next session is smarter than this
-one.
+Read `phases/record-lessons.md` for how to route session outputs to
+their real homes. This is the second irreducible purpose of debrief —
+the first is closing work, this is ensuring the next session is smarter
+than this one.
 
-**Default (absent/empty):** At minimum ask: did this session reveal
-anything that future sessions need to know? A new pattern, a gotcha,
-a process gap, a user preference? Lessons are perishable — capture
-them now while context is fresh.
+**The phase file teaches a routing discipline:** every output has
+exactly one home with a forcing function — omega `decision`/`lesson`/
+`constraint`/`preference` memory, inline in CLAUDE.md or a briefing
+(for load-bearing project facts), a pib-db deferred action (for
+conditional revisits), or the upstream-feedback phase (for CC-applicable
+friction). Loose `.md` files written next to the code they describe
+are explicitly an **anti-pattern** — they rot silently when the code
+changes. Hybrid observations (part project, part CC) must be split.
 
-**Omega-only:** If `~/.claude-cabinet/omega-venv/bin/python3` and
-`scripts/cabinet-memory-adapter.py` both exist, write lessons to omega
-— never to flat markdown. A guard hook enforces this. Use the adapter:
-
-```bash
-echo '{"text": "the lesson", "type": "lesson"}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
-```
-
-Types: `decision`, `lesson`, `preference`, `constraint`, `pattern`.
-Flat markdown memory is the fallback only when omega is unavailable.
+**Default (absent/empty):** Follow the routing tree in the phase file.
+Ask the user only when routing is genuinely ambiguous — not as a
+catch-all "what did we learn?" prompt, which tends to produce vague
+lessons that don't get recorded anywhere useful.
 
 **Omega broken:** If the memory module is installed (check `.ccrc.json`
 for `"memory": true`) but the venv or adapter is missing, surface this
@@ -485,7 +482,7 @@ Read `phases/report.md` for how to present the debrief summary.
 | `auto-maintenance.md` | Skip | Recurring session-end tasks |
 | `update-state.md` | Default: check system-status.md | What state files to update |
 | `health-checks.md` | Skip | Session-end health checks |
-| `record-lessons.md` | Default: ask what was learned | How to capture learnings |
+| `record-lessons.md` | Default: route outputs per the decision tree | How to route session outputs to omega / CLAUDE.md / pib-db triggers / upstream |
 | `audit-pattern-capture.md` | **Instruction: always runs** | Detect recurring audit findings, write to patterns-project.md |
 | `methodology-capture.md` | **Instruction: always runs** | Detect methodology-level work; capture reasoning chain + narrative to `.claude/methodology/` |
 | `upstream-feedback.md` | **Instruction: always runs** | Surface CC friction to source repo |

@@ -11,10 +11,53 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { createInterface } from 'node:readline';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import * as lib from './pib-db-lib.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DB_PATH = process.env.PIB_DB_PATH || join(process.cwd(), 'pib.db');
+
+// Resolve pib.db path, handling git worktrees where cwd may not contain
+// the canonical database. Worktrees have a .git *file* (not directory)
+// pointing to the main repo's .git/worktrees/<name>/ directory.
+function resolveDbPath() {
+  if (process.env.PIB_DB_PATH) return process.env.PIB_DB_PATH;
+
+  const cwd = process.cwd();
+  const localDb = join(cwd, 'pib.db');
+
+  // If local pib.db exists and is non-trivial (>8KB), use it
+  if (existsSync(localDb)) {
+    try {
+      const stats = statSync(localDb);
+      if (stats.size > 8192) return localDb;
+    } catch { /* fall through to worktree detection */ }
+  }
+
+  // Check if we're in a git worktree (.git is a file, not a directory)
+  const gitPath = join(cwd, '.git');
+  if (existsSync(gitPath)) {
+    try {
+      const stats = statSync(gitPath);
+      if (stats.isFile()) {
+        // .git file contains: "gitdir: /path/to/main/.git/worktrees/<name>"
+        const content = readFileSync(gitPath, 'utf-8').trim();
+        const match = content.match(/^gitdir:\s*(.+)/);
+        if (match) {
+          // Walk up from .git/worktrees/<name> to find the main repo
+          const gitdir = match[1];
+          const mainGitDir = join(gitdir, '..', '..');
+          const mainRepoDir = dirname(mainGitDir);
+          const mainDb = join(mainRepoDir, 'pib.db');
+          if (existsSync(mainDb)) return mainDb;
+        }
+      }
+    } catch { /* fall through to default */ }
+  }
+
+  return localDb;
+}
+
+const DB_PATH = resolveDbPath();
 
 // ---------------------------------------------------------------------------
 // SQLite setup
@@ -28,6 +71,12 @@ function getDb() {
   db = new Database(DB_PATH);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
+
+  // Ensure schema exists, then apply pending migrations. Both are cheap:
+  // the schema file is idempotent (CREATE TABLE IF NOT EXISTS) and migrate()
+  // short-circuits when PRAGMA user_version is already current.
+  const schemaPath = join(__dirname, 'pib-db-schema.sql');
+  lib.init(db, { schemaPath });
   return db;
 }
 
@@ -149,6 +198,46 @@ const TOOLS = [
     inputSchema: { type: 'object', properties: {} },
   },
   {
+    name: 'pib_defer_with_trigger',
+    description: 'Defer an action or project with a free-text trigger condition describing what would reactivate it. Orient re-evaluates triggers each session. Use this INSTEAD of pib_update_action with status=deferred when the deferral is waiting for a specific condition.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        fid: { type: 'string', description: 'Action or project fid (e.g., act:abc12345 or prj:abc12345)' },
+        triggerCondition: { type: 'string', description: 'Natural-language predicate describing when to reactivate (e.g., "3+ projects calling Claude API directly")' },
+        cascade: { type: 'boolean', description: 'When deferring a project with open child actions, also defer them. Required for projects with open children.' },
+      },
+      required: ['fid', 'triggerCondition'],
+    },
+  },
+  {
+    name: 'pib_list_triggered',
+    description: 'List all items (actions and projects) with an active trigger_condition. Returns two arrays: actions and projects, each with fid, trigger text, last check result, and days since last check.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        includeDone: { type: 'boolean', description: 'Include items already marked done. Default false.' },
+      },
+    },
+  },
+  {
+    name: 'pib_mark_trigger_checked',
+    description: 'Record that a trigger was evaluated. Use after orient\'s deferred-check phase evaluates triggers against session context. Result must be one of: triggered | still-waiting | needs-info | condition-obsolete.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        fid: { type: 'string', description: 'Action or project fid' },
+        result: {
+          type: 'string',
+          enum: ['triggered', 'still-waiting', 'needs-info', 'condition-obsolete'],
+          description: 'Outcome of this evaluation',
+        },
+        notes: { type: 'string', description: 'Optional reasoning or context for the evaluation' },
+      },
+      required: ['fid', 'result'],
+    },
+  },
+  {
     name: 'pib_query',
     description: 'Run an arbitrary SQL query against the pib database.',
     inputSchema: {
@@ -166,14 +255,6 @@ const TOOLS = [
 // ---------------------------------------------------------------------------
 function handleToolCall(name, args) {
   const d = getDb();
-  const schemaPath = join(__dirname, 'pib-db-schema.sql');
-
-  // Auto-init: ensure tables exist
-  try {
-    d.prepare('SELECT 1 FROM projects LIMIT 0').run();
-  } catch {
-    lib.init(d, { schemaPath });
-  }
 
   switch (name) {
     case 'pib_create_project':
@@ -196,6 +277,12 @@ function handleToolCall(name, args) {
       return lib.triage(d, args);
     case 'pib_triage_history':
       return lib.triageHistory(d);
+    case 'pib_defer_with_trigger':
+      return lib.deferWithTrigger(d, args);
+    case 'pib_list_triggered':
+      return lib.listTriggered(d, args);
+    case 'pib_mark_trigger_checked':
+      return lib.markTriggerChecked(d, args);
     case 'pib_query':
       return lib.query(d, args);
     default:
