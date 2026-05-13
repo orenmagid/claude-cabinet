@@ -56,3 +56,24 @@ verbally, or a constraint discovered through external research).
 Over-capturing degrades retrieval quality. The test: *"Would a future
 session benefit from knowing this?"* If yes, capture it. If it's just
 noise or ephemera, skip it.
+
+## Known Limitation: Auto-Memory System Prompt Conflict
+
+Claude Code's built-in auto-memory system prompt describes a file-based
+`.md` memory system (`/Users/<user>/.claude/projects/<project>/memory/`).
+When omega is active, this conflicts — the system prompt tells Claude to
+write `.md` files while CLAUDE.md and this rules file tell it to use
+omega. The system prompt's instructions are strong and may override
+project-level rules in some sessions.
+
+**Mitigations:**
+- The `omega-memory-guard` PreToolUse hook blocks flat markdown writes
+  when omega is available (structural enforcement, ~100% reliable)
+- This rules file and CLAUDE.md omega instructions provide prompt-level
+  guidance (~80% reliable)
+- If Claude creates a `.md` memory file despite these, the guard will
+  block it and redirect to `omega_store()`
+
+This is a platform limitation — the auto-memory system prompt cannot
+be suppressed from project configuration. The guard hook is the
+primary defense.

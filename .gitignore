@@ -3,6 +3,15 @@ node_modules/
 *.db-shm
 *.db-wal
 
+# Editor + tool artifacts
+.specstory/
+.vscode/
+__pycache__/
+*.pyc
+
+# Ephemeral act verification artifacts
+.claude/verification/
+
 # Local CC install (dogfooding — not part of the distributable package).
 # The source of truth lives in templates/. Anything the installer drops
 # into working locations (.claude/, scripts/, .ccrc.json) is downstream
