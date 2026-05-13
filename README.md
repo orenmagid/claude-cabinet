@@ -5,7 +5,7 @@ gives Claude a memory, 31 domain experts, a planning process, and the
 habit of starting sessions informed and ending them properly.
 
 Built by a guy who'd rather talk to Claude than write code. Most of it
-was built by Claude. I just complained until it worked.
+was built by Claude. I just complained until it (mostly) worked.
 
 ## The Idea
 
