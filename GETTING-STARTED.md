@@ -30,9 +30,9 @@ You're the decision-maker. The cabinet advises. Claude does the legwork.
 
 ## Do I need this?
 
-The simplest test: **are you coming back tomorrow?**
+The simplest test: **will you come back to this?**
 
-If you're working on something that will take more than one sitting —
+If you're working on something that spans more than one conversation —
 an app, a website, a research project, a business you're building —
 then every time you start a new conversation with Claude, you lose
 context. You end up re-explaining what you're doing, what you decided

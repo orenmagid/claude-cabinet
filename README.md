@@ -63,8 +63,8 @@ automatically.
 
 - **`/orient`** — open every session with this. Claude reads project
   state, checks health, surfaces what needs attention, and briefs you
-  so you never start blind. Think of it as the morning briefing before
-  the cabinet gets to work.
+  so you never start blind. Think of it as the briefing before the
+  cabinet gets to work.
 - **`/debrief`** — close every session with this. Claude marks work
   done, records lessons, updates state, and prepares the briefing for
   next time. Without debrief, the next orient starts with stale
@@ -134,7 +134,7 @@ hooks — things that keep going wrong become things that can't go wrong.
 
 ## Your Workflow
 
-The day-to-day rhythm:
+The rhythm of each session:
 
 1. **Start a session** → `/orient` (get briefed)
 2. **Do your work** → talk to Claude, use `/plan` for anything non-trivial
@@ -227,7 +227,7 @@ other.
 ## Philosophy
 
 This started as the process layer of [Flow](https://github.com/orenmagid/flow),
-a cognitive workspace built on Claude Code over months of daily use. The
+a cognitive workspace built on Claude Code over months of intensive use. The
 patterns that emerged — the session loop, cabinet-style audits, feedback
 enforcement — turned out to be transferable to any project.
 

@@ -5,7 +5,7 @@ habit: `/orient` at the start, `/debrief` at the end. This guide covers
 everything else — when to use which command, what the cabinet is actually
 doing for you, and how the system grows with your project.
 
-## The Daily Habit
+## The Session Habit
 
 Every session follows the same shape:
 
@@ -216,7 +216,7 @@ includes everything that happened in previous sessions.
 
 Then `/triage-audit` to review findings and decide what to address.
 
-### "I'm done for today"
+### "I'm wrapping up this session"
 
 ```
 /debrief
