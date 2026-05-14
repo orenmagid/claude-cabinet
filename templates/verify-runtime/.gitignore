@@ -1,0 +1,14 @@
+node_modules/
+dist/
+
+# npm pack output left in the dir before move
+*.tgz
+
+# SQLite databases (pib-db leaks these if invoked with wrong cwd)
+*.db
+*.db-shm
+*.db-wal
+
+# Test artifacts
+reports/
+screenshots/

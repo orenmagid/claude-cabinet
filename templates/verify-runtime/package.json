@@ -1,0 +1,34 @@
+{
+  "name": "cabinet-verify",
+  "version": "0.1.0",
+  "description": "Walkthrough verification harness for Claude Cabinet. Cucumber + Playwright scenarios with human-in-the-loop verdict pause.",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "bin": {
+    "cabinet-verify-report-last": "./dist/src/cli/report-last.js",
+    "cabinet-verify-report-status": "./dist/src/cli/report-status.js",
+    "cabinet-verify-preflight": "./dist/src/cli/preflight.js"
+  },
+  "files": [
+    "dist/",
+    "CONVENTIONS.md",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test dist/test/*.test.js"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^11.2.0",
+    "@playwright/test": "^1.49.0",
+    "boxen": "^8.0.1",
+    "dotenv": "^16.4.7",
+    "picocolors": "^1.1.1",
+    "terminal-link": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}

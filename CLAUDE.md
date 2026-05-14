@@ -9,12 +9,30 @@ for Claude Code projects. Small codebase: 7 files in `lib/`, templates in
 - `lib/cli.js` — main orchestration, module definitions, all CLI logic
 - `lib/copy.js` — template copying with conflict detection
 - `lib/omega-setup.js` — Python discovery, venv creation, omega-memory install
+- `lib/verify-setup.js` — cabinet-verify runtime installer (creates
+  `~/.claude-cabinet/verify/<version>/dist/cabinet-verify-<version>.tgz`
+  via `npm pack`; writes `~/.claude-cabinet/verify/current/VERSION` pointer)
 - `templates/skills/` — skill definitions (SKILL.md) and phase files
 - `templates/skills/onboard/` — conversational onboarding skill
 - `templates/skills/cabinet-*/` — 31 expert cabinet member definitions
+- `templates/skills/verify/` — walkthrough-verification skeleton skill
+  (Cucumber + Playwright; opt-in via the `verify` module)
+- `templates/verify-runtime/` — `cabinet-verify` npm package source
+  (lifted from de[sic]ify's e2e/support/; packed into the install dir
+  by `lib/verify-setup.js`)
 - `templates/cabinet/` — cabinet infrastructure (committees, lifecycle, etc.)
 - `templates/briefing/` — project briefing templates
 - `.ccrc.json` — installation metadata and manifest (generated, gitignored)
+
+## Modules
+
+- **session-loop** (mandatory): orient + debrief skeleton skills
+- **hooks**, **work-tracking**, **planning**, **compliance**, **audit**,
+  **lifecycle**, **validate** (default-installed)
+- **memory** (opt-in default, Python 3.11+): omega-memory engine
+- **verify** (opt-in, off by default): Cucumber + Playwright walkthrough
+  harness. Runtime at `~/.claude-cabinet/verify/<version>/`. /verify
+  skeleton skill + opt-in /plan, /execute, /debrief integration phases.
 
 ## Conventions
 
