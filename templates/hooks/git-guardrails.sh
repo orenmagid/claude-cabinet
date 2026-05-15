@@ -9,13 +9,15 @@
 #
 # Hook contract:
 #   Input: $CLAUDE_TOOL_INPUT has the tool use JSON with "command" field
-#   Output: JSON on stdout with { "decision": "block"|"allow", "reason": "..." }
+#   Output: JSON on stdout with { "decision": "block", "reason": "..." }
+#           when blocking. Otherwise empty stdout + exit 0 (Claude Code
+#           treats no-output as allow; emitting "allow" violates the
+#           hook output schema).
 
 # Read the command from the tool input
 COMMAND=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('command',''))" 2>/dev/null)
 
 if [ -z "$COMMAND" ]; then
-  echo '{"decision":"allow"}'
   exit 0
 fi
 
@@ -62,6 +64,5 @@ RESULT=$(check_command "$COMMAND")
 
 if [ -n "$RESULT" ]; then
   echo "$RESULT"
-else
-  echo '{"decision":"allow"}'
 fi
+exit 0

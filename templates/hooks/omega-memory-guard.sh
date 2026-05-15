@@ -16,13 +16,14 @@
 #
 # Hook contract:
 #   Input: $CLAUDE_TOOL_INPUT has the tool use JSON with "file_path" field
-#   Output: JSON on stdout with { "decision": "block"|"allow", "reason": "..." }
+#   Output: JSON on stdout with { "decision": "block", "reason": "..." }
+#           when blocking. Otherwise empty stdout + exit 0 (allow is the
+#           default; emitting "allow" violates the hook output schema).
 
 # Extract file_path from tool input
 FILE_PATH=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('file_path',''))" 2>/dev/null)
 
 if [ -z "$FILE_PATH" ]; then
-  echo '{"decision":"allow"}'
   exit 0
 fi
 
@@ -30,21 +31,18 @@ fi
 # Note: case patterns with * don't cross / boundaries in some shells,
 # so we use [[ ]] substring matching for absolute path compatibility.
 if [[ "$FILE_PATH" != *"/.claude/memory/"* ]] && [[ "$FILE_PATH" != *"/.claude/projects/"*"/memory/"* ]]; then
-  echo '{"decision":"allow"}'
   exit 0
 fi
 
 # Allow MEMORY.md index files (structural, not memory content)
 BASENAME=$(basename "$FILE_PATH")
 if [ "$BASENAME" = "MEMORY.md" ]; then
-  echo '{"decision":"allow"}'
   exit 0
 fi
 
 # Allow pattern files (enforcement pipeline artifacts, not semantic memories)
 case "$FILE_PATH" in
   */memory/patterns/*)
-    echo '{"decision":"allow"}'
     exit 0
     ;;
 esac
@@ -53,7 +51,6 @@ esac
 OMEGA_PYTHON="$HOME/.claude-cabinet/omega-venv/bin/python3"
 if [ ! -x "$OMEGA_PYTHON" ]; then
   # Omega not available — flat markdown IS the correct fallback
-  echo '{"decision":"allow"}'
   exit 0
 fi
 
@@ -73,7 +70,6 @@ find_adapter() {
 ADAPTER=$(find_adapter)
 if [ -z "$ADAPTER" ]; then
   # No adapter found — flat markdown fallback is correct
-  echo '{"decision":"allow"}'
   exit 0
 fi
 

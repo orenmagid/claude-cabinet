@@ -14,13 +14,14 @@
 #
 # Hook contract:
 #   Input: $CLAUDE_TOOL_INPUT has the tool use JSON with "file_path" field
-#   Output: JSON on stdout with { "decision": "block"|"allow", "reason": "..." }
+#   Output: JSON on stdout with { "decision": "block", "reason": "..." }
+#           when blocking. Otherwise empty stdout + exit 0 (allow is the
+#           default; emitting "allow" violates the hook output schema).
 
 # Extract file_path from tool input
 FILE_PATH=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('file_path',''))" 2>/dev/null)
 
 if [ -z "$FILE_PATH" ]; then
-  echo '{"decision":"allow"}'
   exit 0
 fi
 
@@ -42,7 +43,6 @@ PROJECT_ROOT=$(find_project_root)
 
 if [ -z "$PROJECT_ROOT" ]; then
   # No .ccrc.json found — not a CC project, allow everything
-  echo '{"decision":"allow"}'
   exit 0
 fi
 
@@ -53,7 +53,6 @@ if [[ "$FILE_PATH" = /* ]]; then
   REL_PATH="${FILE_PATH#$PROJECT_ROOT/}"
   # If the path didn't change, the file is outside the project
   if [ "$REL_PATH" = "$FILE_PATH" ]; then
-    echo '{"decision":"allow"}'
     exit 0
   fi
 else
@@ -74,6 +73,5 @@ except:
 
 if [ "$IN_MANIFEST" = "yes" ]; then
   echo "{\"decision\":\"block\",\"reason\":\"Blocked: $REL_PATH is managed by Claude Cabinet. CC-managed files are upstream-owned — edits come through /cc-upgrade, not direct modification. Put project-specific content in briefing files or phase files instead.\"}"
-else
-  echo '{"decision":"allow"}'
 fi
+exit 0

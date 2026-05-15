@@ -47,4 +47,4 @@ if ! echo "$NOTES" | grep -qiE '(## Surface|files:|dirs:)'; then
   exit 0
 fi
 
-echo '{"decision":"allow"}'
+exit 0

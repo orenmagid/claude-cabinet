@@ -285,13 +285,42 @@
     let findings = [];
     const verdicts = {};  // { findingId: { verdict, feedback } }
     const memberNotes = {};  // { member: { comment, question } }
+    const feedbackDebounce = {}; // { findingId: timeoutId }
+
+    function dedupById(items) {
+      const seen = new Set();
+      const out = [];
+      for (const f of items) {
+        if (!f || !f.id || seen.has(f.id)) continue;
+        seen.add(f.id);
+        out.push(f);
+      }
+      return out;
+    }
+
+    // POST a verdict write-through to the server (silent on failure
+    // — write-through is best-effort; submit remains the source of truth)
+    function persistVerdict(id) {
+      const v = verdicts[id] || { verdict: '', feedback: '' };
+      fetch('/api/verdict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, verdict: v.verdict, feedback: v.feedback }),
+      }).catch(() => {});
+    }
 
     // ── Public API for Claude (javascript_tool) ──
     window.loadFindings = function(data) {
-      findings = Array.isArray(data) ? data : [];
-      // Pre-populate from recommendations
+      findings = dedupById(Array.isArray(data) ? data : []);
+      // Hydrate from server-persisted drafts first; recommendations only
+      // fill in when there's no prior draft.
       findings.forEach(f => {
-        if (f.recommendation && !verdicts[f.id]) {
+        if (f.draft && f.draft.verdict !== undefined) {
+          verdicts[f.id] = {
+            verdict: f.draft.verdict || '',
+            feedback: f.draft.feedback || '',
+          };
+        } else if (f.recommendation && !verdicts[f.id]) {
           verdicts[f.id] = { verdict: f.recommendation, feedback: '' };
         }
       });
@@ -476,6 +505,7 @@
         const v = e.target.dataset.v;
         if (!verdicts[id]) verdicts[id] = { verdict: '', feedback: '' };
         verdicts[id].verdict = v;
+        persistVerdict(id);
         render();
       }
       // Bulk buttons
@@ -485,6 +515,7 @@
         findings.filter(f => f['cabinet-member'] === member).forEach(f => {
           if (!verdicts[f.id]) verdicts[f.id] = { verdict: '', feedback: '' };
           verdicts[f.id].verdict = v;
+          persistVerdict(f.id);
         });
         render();
       }
@@ -504,6 +535,9 @@
         const id = e.target.dataset.id;
         if (!verdicts[id]) verdicts[id] = { verdict: '', feedback: '' };
         verdicts[id].feedback = e.target.value;
+        // Debounce write-through so we don't POST on every keystroke
+        clearTimeout(feedbackDebounce[id]);
+        feedbackDebounce[id] = setTimeout(() => persistVerdict(id), 400);
       }
       if (e.target.classList.contains('member-input')) {
         const p = e.target.dataset.member;

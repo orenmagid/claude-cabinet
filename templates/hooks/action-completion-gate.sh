@@ -14,7 +14,6 @@ INPUT="$CLAUDE_TOOL_INPUT"
 FID=$(echo "$INPUT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('fid',''))" 2>/dev/null)
 
 if [ -z "$FID" ]; then
-  echo '{"decision":"allow"}'
   exit 0
 fi
 
@@ -43,4 +42,4 @@ if [ "$AC_VERIFIED" != "True" ]; then
   exit 0
 fi
 
-echo '{"decision":"allow"}'
+exit 0
