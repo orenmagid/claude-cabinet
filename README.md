@@ -131,6 +131,10 @@ hooks — things that keep going wrong become things that can't go wrong.
 - **`/cc-upgrade`** — when Claude Cabinet publishes updates, this skill
   runs the installer for the mechanical parts and walks you through
   what changed conversationally. Intelligence is the merge strategy.
+- **`/cc-feedback`** — file friction with CC itself mid-session
+  without waiting for debrief. When a skill, phase, or convention
+  causes pain, this captures the detail and queues it for upstream
+  delivery to the Claude Cabinet repo.
 
 ### Verify (opt-in, off by default)
 
@@ -180,15 +184,29 @@ that override default behavior for any skill. Write content in a phase
 file to customize it, write `skip: true` to disable it, or leave it
 absent to use the default. No config files, no YAML, no DSL.
 
+## Adding Modules to an Existing Install
+
+Some modules (like `verify` and `memory`) are opt-in. To add one
+without touching anything else in your install:
+
+```
+npx create-claude-cabinet --modules verify --yes
+```
+
+The `--modules` flag **merges** with your existing install — it adds
+the listed modules to what's already there, it doesn't replace your
+module set. Safe to run on a mature project without losing
+customization. You can pass multiple modules: `--modules verify,memory`.
+
 ## CLI Options
 
 ```
-npx create-claude-cabinet                       # Interactive walkthrough
-npx create-claude-cabinet my-project            # Install in ./my-project/
-npx create-claude-cabinet --yes                 # Accept all defaults
-npx create-claude-cabinet --yes --no-db         # All defaults, skip database
-npx create-claude-cabinet --dry-run             # Preview without writing files
-npx create-claude-cabinet --modules verify --yes  # Add an opt-in module to an existing install
+npx create-claude-cabinet                         # Interactive walkthrough
+npx create-claude-cabinet my-project              # Install in ./my-project/
+npx create-claude-cabinet --yes                   # Accept all defaults
+npx create-claude-cabinet --yes --no-db           # All defaults, skip database
+npx create-claude-cabinet --dry-run               # Preview without writing files
+npx create-claude-cabinet --modules verify --yes  # Add an opt-in module (merges, doesn't replace)
 ```
 
 ## What Gets Installed

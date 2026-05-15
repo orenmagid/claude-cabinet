@@ -79,10 +79,26 @@ After the audit runs, use `/triage-audit` to review findings. You
 decide what to fix, defer, or reject. Approved findings become work
 items you can plan and execute.
 
+**Reload-safe.** Triage decisions are written to disk as you make them
+— if you close the tab, restart the server, or get interrupted, your
+in-progress verdicts are still there when you come back. Submit
+remains the moment the decisions get applied (actions created,
+auto-fixes attempted, suppressions recorded).
+
 **How often?** There's no rule. Run one when you've made significant
 changes, when you're about to ship something, or when you just want
 a health check. Some people audit weekly. Some audit before every
 release. Find what works for you.
+
+### Something's wrong with Claude Cabinet itself
+
+**Use `/cc-feedback`.** If a CC skill, phase, or convention causes
+friction mid-session, file it without waiting for debrief. Tell Claude
+what hurt — confusing instructions, a hook that fires wrong, a phase
+that's missing context — and it gets queued for upstream delivery to
+the Claude Cabinet repo. Debrief's upstream-feedback phase also
+captures these automatically, but `/cc-feedback` is the escape hatch
+when the friction is fresh and you don't want to lose the detail.
 
 ### You want to verify a feature still works
 
