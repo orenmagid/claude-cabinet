@@ -3,7 +3,10 @@
 ## What's Built
 
 - CLI installer with interactive and flag-based module selection
-- 9 modules: session-loop, hooks, work-tracking, planning, compliance, audit, lifecycle, validate, memory
+- 10 modules: session-loop, hooks, work-tracking, planning, compliance, audit, lifecycle, validate, memory, verify
+- Verify module (opt-in, off by default): Cucumber + Playwright walkthrough harness with human-in-the-loop P/I/S/N verdict pauses; ships `/verify` skeleton skill (subcommands: bare run, `learn`, `update`, `backfill`) + `cabinet-verify` npm runtime at `~/.claude-cabinet/verify/<version>/` + opt-in phase hooks into `/plan`, `/execute`, `/debrief`, `/orient`
+- Hook output schema: all PreToolUse hooks return JSON only when blocking; non-block path is bare `exit 0` (emitting `{"decision":"allow"}` violates Claude Code's schema and produced "Invalid input" warnings on every tool call — fixed in v0.25.4)
+- Triage UI persistence: per-decision write-through to `.claude/triage-draft.json` via `POST /api/verdict`; `GET /api/findings` merges drafts so page reload re-hydrates in-progress state; findings dedup'd by id on load so the submit gate compares matching unique counts (v0.25.4)
 - 3 install modes: Everything, Lean (`--lean`), Custom (interactive per-module)
 - Template copying with hash-based conflict detection and manifest tracking
 - Existing installs: add-only (no overwrite prompts), updates via `/cc-upgrade`

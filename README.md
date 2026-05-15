@@ -132,6 +132,28 @@ hooks — things that keep going wrong become things that can't go wrong.
   runs the installer for the mechanical parts and walks you through
   what changed conversationally. Intelligence is the merge strategy.
 
+### Verify (opt-in, off by default)
+
+Walkthrough verification harness — Cucumber `.feature` files describing
+user journeys, Playwright running them, and human-in-the-loop verdict
+pauses (Pass / Issue / Skip / Needs-info) at checks that need subjective
+judgment. Replaces flat AC checklists with re-runnable scenarios you can
+read months later.
+
+- **`/verify`** — run the suite
+- **`/verify learn`** — bootstrap from a cold start. Claude scans
+  routes, memory, git, and the live UI; proposes scenarios; calibrates
+  with you; then generates `.feature` files and step stubs
+- **`/verify update "I changed X"`** — keep scenarios in sync as the
+  product evolves
+- **`/verify backfill <fid>`** — attach a Verify Plan to a pending
+  action's notes
+
+Enable with `--modules verify` (existing installs merge, nothing else
+disturbed). Runtime lives at `~/.claude-cabinet/verify/<version>/` and
+ships an opinionated `cabinet-verify` npm package built from de[sic]ify's
+e2e harness.
+
 ## Your Workflow
 
 The rhythm of each session:
@@ -161,11 +183,12 @@ absent to use the default. No config files, no YAML, no DSL.
 ## CLI Options
 
 ```
-npx create-claude-cabinet                 # Interactive walkthrough
-npx create-claude-cabinet my-project      # Install in ./my-project/
-npx create-claude-cabinet --yes           # Accept all defaults
-npx create-claude-cabinet --yes --no-db   # All defaults, skip database
-npx create-claude-cabinet --dry-run       # Preview without writing files
+npx create-claude-cabinet                       # Interactive walkthrough
+npx create-claude-cabinet my-project            # Install in ./my-project/
+npx create-claude-cabinet --yes                 # Accept all defaults
+npx create-claude-cabinet --yes --no-db         # All defaults, skip database
+npx create-claude-cabinet --dry-run             # Preview without writing files
+npx create-claude-cabinet --modules verify --yes  # Add an opt-in module to an existing install
 ```
 
 ## What Gets Installed

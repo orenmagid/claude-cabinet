@@ -84,6 +84,27 @@ changes, when you're about to ship something, or when you just want
 a health check. Some people audit weekly. Some audit before every
 release. Find what works for you.
 
+### You want to verify a feature still works
+
+**Use `/verify`** (opt-in module — enable with
+`npx create-claude-cabinet --modules verify --yes`). Instead of flat
+acceptance-criteria checklists, this builds re-runnable user-journey
+scenarios in Cucumber `.feature` files — human-readable Gherkin you can
+re-read months later — and runs them with Playwright. At any check
+needing subjective judgment, the suite pauses and asks you for a
+verdict: **P**ass / **I**ssue / **S**kip / **N**eeds-info. The
+engineering loop and the product loop merge into one pass.
+
+Bootstrap from a cold start with `/verify learn` — Claude scans your
+routes, memory, git history, and existing UI, proposes scenarios, asks
+calibration questions, then writes the feature files and step stubs.
+Once it exists, `/verify` (no args) runs the suite, and
+`/verify update "I changed X"` keeps scenarios in sync as the product
+evolves.
+
+Good fit when you've shipped a feature and want a record of "what
+should still work" that survives the next refactor.
+
 ### You want to see your tasks
 
 **Use `/work-tracker`.** This opens a visual interface showing your
