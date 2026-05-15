@@ -4,9 +4,10 @@ description: |
   Walkthrough verification harness. Cucumber + Playwright scenarios with
   human-in-the-loop verdict pauses (P/I/S/N) for subjective checks.
   Subcommands: bare (run the suite), 'learn' (bootstrap from cold start),
-  'update <change>' (sync feature files to a code change). Use when:
-  "verify", "/verify", "/verify learn", "/verify update", "run walkthrough",
-  "verify scenarios", after a multi-PR umbrella ships.
+  'update <change>' (sync feature files to a code change), 'backfill <fid>'
+  (add a Verify Plan section to a pending action's notes). Use when:
+  "verify", "/verify", "/verify learn", "/verify update", "/verify backfill",
+  "run walkthrough", "verify scenarios", after a multi-PR umbrella ships.
 related:
   - type: file
     path: .claude/skills/verify/phases/discover.md
@@ -27,9 +28,12 @@ related:
     path: .claude/skills/verify/phases/scenario-template.md
     role: "Gherkin scenario template (cost+role tags, NN.NN checkIds)"
   - type: file
+    path: .claude/skills/verify/phases/backfill.md
+    role: "How to draft a ## Verify Plan section for a pending action"
+  - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
-argument-hint: "subcommand — 'learn', 'update <change>', or empty to run"
+argument-hint: "subcommand — 'learn', 'update <change>', 'backfill <fid>', or empty to run"
 user-invocable: true
 standing-mandate: []
 ---
@@ -47,6 +51,13 @@ If `$ARGUMENTS` is provided:
   extending an existing scenario set.
 - **'update <change-description>'**: Sync feature files to a code change.
   The change can be a pib-db action fid, a diff snippet, or free-text.
+- **'backfill <fid>'**: Add a `## Verify Plan` section to a pending action's
+  notes. For actions that were planned before the verify module existed,
+  or planned without Verify Plan questions surfaced. Reads the existing
+  notes, interviews the user one question at a time about UI surface and
+  feature-file edits, drafts the section, and appends via
+  `pib_update_action`. Does NOT modify feature files — that's `/execute`'s
+  job at action ship time.
 
 ## Purpose
 
@@ -175,6 +186,30 @@ may want a new scenario, not an edit to an existing one).
 The proposed edits are presented inline. User approves, the skill
 writes them.
 
+### Mode D: `/verify backfill <fid>` — add Verify Plan to pending action
+
+Read `phases/backfill.md` for the full flow. Brief overview:
+
+1. **Load the action.** Call `pib_get_action <fid>`. Read the
+   action's `text` and `notes` (especially the `## Surface Area`
+   section). Confirm the action is pending (`completed = 0`) — if
+   already shipped, redirect the user to `/verify update <fid>`.
+2. **Read existing feature files.** `ls e2e/features/*.feature` so
+   the interview can reference real scenarios and checkIds.
+3. **Interview, one question at a time.** Per CLAUDE.md global
+   convention. Walk the user through: which features need edits,
+   what verb (ADD/MODIFY/REMOVE/NEW), what anchor or scenario name.
+4. **Draft the section.** Format matches `verify-plan.md`'s output
+   spec (one `- features/<file>.feature:` line per entry).
+5. **Show the diff.** Display the action's current notes alongside
+   the proposed appended section.
+6. **Confirm + write.** On approval, call `pib_update_action` with
+   the augmented notes. Without approval, exit without changes.
+
+This mode does NOT modify feature files. That's `/execute`'s job
+once the action runs. Backfill only adds the planning artifact so
+`/execute`'s `verify-emit` phase has something to read.
+
 ## Phase Summary
 
 | Phase | Absent = | What it customizes |
@@ -185,6 +220,7 @@ writes them.
 | `generate.md` | Default: write .feature + step stubs from calibrated draft | Generation rules (collision handling, naming) |
 | `update.md` | Default: action fid / diff / free-text dispatch | How change descriptions map to edits |
 | `scenario-template.md` | Default: Gherkin with cost+role tags, NN.NN checkIds | Project-specific scenario shape |
+| `backfill.md` | Default: interview-driven Verify Plan section drafting | Project-specific backfill questions |
 
 ## Principles
 

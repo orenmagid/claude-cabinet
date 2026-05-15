@@ -74,8 +74,9 @@ For each remaining match, emit one Attention Items entry:
 
 > **`<fid>`** — `<action text>`
 >   Pending plan touches UI but lacks a `## Verify Plan` section.
->   Suggest: `/plan <fid>` to backfill the section, or accept drift —
->   `/debrief` will flag this act on completion if it ships uncovered.
+>   Suggest: `/verify backfill <fid>` to draft the section interactively,
+>   or accept drift — `/debrief` will flag this act on completion if
+>   it ships uncovered.
 
 The entries go in the briefing's **Attention Items** section,
 alongside any items surfaced by deferred-check, health-checks, etc.
