@@ -493,7 +493,8 @@ Read `phases/report.md` for how to present the debrief summary.
 
 Phases are either **core** (maintain system state) or **presentation**
 (surface information for the user). For lightweight session closes,
-skip presentation phases. Core phases always run.
+skip presentation phases. **Core phases always run — Quick Mode is not
+a license to skip them.**
 
 - **Core phases** (always run): inventory, close-work,
   cabinet-consultations, audit-pattern-capture, auto-maintenance,
@@ -504,6 +505,26 @@ skip presentation phases. Core phases always run.
 
 A project that wants a quick debrief variant skips the report and
 outputs a minimal summary instead.
+
+### What Quick Mode does NOT skip
+
+**Cabinet-consultations (step 3) is core and MUST run — do NOT skip,
+do NOT paraphrase, do NOT defer.** This is where record-keeper (and
+any other debrief-mandated members) verifies documentation against
+reality. Skipping it is the single most common Quick Mode failure
+mode: the consultations *feel* like overhead because they spawn
+agents, but they are the only mechanism that catches doc drift,
+methodology gaps, and stale state. A debrief without
+cabinet-consultations leaves the next orient reading stale docs.
+
+**Audit-pattern-capture, methodology-capture, and upstream-feedback
+are instruction phases — they ship with CC and are always required**,
+in Quick Mode as much as in full debrief. Their per-session cost is
+near zero when nothing fires.
+
+If a session genuinely has no audit findings, no methodology work,
+and no CC friction, those phases self-skip in seconds. That is not
+the same as Claude choosing to skip them.
 
 ## Extending and Calibration
 
