@@ -43,7 +43,7 @@
 - Memory maintenance: consolidate (every session), compact + discover_connections + backup (weekly)
 - Knowledge graph: traverse, link, contradiction detection, auto-relate on store
 - Historian memory health measurement: growth, connectivity, contradictions, retrieval quality
-- Dogfooded: installed on itself (full install, all 9 modules)
+- Dogfooded: installed on itself (full install, all 10 modules)
 - Split briefing files for dogfood install: identity, architecture, jurisdictions, cabinet, work-tracking
 - Skill index (`_index.json`): generated at install time, caches metadata for all 50 skills
 - Plugin skill indexing: `generateSkillIndex()` reads `.claude-plugin/plugin.json` and indexes plugin skills with `type: "plugin"` and `source` field
