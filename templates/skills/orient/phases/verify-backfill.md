@@ -83,8 +83,9 @@ alongside any items surfaced by deferred-check, health-checks, etc.
 
 ## What this phase does NOT do
 
-- It does not modify action notes. The operator runs `/plan <fid>`
-  to backfill, or chooses to accept the drift.
+- It does not modify action notes. The operator runs
+  `/verify backfill <fid>` to backfill, or chooses to accept the
+  drift.
 - It does not file new actions or projects.
 - It does not block orient. Even with 5 backfill candidates, orient
   completes; the Attention Items accumulate.
