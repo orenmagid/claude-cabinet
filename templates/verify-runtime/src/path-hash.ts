@@ -146,6 +146,18 @@ export function computePathHash(scenarioFile: string, checkId: string): string {
     throw new Error(`path-hash: ${scenarioFile} has no Feature`);
   }
 
+  // Normalize the input checkId to its leading non-whitespace token. The
+  // frozen spec (CONVENTIONS.md §CheckId) defines checkId as a single
+  // NN.NN token, but real callers sometimes pass a multi-token form like
+  // "2.04 history-list-feels-readable" (e.g., the `ask the human` step
+  // shape that includes a kebab slug before the colon-delimited
+  // description). Normalizing here lets either form match without
+  // requiring downstream callers to enforce the convention.
+  const normalizedCheckId = leadingToken(checkId);
+  if (!normalizedCheckId) {
+    throw new Error(`path-hash: empty checkId passed for ${scenarioFile}`);
+  }
+
   // Find ALL matching scenarios (to detect cross-scenario duplicate
   // checkIds, which the spec says is undefined behavior — we treat as
   // an error rather than silently first-match).
@@ -168,7 +180,7 @@ export function computePathHash(scenarioFile: string, checkId: string): string {
     let targetIndex = -1;
     for (let i = 0; i < scenario.steps.length; i++) {
       const extracted = extractCheckIdFromStep(scenario.steps[i].text);
-      if (extracted === checkId) {
+      if (extracted === normalizedCheckId) {
         targetIndex = i;
         break;
       }
@@ -179,12 +191,15 @@ export function computePathHash(scenarioFile: string, checkId: string): string {
   }
 
   if (matches.length === 0) {
-    throw new Error(`path-hash: no step matching checkId "${checkId}" found in ${scenarioFile}`);
+    throw new Error(
+      `path-hash: no step matching checkId "${normalizedCheckId}" found in ${scenarioFile}` +
+        (normalizedCheckId !== checkId ? ` (input checkId was "${checkId}")` : ''),
+    );
   }
   if (matches.length > 1) {
     const names = matches.map((m) => `"${m.scenarioName}"`).join(', ');
     throw new Error(
-      `path-hash: checkId "${checkId}" appears in multiple scenarios in ${scenarioFile} ` +
+      `path-hash: checkId "${normalizedCheckId}" appears in multiple scenarios in ${scenarioFile} ` +
         `(${names}). CheckIds must be unique across all scenarios in a feature file — ` +
         `rename one of them.`,
     );

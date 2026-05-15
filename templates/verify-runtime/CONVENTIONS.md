@@ -286,6 +286,16 @@ The parser tries the quoted form first, then the bare form. Step text
 fed into pathHash is the FULL step including the quoted argument — see
 pathHash Spec.
 
+**Multi-token tolerance at the call boundary.** Callers (step
+definitions) may pass either the bare `NN.NN` token OR a multi-token
+form like `"2.04 history-list-feels-readable"` (e.g., the `ask the
+human` step shape that includes a kebab slug before the colon-delimited
+description). `computePathHash` normalizes the input to its leading
+non-whitespace token before matching, so both forms resolve to the same
+scenario step. The recorded ledger row's `checkId` field preserves
+whatever the caller passed — display-side affordance — but the
+content-aware invariant only depends on the leading token.
+
 Numbering schemes are project-driven (scenario-major.step-minor is the
 de[sic]ify convention; other projects may use 3-part or alphabetic
 schemes). The runtime only requires that the leading token of the
