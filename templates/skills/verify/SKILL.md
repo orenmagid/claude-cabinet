@@ -128,8 +128,15 @@ scenario change.
 
 1. Check if `e2e/` exists in the project root. If not, recommend
    `/verify learn` and exit.
-2. Run `npm run verify` from the project's `e2e/` dir.
-3. Surface the output. If failures or I-verdicts landed, suggest
+2. **Test-isolation nudge.** If `e2e/` exists but `e2e/start-test-stack.sh`
+   does not — and the project's dev stack is suspected to write to a
+   real DB (signal: `package.json` references a single `data/`,
+   `db/`, or similar shared persistence path) — surface a one-line
+   note before running: *"No isolated test stack detected. Scenarios
+   will run against your dev stack. Run `/verify learn` to generate
+   an isolation scaffold if your dev DB matters."* Do not block.
+3. Run `npm run verify` from the project's `e2e/` dir.
+4. Surface the output. If failures or I-verdicts landed, suggest
    `npm run report:last` to triage.
 
 This mode is intentionally thin — the harness is the value, not
@@ -158,8 +165,12 @@ The "learn" flow runs four phases:
    question at a time. Examples: "I see admin routes but only one admin
    user — real persona or fold into main?", "Should the fresh-user
    flow be its own scenario or part of admin?", "What's the dev stack
-   URL for preflight?". Do NOT batch questions — one at a time per
-   project convention.
+   URL for preflight?". Calibrate also includes a **test-isolation
+   probe** — if the project's dev stack writes to a real DB, the
+   skill captures the DB path, dev-server proxy config, and test
+   stack ports so install.sh can emit an `e2e/start-test-stack.sh`
+   scaffold. Do NOT batch questions — one at a time per project
+   convention.
 
 4. **Generate** (read `phases/generate.md`): write the `.feature`
    files using the template in `phases/scenario-template.md` plus

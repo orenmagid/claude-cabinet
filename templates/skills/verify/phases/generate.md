@@ -40,6 +40,24 @@ A hash-routing project that gets `/forecast` features fails at every
 navigate step — Flow's cold-start hit this. The discover phase probes
 for hash routing specifically to prevent it.
 
+## Test-isolation passthrough
+
+If calibrate phase recorded `testIsolation.enabled = true`, set
+these env vars before invoking `install.sh`:
+
+```
+CABINET_VERIFY_TEST_STACK=1
+CABINET_VERIFY_TEST_DB_FILE=<calibrate 2b answer>
+CABINET_VERIFY_TEST_PROXY_CONFIG=<calibrate 2c answer or empty>
+CABINET_VERIFY_TEST_API_PORT=<calibrate 2d apiPort>
+CABINET_VERIFY_TEST_DEV_PORT=<calibrate 2d devPort>
+```
+
+install.sh emits `e2e/start-test-stack.sh` (template with a TODO
+marker for the API boot command) and `e2e/README.md` (operator
+instructions for the isolated stack). The scaffold is skipped
+entirely when `testIsolation.enabled = false`.
+
 ## Pre-write checks
 
 Before writing:
