@@ -4,7 +4,9 @@
 
 - CLI installer with interactive and flag-based module selection
 - 10 modules: session-loop, hooks, work-tracking, planning, compliance, audit, lifecycle, validate, memory, verify
-- Verify module (opt-in, off by default): Cucumber + Playwright walkthrough harness with human-in-the-loop P/I/S/N verdict pauses; ships `/verify` skeleton skill (subcommands: bare run, `learn`, `update`, `backfill`) + `cabinet-verify` npm runtime at `~/.claude-cabinet/verify/<version>/` + opt-in phase hooks into `/plan`, `/execute`, `/debrief`, `/orient`
+- Verify module (opt-in, off by default): Cucumber + Playwright walkthrough harness with human-in-the-loop P/I/S/N verdict pauses; ships `/verify` skeleton skill (subcommands: bare run, `learn`, `update`, `backfill`) + `cabinet-verify` npm runtime at `~/.claude-cabinet/verify/<version>/` + opt-in phase hooks into `/plan`, `/execute`, `/debrief`, `/orient` (orient `verify-backfill` phase surfaces pending UI actions missing a Verify Plan)
+- Verify runtime hardening: `cabinet-verify` tolerates multi-token `checkId` args (quoted Gherkin args with spaces) and the tarball install path is robust to partial/corrupt prior installs (re-pack on missing/zero-byte tgz)
+- Installer merge-on-add: `--modules X` adds module X to an existing install instead of replacing the manifest; preserves prior module selections (fixes the v0.25.x regression where `--modules verify` would silently disable other modules)
 - Hook output schema: all PreToolUse hooks return JSON only when blocking; non-block path is bare `exit 0` (emitting `{"decision":"allow"}` violates Claude Code's schema and produced "Invalid input" warnings on every tool call — fixed in v0.25.4)
 - Triage UI persistence: per-decision write-through to `.claude/triage-draft.json` via `POST /api/verdict`; `GET /api/findings` merges drafts so page reload re-hydrates in-progress state; findings dedup'd by id on load so the submit gate compares matching unique counts (v0.25.4)
 - 3 install modes: Everything, Lean (`--lean`), Custom (interactive per-module)

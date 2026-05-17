@@ -114,9 +114,11 @@ engineering loop and the product loop merge into one pass.
 Bootstrap from a cold start with `/verify learn` — Claude scans your
 routes, memory, git history, and existing UI, proposes scenarios, asks
 calibration questions, then writes the feature files and step stubs.
-Once it exists, `/verify` (no args) runs the suite, and
+Once it exists, `/verify` (no args) runs the suite,
 `/verify update "I changed X"` keeps scenarios in sync as the product
-evolves.
+evolves, and `/verify backfill <fid>` attaches a Verify Plan to a
+pending action that was planned before the verify module existed (so
+`/execute` has feature-file edits to emit when the action ships).
 
 Good fit when you've shipped a feature and want a record of "what
 should still work" that survives the next refactor.
