@@ -64,3 +64,17 @@ export {
 } from './preflight.js';
 
 export { CabinetVerifyWorld, type IWorldOptions } from './world.js';
+
+// Side-effect import: registers the five baseline Cucumber steps
+// (Given dev-stack-up, Given signed-in-as-role, When navigate, Then
+// check, Then ask-the-human). Projects don't redeclare these — they
+// register per-checkId assertions and an optional sign-in handler via
+// the API re-exported below.
+import './baseline-steps.js';
+
+export {
+  setSignInHandler,
+  registerCheck,
+  type SignInHandler,
+  type CheckHandler,
+} from './baseline-steps.js';

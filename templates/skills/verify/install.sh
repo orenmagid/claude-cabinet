@@ -262,32 +262,37 @@ TS
 plan_write "e2e/support/world.ts" "$WORLD_TS"
 
 AUTH_TS=$(cat <<'TS'
-// Project-side auth helper. The cabinet-verify base class records the
-// role tag (@as-user / @as-admin / @as-fresh) into this.role; this
-// helper is where you implement the sign-in for each role using your
-// project's auth flow.
-import { CabinetVerifyWorld } from 'cabinet-verify';
+// Project-side sign-in handler. The cabinet-verify baseline step
+// "I am signed in as the {role} role" handles the no-auth case
+// itself: when CABINET_VERIFY_<ROLE>_EMAIL and _PASSWORD are both
+// blank, the harness navigates to "/" and continues. This file is
+// only consulted when credentials ARE set, i.e. when you actually
+// have an auth flow to drive. Wire it up by calling
+// setSignInHandler(signInAs) at module load (the call at the bottom
+// is the registration).
+import { setSignInHandler, type CabinetVerifyWorld } from 'cabinet-verify';
 
 export async function signInAs(world: CabinetVerifyWorld, role: string): Promise<void> {
   const emailEnv = `CABINET_VERIFY_${role.toUpperCase()}_EMAIL`;
   const passwordEnv = `CABINET_VERIFY_${role.toUpperCase()}_PASSWORD`;
-  const email = process.env[emailEnv];
-  const password = process.env[passwordEnv];
-  if (!email || !password) {
-    throw new Error(`signInAs: ${emailEnv} or ${passwordEnv} missing in .env.local`);
-  }
+  const email = process.env[emailEnv]!;
+  const password = process.env[passwordEnv]!;
 
-  // TODO: replace this stub with your project's sign-in flow.
+  // TODO: replace this stub with the project sign-in flow.
   // Typical shapes:
   //   await world.page.goto(world.baseUrl + '/signin');
   //   await world.page.getByLabel('Email').fill(email);
   //   await world.page.getByLabel('Password').fill(password);
   //   await world.page.getByRole('button', { name: 'Sign in' }).click();
   //   await world.page.waitForURL(world.baseUrl + '/app');
+  void email;
+  void password;
   throw new Error(
-    `signInAs: not implemented. Fill in support/auth.ts with your project's sign-in flow.`,
+    `signInAs: not implemented. Fill in support/auth.ts with the project sign-in flow.`,
   );
 }
+
+setSignInHandler(signInAs);
 TS
 )
 plan_write "e2e/support/auth.ts" "$AUTH_TS"

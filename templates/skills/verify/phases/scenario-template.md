@@ -86,32 +86,38 @@ give the operator visual landmarks during the run.
 
 ## Generated step-definition stub shape
 
+The five baseline step handlers (`Given the local dev stack is up`,
+`Given I am signed in as the "{role}" role`, `When I navigate to {string}`,
+`Then check {string} {}`, `Then ask the human {string}`) are registered
+by `cabinet-verify` itself when the World module is imported. Per-
+scenario files contain **only** the scenario-specific assertion bodies,
+registered by checkId via `registerCheck`.
+
 For each scenario, generate `e2e/steps/scenario-{N}.ts` with:
 
 ```ts
-import { Given, When, Then } from '@cucumber/cucumber';
-import { autoCheck, askHumanVerdict } from 'cabinet-verify';
-import { CabinetVerifyWorld } from 'cabinet-verify';
+import { registerCheck } from 'cabinet-verify';
+import type { CabinetVerifyWorld } from 'cabinet-verify';
 
-When('I navigate to {string}', async function (this: CabinetVerifyWorld, route: string) {
-  await this.page.goto(this.baseUrl + route);
+// One registerCheck call per `check "N.NN slug"` step in the feature
+// file. The function body is the real assertion — fill in as you
+// verdict the scenario for the first time.
+
+registerCheck('N.01 slug-name', async (world: CabinetVerifyWorld) => {
+  // TODO: replace with the real assertion against world.page.
+  throw new Error('not implemented');
 });
 
-Then('check {string} {}', async function (this: CabinetVerifyWorld, idAndSlug: string, _rest: string) {
-  await autoCheck(this, idAndSlug, async () => {
-    // TODO: replace with the real assertion. The step text after the
-    // quoted arg ('the workspace heading is visible' etc) is in _rest.
-    throw new Error('not implemented');
-  });
+registerCheck('N.02 slug-name', async (world: CabinetVerifyWorld) => {
+  throw new Error('not implemented');
 });
 
-Then('ask the human {string}', async function (this: CabinetVerifyWorld, idAndDescription: string) {
-  const space = idAndDescription.indexOf(' ');
-  const checkId = space >= 0 ? idAndDescription.slice(0, space) : idAndDescription;
-  const description = space >= 0 ? idAndDescription.slice(space + 1) : '';
-  await askHumanVerdict(this.page, checkId, description);
-});
+// …one per check step in the scenario.
 ```
+
+`ask the human "..."` steps need no per-id registration — the baseline
+handler routes straight to `askHumanVerdict`. They only show up in the
+`.feature` file.
 
 The stubs throw on the auto-check assertion bodies. The user fills
 them in as they verdict the scenario for the first time — typical
