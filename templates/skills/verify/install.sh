@@ -131,6 +131,22 @@ plan_mkdir "e2e/reports"
 plan_mkdir "e2e/screenshots"
 
 # package.json — per CONVENTIONS.md §npm Scripts (frozen contract).
+#
+# Node-version note: `--env-file-if-exists` requires Node 20.12+. We
+# invoke `node` directly (not `NODE_OPTIONS`) because Node 22+ rejects
+# `NODE_OPTIONS='--env-file=...'` ("--env-file= is not allowed in
+# NODE_OPTIONS"). The CLI form is the only path that works across
+# Node 20.12 / 21 / 22+.
+#
+# Cucumber bin path: cucumber-js v11 ships at
+# node_modules/@cucumber/cucumber/bin/cucumber.js. The `cucumber-js`
+# shell wrapper does NOT pass through CLI flags like --import in a
+# way Node honors after the shebang resolves, so we invoke the .js
+# entry directly.
+#
+PREFLIGHT_CMD="node --env-file-if-exists=.env.local node_modules/cabinet-verify/dist/src/cli/preflight.js"
+CUCUMBER_CMD="node --env-file-if-exists=.env.local --import tsx/esm node_modules/@cucumber/cucumber/bin/cucumber.js --import 'steps/**/*.ts' --import 'support/**/*.ts'"
+
 PACKAGE_JSON=$(cat <<JSON
 {
   "name": "$(basename "$PWD")-e2e",
@@ -138,13 +154,16 @@ PACKAGE_JSON=$(cat <<JSON
   "private": true,
   "type": "module",
   "description": "Walkthrough verification harness (cabinet-verify).",
+  "engines": {
+    "node": ">=20.12"
+  },
   "scripts": {
-    "preflight": "cabinet-verify-preflight",
-    "verify": "npm run preflight && NODE_OPTIONS='--import tsx/esm' cucumber-js --tags '@free and not @manual'",
-    "verify:cheap": "npm run preflight && NODE_OPTIONS='--import tsx/esm' cucumber-js --tags '(@free or @api-small) and not @manual'",
-    "verify:full": "npm run preflight && NODE_OPTIONS='--import tsx/esm' cucumber-js --tags 'not @manual'",
-    "verify:manual": "npm run preflight && NODE_OPTIONS='--import tsx/esm' cucumber-js --tags '@manual'",
-    "verify:scenario": "npm run preflight && NODE_OPTIONS='--import tsx/esm' cucumber-js",
+    "preflight": "${PREFLIGHT_CMD}",
+    "verify": "npm run preflight && ${CUCUMBER_CMD} --tags '@free and not @manual'",
+    "verify:cheap": "npm run preflight && ${CUCUMBER_CMD} --tags '(@free or @api-small) and not @manual'",
+    "verify:full": "npm run preflight && ${CUCUMBER_CMD} --tags 'not @manual'",
+    "verify:manual": "npm run preflight && ${CUCUMBER_CMD} --tags '@manual'",
+    "verify:scenario": "npm run preflight && ${CUCUMBER_CMD}",
     "report:last": "cabinet-verify-report-last",
     "report:status": "cabinet-verify-report-status",
     "install:browsers": "playwright install chromium"
@@ -179,10 +198,14 @@ CUCUMBER_JS=$(cat <<'JS'
 // cabinet-verify scaffold. Reads scenarios from features/ and step
 // definitions from steps/ + support/. The cabinet-verify package
 // supplies the World base class and lifecycle hooks via support/world.ts.
+//
+// Note: cucumber-js v11 ignores the `import:` config key when
+// invoked via CLI. Step/support import paths are passed as
+// `--import 'steps/**/*.ts' --import 'support/**/*.ts'` in the npm
+// scripts in package.json — that is the source of truth, not this file.
 export default {
   default: {
     paths: ['features/**/*.feature'],
-    import: ['steps/**/*.ts', 'support/**/*.ts'],
     format: ['progress-bar'],
     formatOptions: { colorsEnabled: true },
   },
