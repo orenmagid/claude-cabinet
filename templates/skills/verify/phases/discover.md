@@ -82,6 +82,34 @@ and the user should narrow `/verify learn` to a specific surface
 (e.g., "learn admin flows only"). For v0.1.0, the skill doesn't
 support surface filtering — escalate to the user.
 
+## Routing shape (path vs hash)
+
+While scanning routes (subagent 1), determine whether the project uses
+**path routing** (`/forecast`, `/people`) or **hash routing**
+(`#forecast`, `#people`). Hash routing is common in projects with no
+backend server, single-bundle SPAs deployed on static hosts, or
+projects that started with React Router's `HashRouter` for legacy
+reasons.
+
+Signals that suggest hash routing:
+
+- `import { HashRouter } from 'react-router-dom'` in the app entry
+- `useHashTab`, `parseHash`, `window.location.hash` references in
+  routing-adjacent files
+- A route table where entries look like `{ hash: 'forecast', ... }`
+  instead of `{ path: '/forecast', ... }`
+- Any link element using `href="#foo"` for in-app navigation rather
+  than anchor links to page sections
+
+If hash routing is detected, emit a `routingShape: "hash"` field in
+the discovery report so the generate phase produces `#route` instead
+of `/route` in generated `.feature` files. Otherwise, default to
+`routingShape: "path"`.
+
+Without this probe, generated feature files use `When I navigate to
+"/forecast"` against a `#forecast` app and every scenario fails at
+step 1 — Flow's cold-start hit this exact mismatch.
+
 ## Persona signals
 
 While running subagent 1 (route scan), look for auth/admin patterns
@@ -106,6 +134,7 @@ interface DiscoveryReport {
   memoryHits: Array<{ topic: string; source: string; summary: string }>;
   crawlHits?: Array<{ url: string; title: string }>;
   personaSignals: Array<{ signal: string; suggestedPersona: string }>;
+  routingShape: "path" | "hash";
 }
 ```
 

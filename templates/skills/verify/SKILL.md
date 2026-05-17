@@ -31,6 +31,9 @@ related:
     path: .claude/skills/verify/phases/backfill.md
     role: "How to draft a ## Verify Plan section for a pending action"
   - type: file
+    path: .claude/skills/verify/phases/recipes.md
+    role: "Testability gotchas (dnd-kit drag, dynamic file inputs, hash routing) and their workarounds"
+  - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
 argument-hint: "subcommand — 'learn', 'update <change>', 'backfill <fid>', or empty to run"
@@ -221,14 +224,25 @@ once the action runs. Backfill only adds the planning artifact so
 | `update.md` | Default: action fid / diff / free-text dispatch | How change descriptions map to edits |
 | `scenario-template.md` | Default: Gherkin with cost+role tags, NN.NN checkIds | Project-specific scenario shape |
 | `backfill.md` | Default: interview-driven Verify Plan section drafting | Project-specific backfill questions |
+| `recipes.md` | Default: dnd-kit, dynamic file input, hash routing gotchas | Project-specific testability recipes |
 
 ## Principles
 
 - **One question at a time.** Calibrate phase NEVER batches questions
   (per CLAUDE.md global convention). Each answer shapes the next.
-- **≤5 scenarios on initial draft.** Force calibration before
-  expansion. Adding scenarios later is cheap; removing scenarios
-  the user didn't ask for is expensive (per process-therapist).
+- **≤5 scenarios on initial draft (cabinet-qa cap).** Force calibration
+  before expansion. Adding scenarios later is cheap; removing scenarios
+  the user did not ask for is expensive (per process-therapist). The
+  cap is load-bearing; do not loosen it without an audit-grade reason.
+- **Depth-first, not shallow-first.** A scenario that touches a
+  surface but verifies nothing is worse than no scenario at all —
+  it occupies a slot in the catalogue and creates a false sense of
+  coverage. The first lap through a scenario should produce real
+  assertions and human-verdict pauses for the parts that genuinely
+  need subjective judgment. If a step can not be exercised (a
+  testability gotcha — see `phases/recipes.md`), file a finding
+  against the consuming project and mark the step "skip until
+  testable" rather than emitting a no-op stub.
 - **cabinet-qa owns "what's worth a scenario".** /verify learn
   delegates that judgment via subagent; it doesn't re-derive it.
 - **The .feature file is the spec.** Anyone (user, future Claude,

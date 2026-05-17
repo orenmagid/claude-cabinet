@@ -119,6 +119,32 @@ registerCheck('N.02 slug-name', async (world: CabinetVerifyWorld) => {
 handler routes straight to `askHumanVerdict`. They only show up in the
 `.feature` file.
 
+### When an interaction is not driveable
+
+If a step cannot be exercised by Playwright (drag-and-drop via
+dnd-kit, transient file inputs, etc. — see `phases/recipes.md`),
+DO NOT emit a `// Smoke no-op` body. That creates a passing scenario
+that verifies nothing.
+
+Two acceptable shapes instead:
+
+1. **Skip until testable.** Throw with an explicit "skip" marker and
+   file a finding against the consuming project for the test seam.
+
+   ```ts
+   registerCheck('N.07 dnd-reorder-applied', async (world) => {
+     throw new Error('SKIP: dnd-kit drag is not driveable from Playwright — see recipes.md Recipe 1');
+   });
+   ```
+
+2. **API surrogate.** Bypass the UI for the action; verify the result
+   via the UI in the next step. This is the documented dnd-kit
+   workaround in `recipes.md`.
+
+In both cases, file the finding when you spot the gotcha — not later.
+The recipes document records the pattern so the same time sink does
+not recur on the next consumer.
+
 The stubs throw on the auto-check assertion bodies. The user fills
 them in as they verdict the scenario for the first time — typical
 workflow is "run it, see what fails, write the assertion, repeat".

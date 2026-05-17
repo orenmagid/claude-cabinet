@@ -27,6 +27,19 @@ For each scenario in the calibrated DraftReport:
 
 Number of files generated = `2 × DraftReport.scenarios.length`.
 
+## Routing shape
+
+The discovery report (`discover.md` "Routing shape" section) carries a
+`routingShape: "path" | "hash"` field. When rendering `When I navigate
+to "..."` lines:
+
+- `path` (default): emit `When I navigate to "/forecast"`
+- `hash`: emit `When I navigate to "#forecast"`
+
+A hash-routing project that gets `/forecast` features fails at every
+navigate step — Flow's cold-start hit this. The discover phase probes
+for hash routing specifically to prevent it.
+
 ## Pre-write checks
 
 Before writing:
