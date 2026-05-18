@@ -104,7 +104,7 @@
 
 ## What's Active
 
-- Published at v0.24.0 on npm as `create-claude-cabinet`
+- Published at v0.26.0 on npm as `create-claude-cabinet`
 - Debrief routing discipline: `record-lessons.md` is now an instruction phase shipping to all consumers — teaches a decision tree for routing session outputs (omega decisions/constraints, CLAUDE.md/briefing for load-bearing project facts, pib-db deferred triggers for conditional revisits, upstream-feedback for CC friction) and explicitly calls out the `feedback-project-*.md` anti-pattern (observed rot rate 4/5 within 7 days). Four instruction phases total: audit-pattern-capture, methodology-capture, record-lessons, upstream-feedback.
 - Orient feedback pipeline hardened: flush does skip-if-exists against feedback/ and feedback/resolved/, atomic outbox reset on clean pass; wrong-write scan excludes `feedback-project-*.md` and `scope: project-specific` files.
 - Four downstream consumers: Flow, article-rewriter, theater-cheater, CC dogfood
