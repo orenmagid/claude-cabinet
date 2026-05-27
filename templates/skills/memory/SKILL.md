@@ -1,200 +1,134 @@
 ---
 name: memory
 description: |
-  Browse, search, and manage semantic memory. Shows what omega remembers —
-  decisions, lessons, preferences, constraints. Supports browse, search,
-  remember, and forget. Use when: "what's in memory", "memory", "/memory",
-  "what do you remember", "show memories", "search memory", "forget",
-  "delete memory", "remember this".
+  Browse, search, validate, and manage the project's built-in memory
+  directory. Shows what's stored under
+  `~/.claude/projects/[project]/memory/` — decisions, lessons,
+  preferences, constraints, and migrated topic files. Use when:
+  "what's in memory", "memory", "/memory", "show memories", "search
+  memory", "find a memory about X", "validate memory". For writing
+  memory, use /cc-remember.
 user-invocable: true
 ---
 
-# /memory — Semantic Memory
+# /memory — Built-In Memory Browser
 
-## Purpose
+## Mental Model
 
-Give the user visibility into what omega remembers. Browse, search, store,
-and delete memories.
+CC uses Claude Code's built-in auto-memory at
+`~/.claude/projects/<slug>/memory/`. Each memory is one `.md` file
+(per-file curated style); `MEMORY.md` is the index that tells Claude
+what's there at session start.
 
-## Prerequisites
+**This skill is the reader.** Writing happens via `/cc-remember` or
+debrief's record-lessons phase. Both use
+`scripts/write-memory-file.mjs` to ensure MEMORY.md stays indexed.
 
-Check that omega is available:
-- `~/.claude-cabinet/omega-venv/bin/python3` exists
-- `scripts/cabinet-memory-adapter.py` exists
+## Mental Model
 
-If not available, tell the user:
-> Memory module is not set up. Run `npx create-claude-cabinet` to install it.
+The new storage is plain markdown you can read and edit. There is one
+folder per project. Read MEMORY.md to see what's there. Edit topic
+files or curated files directly when an entry needs revision.
 
-## Adapter Reference
-
-The adapter (`scripts/cabinet-memory-adapter.py`) provides project-scoped
-queries and a stable JSON interface. Session-level capture and recall are
-handled by omega's native hooks (configured globally). The adapter handles
-skill-invoked operations. All commands read JSON from stdin, output JSON
-to stdout, and exit 0 even on failure.
-
-```bash
-echo '<json>' | ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py <command>
-```
-
-| Command | Input | Output |
-|---------|-------|--------|
-| `store` | `{text, type, tags?, project?}` | `{ok, id}` — stored memory ID |
-| `query` | `{text, limit?, type?, project?, scope?}` | `{ok, results}` — semantic search with project scoping |
-| `delete` | `{id}` | `{ok, deleted}` — requires full node_id |
-| `list` | `{type?, project?, limit?}` | `{ok, memories, count}` — all memories with full IDs |
-
-Memory types: `decision`, `lesson_learned`, `user_preference`, `constraint`,
-`error_pattern`.
-
-## Commands
+## Mode of operation
 
 Parse the user's intent from their prompt:
 
 ### Browse (default — no arguments)
 
-Show the timeline and stats:
+Read `MEMORY.md` at the project's memory dir and present the index
+conversationally. List sections:
+- **Topic files** (migrated from omega, if present) — `decisions.md`,
+  `lessons.md`, `cross-{project}.md`, etc.
+- **Curated entries** (per-file) — one entry per file with a
+  descriptive title.
 
+For each, name the file and what it covers (from the index entry).
+Don't dump file contents unless asked.
+
+Resolve the memory dir via:
 ```bash
-~/.claude-cabinet/omega-venv/bin/omega timeline 2>&1
-~/.claude-cabinet/omega-venv/bin/omega stats 2>&1
+node -e "console.log(require('./lib/project-context').resolveMemoryDir())"
 ```
-
-Present both outputs conversationally. The timeline shows what's stored
-chronologically, stats shows the type distribution.
+Or use the platform default: `~/.claude/projects/<dashified-cwd>/memory/`.
 
 ### Search — user provides a topic
 
-```bash
-echo '{"text": "the user query", "limit": 10}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
-```
+Grep across the memory dir. Two passes:
 
-**Scope options** (pass `scope` in the JSON):
-- `"tiered"` (default) — project memories first, then cross-project to fill
-- `"project"` — only memories from this project
-- `"all"` — memories from all projects equally
+1. Title/description match (fastest):
+   ```bash
+   grep -i "<query>" ~/.claude/projects/<slug>/memory/MEMORY.md
+   ```
+2. Full-text match across all `.md` files:
+   ```bash
+   grep -i -l "<query>" ~/.claude/projects/<slug>/memory/*.md
+   ```
 
-The `project` field defaults to the current directory name. Results
-include a `tier` field ("project" or "cross-project") in tiered mode.
-
-Present results conversationally — highlight the most relevant matches,
-their types, and which project they came from when cross-project results
-appear.
-
-**Graph enrichment:** For the top 1-2 results, check for related memories
-via omega's graph traversal. This surfaces the knowledge network — not
-just what matched, but what's connected to what matched:
-
-```bash
-~/.claude-cabinet/omega-venv/bin/python3 -c "
-from omega import traverse
-result = traverse('THE_MEMORY_ID', max_hops=2)
-print(result)
-"
-```
-
-If traversal returns connected memories, present them as "Related:"
-under the main result. Edge types tell the story:
-- `related` — semantically similar
-- `evolution` — this understanding has developed over time
-- `contradicts` — conflicts with another memory (surface both sides)
-- `temporal_cluster` — captured in the same session
+Present the most-relevant matches (typically the title hits first).
+For each, read the file and quote the relevant section. If the query
+spans multiple matches, surface 3-5 and ask whether to dig deeper.
 
 ### Remember — user wants to store something
 
-```bash
-echo '{"text": "what to remember", "type": "preference"}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
+Redirect to `/cc-remember`. Don't write the file directly from this
+skill — `/cc-remember` is the canonical write path because it updates
+MEMORY.md's index. Direct writes bypass indexing and the memory
+becomes invisible to next session's `/orient`.
+
+```
+Use /cc-remember to capture this. For example:
+  /cc-remember --slug "decided_use_built_in" "We decided to ..."
 ```
 
-Pick the type based on what the user said:
-- `decision` — they made a choice and want it recorded (permanent)
-- `lesson` — they learned something (maps to `lesson_learned`, permanent)
-- `preference` — they want something done a certain way (maps to `user_preference`, permanent)
-- `constraint` — a limitation or prerequisite (permanent)
-- `error` — a failure pattern to avoid (maps to `error_pattern`, permanent)
+If the user pushes through ("just do it yourself"), call
+`scripts/write-memory-file.mjs` programmatically — that's the same
+write path /cc-remember uses.
 
-The adapter maps friendly names to omega's native types for correct TTL.
+### Validate — user asks for a health check
 
-Confirm what was stored. After storing, check for similar existing memories
-and link them if relevant:
-
+Run the structural validator:
 ```bash
-~/.claude-cabinet/omega-venv/bin/python3 -c "
-from omega import find_similar_memories
-result = find_similar_memories('THE_NEW_MEMORY_ID')
-print(result)
-"
+node scripts/validate-memory.mjs
 ```
 
-If similar memories exist, tell the user: "This connects to N existing
-memories about [topic]." Omega auto-relates on store, but surfacing it
-builds user confidence that the knowledge graph is working.
+Report the result. Pass: confirm "memory dir is healthy: <N> files,
+<X> indexed, MEMORY.md within caps." Fail: list each violation and
+suggest the fix (orphans → reference in MEMORY.md or delete; broken
+references → restore the file or remove from index).
 
-### Link — user wants to connect memories
+### Forget — user wants to remove a memory
 
-If the user says "link these" or "these are related":
-
+**Step 1:** Identify the file. Search by content or filename:
 ```bash
-~/.claude-cabinet/omega-venv/bin/python3 -c "
-from omega import SQLiteStore
-s = SQLiteStore()
-s.add_edge('MEM_ID_1', 'MEM_ID_2', edge_type='related', weight=1.0)
-print('Linked')
-"
+ls ~/.claude/projects/<slug>/memory/ | grep -i "<term>"
+grep -l "<content phrase>" ~/.claude/projects/<slug>/memory/*.md
 ```
 
-Edge types: `related`, `contradicts`, `supersedes`, `evolves`.
+**Step 2:** Show the user what matched. Confirm which file to delete.
 
-### Contradictions — user asks what conflicts
+**Step 3:** Delete the file and remove its index entry from MEMORY.md.
+The file is just markdown — `rm path/to/file.md` plus an Edit on
+MEMORY.md to strip the index line. Re-run `validate-memory.mjs`
+afterward to confirm no orphan references remain.
 
-```bash
-~/.claude-cabinet/omega-venv/bin/python3 -c "
-from omega import SQLiteStore
-s = SQLiteStore()
-edges = s.get_edges_by_type('contradicts')
-for e in edges:
-    print(f\"{e['source_id']} <-> {e['target_id']} (confidence: {e['weight']:.2f})\")
-if not edges: print('No contradictions found')
-"
-```
-
-For each contradiction pair, query both memories to show the user what
-conflicts. Ask which one is correct, then supersede the wrong one.
-
-### Forget — user wants to remove something
-
-**Step 1:** Find the memory. Use `list` to get full node_ids:
-
-```bash
-echo '{"type": "preference", "limit": 20}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py list
-```
-
-Or search by content:
-
-```bash
-echo '{"text": "the topic to forget"}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
-```
-
-**Step 2:** Show the user what matched. Confirm which one(s) to delete.
-
-**Step 3:** Delete by full node_id (e.g. `mem-077e6037742e`, NOT the
-truncated `mem-077e6037` shown in timeline):
-
-```bash
-echo '{"id": "mem-077e6037742e"}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py delete
-```
-
-The `list` command returns full node_ids. The `timeline` CLI shows
-truncated IDs — always use `list` to get the correct ID for deletion.
+For migrated topic files (`decisions.md`, `lessons.md`, etc.), don't
+delete the whole file — Edit it to remove the specific dated entry,
+then leave the file in place.
 
 ## Presentation
 
-Keep it conversational. Don't dump raw CLI output or JSON — summarize it.
-For timeline, present as a readable list. For search results, highlight
-the most relevant matches and their types. For forget, always confirm
-before deleting.
+Keep it conversational. Don't dump raw file contents or grep output
+verbatim — summarize. For browse, present the index sections with
+short descriptions. For search, quote the most relevant matches and
+their source files. For forget, always confirm before deleting.
+
+## Calibration
+
+**Without this skill:** the user has no easy way to inspect what's in
+the memory dir, search for an old memory by topic, or clean up stale
+entries. Memory accumulates without anyone looking at it.
+
+**With this skill:** memory becomes browsable — the user can see what's
+captured, find what they need, and prune what's wrong. The system
+stays legible.

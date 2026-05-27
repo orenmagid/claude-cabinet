@@ -112,37 +112,17 @@ sessions, and project-specific context.
 - `.claude/memory/patterns/` — enforcement patterns from prior sessions.
   Scan the directory, read each pattern file. These are project-level
   feedback that guides behavior (what to avoid, what to keep doing).
-- **Omega semantic memory (MANDATORY if configured)**
-
-  If `~/.claude-cabinet/omega-venv/bin/omega` exists, execute this
-  query — do NOT skip, do NOT paraphrase, execute the command:
-
+- **Built-in memory index.** Claude Code loads `MEMORY.md` from the
+  project's memory dir at session start automatically (200-line /
+  25KB budget). During orient, glance at the index sections and load
+  topic files whose descriptions match the session's likely focus.
+  Resolve the memory dir via:
   ```bash
-  ~/.claude-cabinet/omega-venv/bin/omega query \
-    "session context for $(basename $(pwd)): recent decisions, active constraints, known issues" \
-    --limit 10 2>/dev/null || echo "OMEGA_QUERY_FAILED"
+  node -e "console.log(require('./lib/project-context').resolveMemoryDir())" 2>/dev/null || \
+    echo "$HOME/.claude/projects/$(pwd | sed 's|/|-|g')/memory"
   ```
-
-  If the command outputs OMEGA_QUERY_FAILED or returns empty:
-  > ⚠ Omega context not loaded — prior session decisions may be
-  > missing. Run: `omega hooks doctor`
-
-  If the venv is missing but `.ccrc.json` lists memory module as
-  installed:
-  > ⚠ Memory module installed but omega venv missing.
-  > Run: `npx create-claude-cabinet` to restore.
-
-  **Known limitation:** The omega `surface_memories` hook (PostToolUse)
-  searches by file path, not behavioral context. Memories like "never
-  guess in browser automation" won't surface when editing
-  `tests/login.spec.ts`. The domain-memories PreToolUse hook addresses
-  this for known high-risk domains.
-
-  **Unmigrated memory files:** If omega is configured and
-  `.claude/memory/*.md` files exist (excluding MEMORY.md and
-  patterns/), surface:
-  > ⚠ Found N unmigrated memory files in .claude/memory/.
-  > Run: `python3 scripts/migrate-memory-to-omega.py --dry-run`
+  Health-check the dir with `node scripts/validate-memory.mjs --quiet`
+  if the script exists (surface violations under Attention Items).
 
 - **Deployment method detection:** Check for deployment indicators and
   surface the deploy command in the briefing so sessions don't default
@@ -189,8 +169,9 @@ anything else.
    whose name starts with `feedback-project-` or whose frontmatter
    contains `scope: project-specific`. Those are intentionally
    project-scoped decisions/constraints, not CC upstream feedback; they
-   belong in omega memory (decision/constraint types), CLAUDE.md, or a
-   pib-db deferred trigger — not in the outbox.
+   belong in the project's built-in memory dir (per-file curated entries
+   via `/cc-remember`), CLAUDE.md, or a pib-db deferred trigger — not
+   in the outbox.
    If remaining candidates found: "Found N feedback files in [path]
    that may be CC upstream feedback written to the wrong location.
    Move to outbox?"
@@ -377,11 +358,12 @@ Read `phases/auto-maintenance.md` for recurring automated tasks that
 should run every session. These are operations that would decay if left
 to human memory — the anti-entropy principle in action.
 
-**Default (absent/empty):** If omega is active (`~/.claude-cabinet/omega-venv/bin/omega`
-exists), run memory hygiene: `omega consolidate` every session (prune stale,
-dedup), `omega compact` weekly (cluster similar memories), `omega backup`
-weekly. Projects add additional maintenance tasks as they discover operations
-that need regular execution.
+**Default (absent/empty):** Run the built-in memory structural validator
+if available: `node scripts/validate-memory.mjs --quiet || true`. Catches
+orphan files, broken references, exceeded caps. Surface violations under
+Attention Items. No periodic consolidation or compaction needed — memory
+is file-based and self-persistent. Projects add additional maintenance
+tasks as they discover operations that need regular execution.
 
 ### 7. Activate Cabinet Members (core)
 
@@ -429,7 +411,7 @@ required sections in this order:
    items listed explicitly
 3. **Attention Items** — anything surfaced by health checks, feedback
    reports, extraction proposals, stale/completable projects
-4. **Maintenance** — omega consolidation results, any weekly tasks run
+4. **Maintenance** — memory validator results (if any violations), any project-specific weekly tasks run
 5. **Cabinet Notes** — output from cabinet consultations (only if they
    had something to say)
 
@@ -479,7 +461,7 @@ stated a focus, ask.
 | `work-scan.md` | Default: pib-db scan + staleness detection | What work items to check |
 | `deferred-check.md` | Skip silently if no triggered items | Surface waiting items and evaluate triggers |
 | `health-checks.md` | Skip | System health checks |
-| `auto-maintenance.md` | Default: omega memory hygiene | Recurring session-start tasks |
+| `auto-maintenance.md` | Default: memory structural validator | Recurring session-start tasks |
 | `cabinet.md` | Skip | Which cabinet members to activate |
 | `briefing.md` | Default: simple summary | How to present orientation |
 | `skills-menu.md` | Default: invoke /menu | What skills to show and how |

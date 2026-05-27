@@ -11,68 +11,28 @@ An auto-maintenance task runs the sync to fix it.
 When this file is absent or empty, this step is skipped. (`skip: true`
 is equivalent to absent here.)
 
-## Omega Memory Hygiene
+## Built-In Memory Hygiene
 
-If omega is active (`~/.claude-cabinet/omega-venv/bin/omega` exists),
-run these maintenance tasks every session:
+CC's built-in memory (per-file curated entries under
+`~/.claude/projects/<slug>/memory/`) is file-based and does not require
+periodic consolidation, compaction, or backup. Each memory file is its
+own durable artifact; the filesystem handles persistence.
 
-### Consolidate (every session)
+What *is* worth checking each session:
 
-Prune zero-access memories older than 30 days and deduplicate. Silent,
-non-destructive — only removes never-accessed entries and exact duplicates.
-
-```bash
-~/.claude-cabinet/omega-venv/bin/omega consolidate --prune-days 30 2>&1
-```
-
-Report only if something was actually pruned or merged (non-zero counts).
-
-### Compact (weekly)
-
-Cluster and summarize similar memories by type. Only run if 7+ days
-since last compact. Check by looking for the most recent `compaction`
-type memory via the adapter:
+### Validate memory structure (every session)
 
 ```bash
-echo '{"type": "compaction", "limit": 1}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py list
+node scripts/validate-memory.mjs --quiet 2>&1 || true
 ```
 
-If the most recent compaction memory is older than 7 days (or none exists):
+Catches orphan files (memory file written without index entry), broken
+references (index points to a missing file), and exceeded caps
+(MEMORY.md >200 lines / >25KB, topic files >50KB).
 
-```bash
-~/.claude-cabinet/omega-venv/bin/omega compact -t lesson_learned 2>&1
-~/.claude-cabinet/omega-venv/bin/omega compact -t decision 2>&1
-~/.claude-cabinet/omega-venv/bin/omega compact -t error_pattern 2>&1
-```
-
-Report results only if clusters were found and compacted.
-
-### Discover Connections (weekly)
-
-Scan for unlinked memories that should be related and create graph edges.
-Auto-relate runs after each store but only checks the 3 nearest memories.
-discover_connections does a broader sweep, turning isolated memories into
-a connected knowledge graph. Runs alongside compact (same weekly cadence).
-
-```bash
-~/.claude-cabinet/omega-venv/bin/python3 -c "
-from omega.bridge import discover_connections
-result = discover_connections(lookback_hours=168)  # 7 days
-print(result if result else 'No new connections found')
-"
-```
-
-Report: "Discovered N new connections between memories" if non-zero.
-
-### Backup (weekly)
-
-Back up the omega database. Runs alongside compact (same weekly cadence).
-Omega keeps the last 5 backups automatically.
-
-```bash
-~/.claude-cabinet/omega-venv/bin/omega backup 2>&1
-```
+Report only violations — silent on pass. The `|| true` ensures orient
+doesn't abort if the validator exits non-zero; orient surfaces issues
+under "Attention Items" instead.
 
 <!--
 ## Project-Specific Maintenance

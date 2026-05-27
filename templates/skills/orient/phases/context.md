@@ -39,30 +39,30 @@ but know they exist — if work in this session touches something that
 relates to another project, mention it. "This API change might affect
 your investor-reports project too."
 
-### Omega Semantic Memory
+### Built-In Memory Index
 
-Omega's native SessionStart hook (in `~/.claude/settings.json` global)
-automatically surfaces recalled memories at session start. During orient,
-you can query for additional specific context using the adapter:
+Read `MEMORY.md` from the project's memory dir (resolved via
+`autoMemoryDirectory` setting if present, else
+`~/.claude/projects/<dashified-cwd>/memory/MEMORY.md`). The index is
+loaded by Claude Code automatically at session start (up to 200 lines
+/ 25KB), so this step is normally already done — but during orient,
+glance at the index sections and load topic files whose descriptions
+match the session's likely focus.
 
+For example, if the user's first message hints at memory architecture
+work, read `decisions.md` (or the relevant individual file under
+"Curated entries"). If they mention a sibling project, read the
+corresponding `cross-{project}.md`.
+
+Topic-file descriptions in MEMORY.md exist for exactly this purpose:
+they tell Claude *when* to read each file. Use them.
+
+To check the memory dir's structural health, run:
 ```bash
-echo '{"text": "recent decisions and lessons", "limit": 5}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 \
-  scripts/cabinet-memory-adapter.py query
+node scripts/validate-memory.mjs --quiet || true
 ```
-
-To verify omega is healthy, run `omega hooks doctor` or `omega status`.
-
-If omega is not available, check whether the memory module is installed
-(look for `"memory": true` in `.ccrc.json`). If it IS installed but the
-venv is missing, surface a warning:
-
-> **⚠ Memory module is installed but omega is not available.**
-> The venv at `~/.claude-cabinet/omega-venv/` may be missing or broken.
-> Re-run `npx create-claude-cabinet` to rebuild it.
-
-If the memory module is NOT installed, skip silently — the user opted
-out. Fall back to flat markdown memory (MEMORY.md) either way.
+Surface any violations under "Attention Items" in the briefing. The
+validator catches orphan files, broken references, and exceeded caps.
 
 ## Additional Context Sources
 

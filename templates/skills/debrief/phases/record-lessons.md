@@ -15,10 +15,9 @@ when the code it describes changes. Loose `.md` files next to code
 are the wrong home: they rot silently because nothing invalidates
 them when the system evolves.
 
-**Each output has one home. Don't double-store.** A decision stored
-in omega doesn't also need a `.md` file. A constraint documented in
-CLAUDE.md doesn't also need an omega entry "for backup." Duplication
-just creates two things to keep in sync.
+**Each output has one home. Don't double-store.** A decision captured
+via `/cc-remember` doesn't also need a CLAUDE.md entry "for backup."
+Duplication just creates two things to keep in sync.
 
 ## Routing Decision Tree
 
@@ -30,20 +29,22 @@ best home:
 Architectural choices, tradeoff resolutions, accepted gaps, rejected
 alternatives.
 
-**Primary home:** omega `decision` memory. Omega has contradiction
-detection — when a later decision supersedes this one, the old entry
-can be marked `status=superseded` instead of silently rotting.
+**Primary home:** built-in memory via `/cc-remember` (or
+`scripts/write-memory-file.mjs` programmatically). One `.md` file per
+decision, descriptive slug, indexed in MEMORY.md.
 
 ```bash
-echo '{"text": "the decision + why", "type": "decision"}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
+node scripts/write-memory-file.mjs \
+  --slug "decided_<short_name>" \
+  --description "<one-line summary>" \
+  "We chose X over Y because Z. Tradeoffs considered: ..."
 ```
 
 **Also add to CLAUDE.md** only if the decision is load-bearing enough
 that *every* session needs to know it at startup (not just sessions
 that touch the relevant code). Examples: "auth is per-user via FastAPI
 Users (no shared passwords)" is load-bearing. "We rejected a specific
-library option after evaluation" is not — omega is enough.
+library option after evaluation" is not — memory is enough.
 
 ### Project constraints / conventions / gotchas
 
@@ -54,9 +55,10 @@ weird setup" facts.
 files get edited when the code changes — the forcing function is that
 they're load-bearing for every session, so staleness surfaces fast.
 
-Use omega `constraint` type only for cross-project patterns (e.g.,
-"in any project with nested package.json..."). Project-specific
-constraints belong inline.
+Use a built-in memory file (`constraint_<short_name>.md` via
+`/cc-remember`) only for nuanced constraints where the explanation is
+too long for CLAUDE.md. Project-specific quick constraints belong
+inline.
 
 ### Conditional revisits — "do X later when Y happens"
 
@@ -79,35 +81,54 @@ Sometimes a project-scoped observation contains a CC-applicable piece:
 "in this project auth tests are hard, AND cabinet-qa should flag this
 pattern in any auth work." That's two things, not one.
 
-**Split it.** Route the project piece to its home (omega / CLAUDE.md /
-trigger). Route the CC piece to the upstream-feedback phase (step 11)
-where it will be drafted and delivered. Don't bury the upstream piece
-inside a project decision doc — it will never find its way home.
+**Split it.** Route the project piece to its home
+(`/cc-remember` / CLAUDE.md / trigger). Route the CC piece to the
+upstream-feedback phase (step 11) where it will be drafted and
+delivered. Don't bury the upstream piece inside a project decision
+doc — it will never find its way home.
 
 ### Lessons, gotchas, discoveries (not decisions, not constraints)
 
 "We learned that X behaves differently from docs." "This pattern
 works." "The CI was green but prod failed because…"
 
-**Primary home:** omega `lesson` memory. Same forcing function as
-decisions — superseded lessons can be marked and surfaced.
+**Primary home:** built-in memory via `/cc-remember --slug
+"lesson_<short_name>" ...`. One `.md` file per lesson.
 
 ### User preferences
 
 Style choices, workflow preferences, corrections the user made.
 
-**Primary home:** omega `preference` memory.
+**Primary home:** built-in memory via `/cc-remember --slug
+"user_prefers_<thing>" ...`. Or CLAUDE.md if it's a preference that
+should fire on every session start (e.g., "always use pnpm").
 
-## The Anti-Pattern: Loose Project-Scoped .md Files
+## Lessons-Applied-to-Own-Output Scan
+
+**Before sending this debrief report**, scan the lessons you just
+captured *this session* against the report you're about to write.
+Does the report itself violate what was learned?
+
+Concrete example: this session captured a `lesson_dont_trust_estimates`
+memory ("user's time estimates are overcalibrated, recalibrate
+downward"). The debrief report then includes "this took 30 minutes"
+phrasing — directly contradicting the just-captured lesson.
+
+For each captured lesson, ask: *Is the debrief report observing this
+lesson?* If not, rewrite the report before sending. Captured but
+not applied is the same failure mode that bit us with omega; the
+write path doesn't matter, the read-and-apply step does.
+
+## The Anti-Pattern: Loose Project-Scoped .md Files Outside the Memory Dir
 
 **Do not write `feedback-project-*.md`, `decision-*.md`, or similar
-loose .md files as the primary record of a session output.** This
-pattern has been observed to rot — in one audited case, 4 of 5 such
-files went stale within 7 days because the underlying code changed
-and the files had no forcing function to catch it.
+loose .md files next to code or in arbitrary project subdirectories.**
+This pattern rots — in one audited case, 4 of 5 such files went stale
+within 7 days because the underlying code changed and the files had
+no forcing function to catch it.
 
 If you are tempted to write a loose .md file:
-- Is it a decision? → omega `decision`
+- Is it a decision? → `/cc-remember --slug "decided_..."`
 - Is it a constraint everyone needs? → CLAUDE.md / briefing
 - Is it a conditional revisit? → pib-db deferred trigger
 - Is it CC upstream friction? → upstream-feedback phase
@@ -115,37 +136,20 @@ If you are tempted to write a loose .md file:
 
 ## Before Writing — Contradiction Check
 
-For each memory you're about to write, query omega for existing
-entries on the same topic:
+For each memory you're about to capture, search the memory dir for
+existing entries on the same topic:
 
 ```bash
-~/.claude-cabinet/omega-venv/bin/omega query "topic keywords" --limit 5
+grep -i "<topic>" ~/.claude/projects/<slug>/memory/*.md
 ```
 
 If an existing entry contradicts or is superseded by the new one,
-mark the old one:
+edit the old file with a `**Superseded by <new-slug>.md on <date>**`
+header. Keep the old file for history — don't delete unless the old
+entry was wrong (rather than just outdated).
 
-```bash
-~/.claude-cabinet/omega-venv/bin/omega update <old-id> --status superseded
-```
-
-This is the forcing function that turns omega into a living record
+This is the forcing function that turns memory into a living record
 instead of another pile of rotting notes.
-
-## When Omega Is Not Available
-
-If `~/.claude-cabinet/omega-venv/bin/python3` is missing AND the
-memory module is not installed (check `.ccrc.json`), fall back to
-flat markdown memory in `~/.claude/projects/...`. But recognize
-this fallback has the same rot problem — prefer CLAUDE.md for
-anything load-bearing and pib-db triggers for anything conditional.
-
-If the memory module IS installed but omega is broken, surface this
-in the debrief report:
-
-> **⚠ Memory module is installed but omega is not working.**
-> Decisions/lessons from this session were saved to flat markdown
-> instead. Run `npx create-claude-cabinet` to rebuild the omega venv.
 
 ## What NOT to Record — Anywhere
 
@@ -163,11 +167,11 @@ Tell the user what went where so they can audit the routing:
 
 ```
 Routed this session:
-- 1 decision → omega mem-xxxxx (JWT revocation tradeoff)
+- 1 decision → memory: decided_jwt_revocation.md
 - 1 constraint → article-rewriter/CLAUDE.md (tsc must run from frontend)
 - 1 deferred trigger → pib-db act:xxxxxxxx (add blocklist if multi-user)
 - 1 upstream piece → CC feedback outbox (cabinet-qa testability)
 ```
 
 This is also how you catch routing errors: if everything ended up in
-omega, the routing discipline didn't actually run.
+memory files, the routing discipline didn't actually run.
