@@ -9,6 +9,7 @@ description: >
   Activated during plan, execute, orient, and debrief to surface relevant
   prior decisions and pattern precedents.
 user-invocable: false
+memory: user
 briefing:
   - _briefing-identity.md
   - _briefing-architecture.md

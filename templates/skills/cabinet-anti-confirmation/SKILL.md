@@ -10,6 +10,7 @@ description: >
   Activated during plan and execute on high-stakes decisions, tradeoffs, and
   architectural choices to stress-test reasoning quality.
 user-invocable: false
+memory: project
 briefing:
   - _briefing-identity.md
 topics:

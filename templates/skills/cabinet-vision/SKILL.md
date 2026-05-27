@@ -11,6 +11,7 @@ description: >
   Activated during audit to evaluate strategic direction and emerging
   opportunities.
 user-invocable: false
+memory: user
 briefing:
   - _briefing-identity.md
   - _briefing-architecture.md

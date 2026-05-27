@@ -10,6 +10,7 @@ description: >
   Activated during audit to evaluate whether the project is becoming what it
   is meant to become.
 user-invocable: false
+memory: project
 briefing:
   - _briefing-identity.md
   - _briefing-jurisdictions.md

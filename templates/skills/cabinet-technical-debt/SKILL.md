@@ -9,6 +9,7 @@ description: >
   Activated during audit to evaluate structural sustainability and absorbable
   change.
 user-invocable: false
+memory: project
 briefing:
   - _briefing-identity.md
   - _briefing-architecture.md

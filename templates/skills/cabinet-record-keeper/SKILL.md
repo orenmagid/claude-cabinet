@@ -9,6 +9,7 @@ description: |
   Activated during audit and debrief to verify documentation accuracy against
   actual code reality.
 user-invocable: false
+memory: project
 briefing:
   - _briefing-identity.md
   - _briefing-jurisdictions.md
