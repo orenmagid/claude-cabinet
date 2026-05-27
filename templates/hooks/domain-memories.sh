@@ -1,5 +1,5 @@
 #!/bin/bash
-# PreToolUse prompt hook on Edit|Write
+# PreToolUse hook on Edit|Write that injects domain memories.
 # Surfaces prevent-type memories BEFORE editing files in risky domains.
 #
 # Two-tier domain identification:

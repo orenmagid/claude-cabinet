@@ -81,6 +81,8 @@
 - $ARGUMENTS support: 7 skills (audit, plan, cabinet, investigate, execute, orient, debrief) accept arguments via `argument-hint` frontmatter
 - `resolve-arguments.cjs`: resolves raw argument strings against cabinet member names and committees.yaml
 - settings-merge.js: dedup logic uses `h.command || h.prompt` key (handles both hook types if needed)
+- domain-memories.sh hook type fix: registered as `type: 'command'` (was incorrectly `'prompt'`); install-time migration normalizes any stale entry with the wrong type
+- User-settings healing: `healUserSettings()` in settings-merge.js strips CC hook entries with project-relative paths (`.claude/hooks/*.sh`) from `~/.claude/settings.json` — those entries leak into every non-CC project. Runs unconditionally on every install, idempotent, logs "Removed N stale CC hook entries" when it heals.
 - pib-db shared library: `pib-db-lib.mjs` exports all db operations, consumed by both CLI and MCP server
 - pib-db MCP server: JSON-RPC 2.0 over stdio, 10 tools (pib_create_action enforces Surface Area format)
 - MCP config merge: installer adds pib-db server to `.mcp.json` when work-tracking module is selected

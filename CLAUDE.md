@@ -1,13 +1,16 @@
 # Claude Cabinet — Project Instructions
 
 Node CLI package (`create-claude-cabinet`) that scaffolds process infrastructure
-for Claude Code projects. Small codebase: 7 files in `lib/`, templates in
+for Claude Code projects. Small codebase: 8 files in `lib/`, templates in
 `templates/`. Two dependencies (`prompts`, `better-sqlite3`). No build step.
 
 ## Key Files
 
 - `lib/cli.js` — main orchestration, module definitions, all CLI logic
 - `lib/copy.js` — template copying with conflict detection
+- `lib/settings-merge.js` — merges CC hooks into `.claude/settings.json`;
+  also heals `~/.claude/settings.json` by stripping CC hook entries with
+  project-relative paths (runs unconditionally on every install)
 - `lib/omega-setup.js` — Python discovery, venv creation, omega-memory install
 - `lib/verify-setup.js` — cabinet-verify runtime installer (creates
   `~/.claude-cabinet/verify/<version>/dist/cabinet-verify-<version>.tgz`
