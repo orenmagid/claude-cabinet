@@ -87,6 +87,17 @@ Problematic Patterns) or frontmatter fields (tools). Complements
 skill-structure — that one is mechanical; this one checks sectional
 structure specific to cabinet members.
 
+### memory-structure
+
+```bash
+node scripts/validate-memory.mjs --quiet
+```
+
+Catches MEMORY.md exceeding session-start budget (200 lines / 25KB),
+orphan memory files not indexed in MEMORY.md, broken references to
+files that don't exist, and oversized topic-style files (>50KB).
+Skips silently if the project has no memory directory yet.
+
 ## Example Validators (commented — enable for your project)
 
 <!--
