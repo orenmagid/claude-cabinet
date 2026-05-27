@@ -66,6 +66,39 @@ Before asking any questions, read two global files if they exist:
    code?" The answer goes into `_briefing.md` so orient and debrief can
    flag when work in one project might affect the other.
 
+   **Cross-project shared rules (only ask if 2+ CC projects):** If
+   the registry has 2+ entries, ask whether they want shared rules —
+   rules that apply across all their CC projects (coding conventions,
+   workflow preferences, git discipline). Frame it around value, not
+   mechanism:
+
+   > "You have N CC projects on this machine. Want them to share some
+   > rules — things like 'always use pnpm', 'always run validate
+   > before commit', formatting preferences? Edit once and all
+   > projects see it."
+   > [1] Yes, set that up (recommended)
+   > [2] No, each project stays independent
+   > [3] Tell me more about how this works
+
+   On **Yes**: create `~/.claude-cabinet-shared/rules/` if absent;
+   create the symlink at `<project>/.claude/rules/shared` →
+   `~/.claude-cabinet-shared/rules/`; add `.claude/rules/shared` to
+   `.gitignore` if not already there. Confirm: "Done. Add rules at
+   `~/.claude-cabinet-shared/rules/<name>.md` and they'll load in
+   every CC project on this machine."
+
+   On **Tell me more**: explain symlinks vs @imports briefly (see
+   `templates/cabinet/cross-project-rules-README.md`), then re-ask.
+
+   On **No**: skip. The question won't be re-asked unless they re-run
+   onboard.
+
+   First install (only 1 CC project on the machine — the one being
+   onboarded right now) — **don't ask**. Defer the question until
+   they have at least one other CC project. Note in `_briefing.md`:
+   "Single CC project on this machine; cross-project rules not yet
+   relevant."
+
 If neither file exists, that's fine — the installer may not have created
 them (npm install path, or the user skipped the identity questions).
 Proceed normally.
