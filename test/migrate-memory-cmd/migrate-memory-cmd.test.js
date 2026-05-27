@@ -8,6 +8,7 @@ const os = require('node:os');
 
 const {
   migrateMemoryCmd,
+  unmigrateMemoryCmd,
   STEPS,
   _internals,
 } = require('../../lib/migrate-memory-cmd');
@@ -374,6 +375,130 @@ test('migrateMemoryCmd: force flag re-runs after already-migrated', async () => 
     const second = await migrateMemoryCmd({ homeDir: home, cwd, verbose: false, force: true });
     assert.strictEqual(second.skipped, false);
     assert.strictEqual(second.state.state, 'complete');
+  } finally {
+    delete process.env.FAKE_OMEGA_FIXTURE;
+    cleanup(home, cwd);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// unmigrateMemoryCmd
+// ---------------------------------------------------------------------------
+
+test('unmigrateMemoryCmd: no migration state → refuses cleanly', async () => {
+  const home = makeTmpHome();
+  const cwd = makeTmpCwd();
+  try {
+    fs.writeFileSync(path.join(cwd, '.ccrc.json'), JSON.stringify({ version: '0.27.0' }));
+    const result = await unmigrateMemoryCmd({ homeDir: home, cwd });
+    assert.strictEqual(result.ok, false);
+    assert.strictEqual(result.reason, 'no-migration-state');
+  } finally {
+    cleanup(home, cwd);
+  }
+});
+
+test('unmigrateMemoryCmd: backup dir missing → refuses cleanly', async () => {
+  const home = makeTmpHome();
+  const cwd = makeTmpCwd();
+  try {
+    fs.writeFileSync(
+      path.join(cwd, '.ccrc.json'),
+      JSON.stringify({
+        version: '0.27.0',
+        migrated_from_omega: {
+          state: 'complete',
+          date: '2026-05-27',
+          backupDir: '/nonexistent/path',
+          completedSteps: STEPS,
+        },
+      })
+    );
+    const result = await unmigrateMemoryCmd({ homeDir: home, cwd });
+    assert.strictEqual(result.ok, false);
+    assert.strictEqual(result.reason, 'backup-missing');
+  } finally {
+    cleanup(home, cwd);
+  }
+});
+
+test('unmigrateMemoryCmd: end-to-end restores backed-up files and sets rolled-back', async () => {
+  const home = makeTmpHome();
+  const cwd = makeTmpCwd();
+  try {
+    seedFullOmegaState(home, cwd);
+    process.env.FAKE_OMEGA_FIXTURE = 'small';
+
+    // Migrate first
+    const migResult = await migrateMemoryCmd({ homeDir: home, cwd, verbose: false });
+    assert.strictEqual(migResult.state.state, 'complete');
+
+    // Sanity: OMEGA block is gone from CLAUDE.md after migration
+    const midClaudeMd = fs.readFileSync(path.join(home, '.claude', 'CLAUDE.md'), 'utf8');
+    assert.ok(!midClaudeMd.includes('OMEGA:BEGIN'));
+
+    // Now roll back
+    const rollback = await unmigrateMemoryCmd({ homeDir: home, cwd });
+
+    assert.strictEqual(rollback.ok, true);
+    assert.ok(rollback.restorations.length >= 2);
+
+    // CLAUDE.md should have OMEGA block restored
+    const restoredClaudeMd = fs.readFileSync(path.join(home, '.claude', 'CLAUDE.md'), 'utf8');
+    assert.ok(restoredClaudeMd.includes('OMEGA:BEGIN'), 'OMEGA block restored');
+    assert.ok(restoredClaudeMd.includes('OMEGA:END'));
+
+    // settings.json should have omega hooks restored
+    const restoredSettings = JSON.parse(fs.readFileSync(path.join(home, '.claude', 'settings.json'), 'utf8'));
+    const allHookCmds = JSON.stringify(restoredSettings.hooks || {});
+    assert.ok(allHookCmds.includes('omega-venv'), 'omega-venv hooks restored');
+
+    // State should be rolled-back
+    const meta = metadata.read(cwd);
+    assert.strictEqual(meta.migrated_from_omega.state, 'rolled-back');
+    assert.ok(meta.migrated_from_omega.rolledBackAt);
+  } finally {
+    delete process.env.FAKE_OMEGA_FIXTURE;
+    cleanup(home, cwd);
+  }
+});
+
+test('unmigrateMemoryCmd: already rolled back → refuses cleanly', async () => {
+  const home = makeTmpHome();
+  const cwd = makeTmpCwd();
+  try {
+    seedFullOmegaState(home, cwd);
+    process.env.FAKE_OMEGA_FIXTURE = 'small';
+    await migrateMemoryCmd({ homeDir: home, cwd, verbose: false });
+    await unmigrateMemoryCmd({ homeDir: home, cwd });
+
+    const second = await unmigrateMemoryCmd({ homeDir: home, cwd });
+    assert.strictEqual(second.ok, false);
+    assert.strictEqual(second.reason, 'already-rolled-back');
+  } finally {
+    delete process.env.FAKE_OMEGA_FIXTURE;
+    cleanup(home, cwd);
+  }
+});
+
+test('unmigrateMemoryCmd: dry-run does not mutate files or state', async () => {
+  const home = makeTmpHome();
+  const cwd = makeTmpCwd();
+  try {
+    seedFullOmegaState(home, cwd);
+    process.env.FAKE_OMEGA_FIXTURE = 'small';
+    await migrateMemoryCmd({ homeDir: home, cwd, verbose: false });
+
+    const claudeMdBefore = fs.readFileSync(path.join(home, '.claude', 'CLAUDE.md'), 'utf8');
+    const stateBefore = metadata.read(cwd).migrated_from_omega.state;
+
+    const result = await unmigrateMemoryCmd({ homeDir: home, cwd, dryRun: true });
+    assert.strictEqual(result.ok, true);
+    assert.strictEqual(result.dryRun, true);
+
+    // No mutations
+    assert.strictEqual(fs.readFileSync(path.join(home, '.claude', 'CLAUDE.md'), 'utf8'), claudeMdBefore);
+    assert.strictEqual(metadata.read(cwd).migrated_from_omega.state, stateBefore);
   } finally {
     delete process.env.FAKE_OMEGA_FIXTURE;
     cleanup(home, cwd);
