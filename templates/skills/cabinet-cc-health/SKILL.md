@@ -391,47 +391,50 @@ incomplete migration.
 
 ### 8. Memory System Health
 
-If the memory module is installed (check `.ccrc.json` modules list for
-`"memory"`), verify the omega memory infrastructure:
+Verify the built-in memory layout at
+`~/.claude/projects/<slug>/memory/`. Delegate to the structural
+validator:
 
-- **Venv integrity.** Does `~/.claude-cabinet/omega-venv/bin/python3`
-  exist? Can it import omega? Run:
-  ```bash
-  ~/.claude-cabinet/omega-venv/bin/python3 -c "import omega; print('ok')"
-  ```
-  A broken venv means all memory hooks silently degrade.
+```bash
+node scripts/validate-memory.mjs
+```
 
-- **Adapter availability.** Does `scripts/cabinet-memory-adapter.py`
-  exist in the project? Skills use it for project-scoped queries.
+The validator catches:
+- MEMORY.md exceeding session-start budget (200 lines / 25KB)
+- Orphan memory files (written but not indexed)
+- Broken references (indexed but file missing)
+- Topic-style files >50KB
 
-- **Hook registration.** Check `~/.claude/settings.json` (global) for
-  omega native hooks (`fast_hook.py session_start`, etc.). Run
-  `omega hooks doctor` to verify. Missing hooks mean omega was installed
-  but `omega hooks setup` was never run.
+Also do a lightweight read-through:
 
-- **Omega database.** Run `omega status` to check health:
-  ```bash
-  ~/.claude-cabinet/omega-venv/bin/omega status
-  ```
-  Check: is the database growing? Zero memories after multiple sessions
-  suggests capture isn't working.
+- **Index discoverability.** Open MEMORY.md and scan the entries.
+  Do the one-line descriptions actually describe what the files
+  contain? Stale descriptions hide memories from future sessions.
+- **Capture cadence.** Compare the file count to session activity.
+  Stagnation suggests `/cc-remember` isn't being invoked when it
+  should. Explosive growth suggests noise is being captured.
+- **`memory-capture.md` rule.** Does `.claude/rules/memory-capture.md`
+  exist? Without it, in-session capture guidance is missing.
+- **`/cc-remember` skill.** Does `templates/skills/cc-remember/SKILL.md`
+  exist (or `.claude/skills/cc-remember/SKILL.md` once installed)?
+  This is the canonical write path.
 
-- **ONNX model presence.** Check `~/.cache/omega/models/` for the
-  embedding model directory. Missing model means semantic search falls
-  back to hash-based pseudo-embeddings (much lower quality).
+If `.ccrc.json.migrated_from_omega.state === 'complete'`, verify
+omega is no longer running: no omega-venv hooks in
+`~/.claude/settings.json`, no omega MCP entries in the 3 config
+locations, OMEGA block absent from `~/.claude/CLAUDE.md`. Stuck
+omega artifacts post-migration suggest --migrate-memory was
+interrupted; re-run it to complete the cleanup.
 
-- **Rules file.** Does `.claude/rules/memory-capture.md` exist? Without
-  it, in-session capture guidance is missing.
-
-**What to report:** Infrastructure gaps (broken venv, missing hooks,
-missing model), capture failures (zero memories after active sessions),
-configuration mismatches (module installed but hooks not registered).
+**What to report:** Validator violations, stale MEMORY.md descriptions,
+missing capture rule or /cc-remember skill, leftover omega artifacts
+post-migration.
 
 **Severity guidance:**
-- Broken venv or missing adapter → **warn** (all memory silently disabled)
-- Missing hooks → **warn** (capture not happening)
-- Missing ONNX model → **info** (degraded but functional)
-- Zero memories after 3+ sessions → **warn** (capture failing silently)
+- Validator violations (orphans, broken refs, caps) → **warn**
+- Missing `/cc-remember` or rule file → **warn** (capture path broken)
+- Stale index descriptions → **info** (discoverability degraded)
+- Leftover omega artifacts post-migration → **warn** (re-run --migrate-memory)
 
 ### 9. Anti-Bloat
 

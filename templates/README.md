@@ -25,7 +25,7 @@ templates, see [EXTENSIONS.md](EXTENSIONS.md).
 | Artifact | What It Does |
 |----------|-------------|
 | `rules/enforcement-pipeline.md` | Generic enforcement pipeline: capture, classify, promote, encode, monitor. Describes the compliance stack and promotion criteria. |
-| `rules/memory-capture.md` | When and how to capture memories to omega. What to capture, what not to, cadence guidance. |
+| `rules/memory-capture.md` | When and how to capture memories via /cc-remember to the per-file curated layout at ~/.claude/projects/<slug>/memory/. What to capture, what not to, cadence guidance. |
 
 ### Skills (22 workflow + 31 cabinet members)
 
@@ -43,7 +43,7 @@ templates, see [EXTENSIONS.md](EXTENSIONS.md).
 | `skills/cc-extract/` | Analyze project artifacts and propose upstream extraction candidates for Claude Cabinet. |
 | `skills/investigate/` | Structured codebase exploration: frame, observe, hypothesize, test, conclude. |
 | `skills/cc-link/` | Set up local development linking for Claude Cabinet source repo work. |
-| `skills/memory/` | Browse, search, and manage semantic memory via omega. |
+| `skills/memory/` | Browse, search, validate, and manage built-in memory at `~/.claude/projects/<slug>/memory/`. Writing happens via /cc-remember. |
 | `skills/menu/` | Dynamically discover and display all available skills. Reads from `_index.json`. |
 | `skills/onboard/` | Conversational onboarding. Interviews you, generates briefings, wires the session loop. Re-runnable. 8 phase files. |
 | `skills/orient/` | Session start. Load context, sync data, scan work, run health checks, spawn cabinet consultations, show skills menu. 7 phase files. |
@@ -109,7 +109,8 @@ mandates and scoped directives.
 
 | Script | What It Does |
 |--------|-------------|
-| `scripts/cabinet-memory-adapter.py` | Python adapter for omega memory. Project-scoped tiered retrieval. |
+| `scripts/write-memory-file.mjs` | Shared topic-write contract for built-in memory. Used by /cc-remember and debrief record-lessons. Atomic, idempotent, indexes in MEMORY.md. |
+| `scripts/validate-memory.mjs` | Structural validator for the memory dir: caps, orphans, broken refs, topic file sizes. Wired into /validate and PostToolUse via memory-index-guard.sh. |
 | `scripts/cc-drift-check.cjs` | Compare installed file hashes against manifest. Detect upstream drift. |
 | `scripts/finding-schema.json` | JSON Schema for audit finding validation. |
 | `scripts/load-triage-history.js` | Build suppression lists from triage history. Tries pib-db first, falls back to filesystem. |

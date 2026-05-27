@@ -56,9 +56,11 @@ shell, settings page, admin dashboard.
 
 ### Subagent 3: Memory scan
 
-**Task:** Query omega memory (if `~/.claude-cabinet/omega-venv/bin/omega`
-exists) for "key flows" / "critical user paths" / "important journeys"
-type queries. Also scan `.claude/memory/` markdown files for similar.
+**Task:** Search the project's built-in memory dir
+(`~/.claude/projects/<slug>/memory/`) for entries matching "key
+flows" / "critical user paths" / "important journeys" — read
+MEMORY.md's index, then any topic file whose description matches.
+Also scan project-level `.claude/memory/patterns/*.md` for similar.
 
 **Return:** Up to 10 entries of `{topic, source, summary}`.
 

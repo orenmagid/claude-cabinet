@@ -141,28 +141,38 @@ Either condition triggers this step. The installer cleans settings.json
 references but does NOT delete the orphaned files (it treats them as
 project-owned since they're no longer in the upstream manifest).
 
-Starting in v0.10, omega's native hooks handle memory capture/recall
-directly (configured in global `~/.claude/settings.json`). The old
-project-level CC memory hooks are now redundant and cause double
-context injection if left in place.
+Starting in v0.27.0, CC's memory layer is Claude Code's built-in
+auto-memory at `~/.claude/projects/<slug>/memory/`. Earlier versions
+shipped a memory module (omega-memory backend, v0.10–v0.26) or
+pre-omega hooks (v0.9.x and earlier). All legacy memory hooks are
+now redundant and should be cleaned.
 
 **Check and clean:**
-1. Read `.claude/settings.json` — look for `memory-session-start.sh`
-   in `SessionStart` hooks and `memory-post-compact.sh` in `PostCompact`
-2. If found, remove those entries. Keep other hooks (git-guardrails,
-   cc-upstream-guard, telemetry) untouched.
-3. Check for orphaned files: `ls .claude/hooks/memory-session-start.sh
-   .claude/hooks/memory-post-compact.sh 2>/dev/null`. Delete any that
-   exist — they are dead weight, not project-owned content.
-4. Verify omega native hooks are configured: run `omega hooks doctor`.
-   If not configured, the installer's omega-setup already ran
-   `omega hooks setup` — verify by checking `~/.claude/settings.json`
-   for `fast_hook.py` entries.
 
-**Tell the user:** "Memory hooks have been upgraded to omega native.
-You now get 3 additional capabilities: real-time decision capture,
-assistant insight extraction, and relevant memory surfacing before
-file edits."
+`lib/settings-merge.js` runs `LEGACY_HOOK_COMMANDS` cleanup on every
+merge — covers `memory-session-start.sh`, `memory-post-compact.sh`,
+`omega-memory-guard.sh`, and `domain-memories.sh`. So running the
+installer (which this upgrade flow does) automatically strips these
+from `.claude/settings.json`.
+
+For omega-era artifacts (CC v0.10–v0.26), the installer detects them
+and prompts to migrate. See `### 3. Detect and Offer Migration from
+Omega` below for the routing.
+
+**Orphaned hook scripts:** If `.claude/hooks/memory-session-start.sh`,
+`memory-post-compact.sh`, or `omega-memory-guard.sh` files still exist
+on disk after settings cleanup, they're dead weight. Delete them:
+
+```bash
+rm -f .claude/hooks/memory-session-start.sh \
+      .claude/hooks/memory-post-compact.sh \
+      .claude/hooks/omega-memory-guard.sh \
+      .claude/hooks/domain-memories.sh
+```
+
+**Tell the user:** "Memory hooks have been cleaned. Built-in memory
+at `~/.claude/projects/<slug>/memory/` is now the active layer.
+Capture happens via `/cc-remember`; browse with `/memory`."
 
 ### 2.5. Legacy Detection and Migration
 

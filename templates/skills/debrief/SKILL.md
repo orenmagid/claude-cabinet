@@ -235,16 +235,14 @@ operations that decay if left to human memory.
 
 **Skip (absent/empty).**
 
-### Memory migration check
+### Memory health check
 
-If omega is configured and .claude/memory/*.md files were written or
-modified this session (check via git status for memory dir changes):
+Run the structural validator if available — catches orphan files,
+broken references, and exceeded caps before they accumulate:
 ```bash
-python3 scripts/migrate-memory-to-omega.py
+node scripts/validate-memory.mjs --quiet 2>&1 || true
 ```
-This migrates any flat memory files to omega, tags them with the
-project name, checks for duplicates, and renames migrated files
-to .md.migrated.
+Surface any violations under the session report's "Health" section.
 
 ### 6. Update State (core)
 
@@ -312,26 +310,28 @@ the first is closing work, this is ensuring the next session is smarter
 than this one.
 
 **The phase file teaches a routing discipline:** every output has
-exactly one home with a forcing function — omega `decision`/`lesson`/
-`constraint`/`preference` memory, inline in CLAUDE.md or a briefing
-(for load-bearing project facts), a pib-db deferred action (for
-conditional revisits), or the upstream-feedback phase (for CC-applicable
-friction). Loose `.md` files written next to the code they describe
-are explicitly an **anti-pattern** — they rot silently when the code
-changes. Hybrid observations (part project, part CC) must be split.
+exactly one home with a forcing function — a per-file curated memory
+via `/cc-remember` (decisions, lessons, preferences, constraints),
+inline in CLAUDE.md or a briefing (for load-bearing project facts),
+a pib-db deferred action (for conditional revisits), or the
+upstream-feedback phase (for CC-applicable friction). Loose `.md`
+files written next to the code they describe (rather than in the
+memory dir via `/cc-remember`) are an **anti-pattern** — they rot
+silently when the code changes. Hybrid observations (part project,
+part CC) must be split.
 
 **Default (absent/empty):** Follow the routing tree in the phase file.
 Ask the user only when routing is genuinely ambiguous — not as a
 catch-all "what did we learn?" prompt, which tends to produce vague
 lessons that don't get recorded anywhere useful.
 
-**Omega broken:** If the memory module is installed (check `.ccrc.json`
-for `"memory": true`) but the venv or adapter is missing, surface this
-in the debrief report:
+**Built-in memory unavailable:** If `~/.claude/projects/<slug>/memory/`
+doesn't exist or `/cc-remember` is unreachable, surface this in the
+debrief report:
 
-> **⚠ Memory module is installed but omega is not working.**
-> Lessons from this session were saved to flat markdown instead of omega.
-> Run `npx create-claude-cabinet` to rebuild the omega venv.
+> **⚠ Built-in memory dir not found.**
+> Lessons from this session weren't captured. Run /cc-remember
+> manually for each lesson, or ensure auto-memory is enabled.
 
 > **Debrief lessons vs audit findings:** Debrief captures session-specific
 > learnings — what was discovered while doing this work, what surprised
@@ -445,16 +445,17 @@ these aren't captured somewhere, they rely on human memory.
 
 Debrief MUST record these for the next session's orient to function:
 
-1. **Session summary** — what was accomplished, stored in omega
-   (if configured) or in .claude/memory/ as fallback
+1. **Session summary** — what was accomplished, captured as a
+   `session_summary_<date>.md` curated entry via `/cc-remember`
 2. **Open items** — any unfinished work, with fids if tracked in pib-db
 3. **Active constraints** — anything discovered this session that limits
-   future work (API limits, broken dependencies, blocked paths)
+   future work (API limits, broken dependencies, blocked paths) — captured
+   as a `constraint_<short_name>.md` curated entry via `/cc-remember`
 4. **Feedback filed** — count of cc-feedback items filed this session
 
-Orient will query omega for items 1-3. Item 4 is checked via the
-outbox. If debrief skips any of these, orient starts the next session
-blind on that dimension.
+Orient will read MEMORY.md to surface items 1-3. Item 4 is checked
+via the outbox. If debrief skips any of these, orient starts the next
+session blind on that dimension.
 
 ### 15. Discover Custom Phases
 
@@ -482,7 +483,7 @@ Read `phases/report.md` for how to present the debrief summary.
 | `auto-maintenance.md` | Skip | Recurring session-end tasks |
 | `update-state.md` | Default: check system-status.md | What state files to update |
 | `health-checks.md` | Skip | Session-end health checks |
-| `record-lessons.md` | Default: route outputs per the decision tree | How to route session outputs to omega / CLAUDE.md / pib-db triggers / upstream |
+| `record-lessons.md` | Default: route outputs per the decision tree | How to route session outputs to /cc-remember / CLAUDE.md / pib-db triggers / upstream |
 | `audit-pattern-capture.md` | **Instruction: always runs** | Detect recurring audit findings, write to patterns-project.md |
 | `methodology-capture.md` | **Instruction: always runs** | Detect methodology-level work; capture reasoning chain + narrative to `.claude/methodology/` |
 | `upstream-feedback.md` | **Instruction: always runs** | Surface CC friction to source repo |

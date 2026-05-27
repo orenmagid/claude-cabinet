@@ -49,7 +49,7 @@ early vs mature re-run:
 | CLAUDE.md | Root `CLAUDE.md` | Project instructions exist |
 | Rules files | `.claude/rules/*.md` | Scoped instructions exist |
 | Hook config | `.claude/settings.json` or `.claude/settings.local.json` | Enforcement hooks exist |
-| Omega memory | `~/.claude-cabinet/omega-venv/` and `omega hooks doctor` OK | Semantic memory is active |
+| Built-in memory | `~/.claude/projects/<slug>/memory/MEMORY.md` exists | Per-file memory layout is active |
 
 **Early re-run:** Fewer than 5 of the above are populated.
 **Mature re-run:** 5 or more are populated.

@@ -15,7 +15,9 @@ briefing:
   - _briefing-architecture.md
 standing-mandate: plan, execute, orient, debrief
 tools:
-  - omega query (if omega active -- memory retrieval)
+  - grep over ~/.claude/projects/<slug>/memory/ (built-in memory retrieval)
+  - node scripts/validate-memory.mjs (memory health check)
+  - /cc-remember (capture new lessons)
 directives:
   plan: >
     Check prior art. Have we attempted something similar before? What
@@ -81,80 +83,51 @@ to help you do your job.
 
 ### Sources of Institutional Memory (check in this order)
 
-0. **Omega semantic memory** — if `~/.claude-cabinet/omega-venv/bin/python3`
-   and `scripts/cabinet-memory-adapter.py` both exist, query omega FIRST.
-   It stores decisions, lessons, preferences, and constraints with semantic
-   retrieval — meaning you can search by concept, not just keyword.
+1. **Built-in memory dir** — `~/.claude/projects/<slug>/memory/`
+   (or `autoMemoryDirectory` setting if configured). MEMORY.md is the
+   index; each per-file curated entry (e.g., `decided_use_pnpm.md`,
+   `lesson_omega_protocol_paywalled.md`) is one memory. Topic files
+   from migration (e.g., `decisions.md`, `lessons.md`,
+   `cross-{project}.md`) hold the omega corpus when present.
 
-   **Querying** (search by meaning, not just keyword):
+   **Browse the index**:
    ```bash
-   echo '{"text": "your query here", "limit": 10}' | \
-     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
+   cat ~/.claude/projects/<slug>/memory/MEMORY.md
    ```
-   Queries use **tiered scoping** by default: project memories first,
-   then cross-project to fill remaining slots. Use `"scope": "project"`
-   for strict project-only, or `"scope": "all"` for global search.
+   The "Topic files" section lists migrated content; "Curated entries"
+   lists per-file memories with one-line descriptions. Use those
+   descriptions to decide which files to read.
 
-   **Storing** (when you discover something worth remembering):
+   **Search by content**:
    ```bash
-   echo '{"text": "the lesson or decision", "type": "lesson"}' | \
-     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py store
-   ```
-   Stores are automatically tagged with the current project name.
-
-   Memory types: `decision` (architectural choices), `lesson` (gotchas,
-   discoveries), `preference` (user corrections), `constraint` (limitations
-   found), `pattern` (conventions established), `compaction` (auto-captured
-   from context compaction).
-
-   **Listing** (browse all memories with full IDs):
-   ```bash
-   echo '{"limit": 20}' | \
-     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py list
+   grep -i -l "<keyword>" ~/.claude/projects/<slug>/memory/*.md
+   grep -i "<phrase>" ~/.claude/projects/<slug>/memory/<topic>.md
    ```
 
-   **Deleting** (remove stale or incorrect memories):
-   ```bash
-   echo '{"id": "mem-077e6037742e"}' | \
-     ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py delete
+   **Capture new memories** via `/cc-remember`:
    ```
-   Note: deletion requires the **full node_id** (e.g. `mem-077e6037742e`),
-   not the truncated display ID shown in `omega timeline`. Use `list` to
-   get full IDs.
-
-   Omega data lives at `~/.omega/omega.db` (SQLite). The `/memory` skill
-   gives users self-serve access to browse, search, and manage memories.
-
-   **Graph traversal** (follow connections from a memory):
-   ```bash
-   ~/.claude-cabinet/omega-venv/bin/python3 -c "
-   from omega import traverse
-   result = traverse('MEM_ID', max_hops=2)
-   print(result)
-   "
+   /cc-remember --slug "lesson_<short_name>" "<full content>"
    ```
-   After finding a relevant memory, traverse its graph connections to
-   discover related decisions, contradictions, or how understanding evolved.
-   Edge types: `related`, `evolution`, `contradicts`, `temporal_cluster`.
+   /cc-remember writes the file and updates MEMORY.md's index
+   atomically. Direct flat-`.md` writes bypass indexing and become
+   invisible to future sessions — always route through /cc-remember.
 
-   **Contradiction detection** (find conflicting memories):
+   **Health check**:
    ```bash
-   ~/.claude-cabinet/omega-venv/bin/python3 -c "
-   from omega import SQLiteStore
-   s = SQLiteStore()
-   edges = s.get_edges_by_type('contradicts')
-   for e in edges: print(f\"{e['source_id']} <-> {e['target_id']} ({e['weight']:.2f})\")
-   "
+   node scripts/validate-memory.mjs
+   ```
+   Catches orphan files (memory written but not indexed), broken
+   references, and exceeded caps.
+
+   Resolve the memory dir at runtime:
+   ```bash
+   node -e "console.log(require('./lib/project-context').resolveMemoryDir())"
    ```
 
-   Omega returns memories ranked by relevance. This is the richest source
-   of institutional memory when available. If omega queries return nothing
-   or fail, fall through to source 1 (flat memory files).
-
-1. **Memory files** — `.claude/memory/*.md` and any project-level memory
-   index (e.g., `MEMORY.md`). These are the distilled, catalogued lessons.
-   Check here first. Read the index for orientation, then read relevant
-   files in full.
+2. **Project-level pattern files** — `.claude/memory/patterns/*.md`.
+   These are project-feedback patterns from the enforcement pipeline
+   (separate from per-file curated memories). Read the index, then
+   any pattern relevant to current work.
 
 2. **Conversation history search** — if a conversation history search tool
    is available (e.g., historian MCP), use it to find prior art. Try
@@ -232,18 +205,6 @@ what was about to happen next. This is the historian's moment.
    in a session should survive compaction because it's been written
    down *during* the session, not just summarized after truncation.
 
-**Omega and compaction:** If omega memory is active, omega's native hooks
-automatically capture key context at session boundaries (session_stop,
-auto_capture, assistant_capture). After compaction, query omega to see
-what was preserved:
-
-```bash
-echo '{"text": "session context before compaction", "limit": 5}' | \
-  ~/.claude-cabinet/omega-venv/bin/python3 scripts/cabinet-memory-adapter.py query
-```
-
-This supplements (not replaces) the manual recovery protocol above.
-
 **The meta-lesson:** Compaction is an entropy event. The historian's
 job is to ensure the memory system is robust enough that compaction
 merely loses conversational tone, not institutional knowledge. If
@@ -254,10 +215,10 @@ advocate for improvements.
 
 You are responsible for the health of the memory system:
 
-1. **After significant work:** Ensure lessons are captured. If omega is
-   available, store lessons there (they persist across sessions and support
-   semantic retrieval). If not, use flat memory files. If a session produced
-   important context that isn't captured anywhere, store it now.
+1. **After significant work:** Ensure lessons are captured via
+   `/cc-remember` (or its programmatic equivalent, `scripts/write-memory-file.mjs`).
+   Each lesson becomes a per-file curated entry indexed in MEMORY.md
+   so it persists across sessions and is discoverable by name.
 
 2. **Cataloguing:** Memory files should be indexed with clear one-line
    descriptions. A memory file that exists but isn't indexed is invisible
@@ -274,61 +235,42 @@ You are responsible for the health of the memory system:
 
 ### Memory Health Measurement
 
-When activated during audit or review, evaluate omega memory health:
+When activated during audit or review, evaluate built-in memory health:
+
+**Structural integrity:**
+```bash
+node scripts/validate-memory.mjs
+```
+Reports violations: MEMORY.md cap exceeded, orphan files, broken
+references, topic files >50KB. Pass = structurally sound.
 
 **Growth & Coverage:**
 ```bash
-~/.claude-cabinet/omega-venv/bin/omega stats --json 2>&1
+ls ~/.claude/projects/<slug>/memory/ | wc -l
 ```
-Check: Is the memory count growing session over session? Are all
-permanent types represented (decision, lesson_learned, user_preference,
-constraint, error_pattern)? Gaps suggest capture isn't working for
-certain categories.
+Track session-over-session. Stagnation suggests capture isn't
+happening; explosive growth (>50 new files/week) suggests noise
+is being captured rather than signal.
 
-**Graph Connectivity:**
+**Index coverage:**
 ```bash
-~/.claude-cabinet/omega-venv/bin/python3 -c "
-from omega import SQLiteStore
-s = SQLiteStore()
-import sqlite3
-conn = sqlite3.connect(s.db_path)
-total = conn.execute('SELECT COUNT(*) FROM memories').fetchone()[0]
-edges = s.edge_count()
-connected = conn.execute('SELECT COUNT(DISTINCT source_id) + COUNT(DISTINCT target_id) FROM memory_relationships').fetchone()[0]
-print(f'Memories: {total}, Edges: {edges}, Connected: {connected}/{total} ({100*connected//max(total,1)}%)')
-"
+grep -c "^- " ~/.claude/projects/<slug>/memory/MEMORY.md
 ```
-Target: >50% of memories should participate in at least one edge.
-Below 30% means discover_connections isn't running or memories are
-too diverse to auto-relate.
+Should match the file count (minus MEMORY.md and edges.json).
+Gaps mean files aren't being indexed — likely Claude wrote them
+directly instead of using `/cc-remember`.
 
-**Contradiction Health:**
-```bash
-~/.claude-cabinet/omega-venv/bin/python3 -c "
-from omega import SQLiteStore
-s = SQLiteStore()
-contradictions = s.get_edges_by_type('contradicts')
-print(f'{len(contradictions)} contradiction(s) detected')
-for c in contradictions:
-    print(f'  {c[\"source_id\"]} <-> {c[\"target_id\"]} (confidence: {c[\"weight\"]:.2f})')
-"
-```
-Unresolved contradictions are technical debt in the knowledge graph.
-Surface them and recommend resolution.
+**Retrieval spot-check:**
+Pick 2-3 recent lessons/decisions. For each, ask "would a fresh
+session find this via MEMORY.md's index?" Read the relevant index
+entry — does its one-line description match what the file actually
+contains? Stale descriptions hide the memory from future sessions.
 
-**Consolidation Effectiveness:**
-```bash
-~/.claude-cabinet/omega-venv/bin/omega consolidate --prune-days 30 2>&1
-```
-Check: Are duplicates accumulating? Are zero-access memories growing?
-If consolidation consistently prunes many entries, capture quality
-may need improvement (storing noise instead of signal).
-
-**Retrieval Quality (spot check):**
-Pick 2-3 recent decisions or lessons from the session. Query omega
-for each one. Does the query return the correct memory in the top 3
-results? If not, embeddings may be degraded or the memory text may
-be too generic to differentiate.
+**Contradictions:**
+The historian's contradiction work is manual now (no graph
+auto-detection). When you discover that two memory files conflict,
+edit the older one to add `**Superseded by <newer-slug>.md on
+<date>**` at the top. Keep both files — the history matters.
 
 ## Output Format
 

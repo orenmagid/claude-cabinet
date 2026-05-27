@@ -324,12 +324,13 @@ direction, this member validates the details.
   to manually edit `.mcp.json`. The official `userConfig` field prompts
   at enable time and stores sensitive values in the system keychain.
 
-- NOT a finding: The project uses a custom memory system (omega) alongside
-  Claude Code's built-in auto-memory. This is intentional — the custom
-  system provides semantic search, knowledge graphs, and structured
-  retrieval that auto-memory doesn't. The two systems serve different
-  purposes. Don't flag custom solutions that genuinely extend beyond
-  platform capabilities.
+- NOT a finding: The project extends Claude Code's built-in features
+  rather than replacing them. CC v0.27.0 wound down its earlier
+  omega-memory integration in favor of Claude Code's native
+  auto-memory + a thin `/cc-remember` + validator layer; the residual
+  layer is small and adds capabilities the platform doesn't (atomic
+  indexing, per-file curated style enforcement). Don't flag custom
+  layers that genuinely extend beyond platform capabilities.
 
 ## Historically Problematic Patterns
 
