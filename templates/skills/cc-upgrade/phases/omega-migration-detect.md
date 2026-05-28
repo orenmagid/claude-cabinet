@@ -71,6 +71,34 @@ anything else. If omega is still ACTIVE (conditions 1–4 above), run the
 full migration flow below FIRST; the sweep cleans up what teardown
 leaves behind, it does not replace migration.
 
+Also strip stale omega permission entries from `.claude/settings.local.json`
+if present. The migration cleans `~/.claude/settings.json` (global hooks/MCP)
+but misses per-project permission allowlists:
+
+```bash
+if [ -f .claude/settings.local.json ]; then
+  node -e "
+    const fs = require('fs');
+    const p = '.claude/settings.local.json';
+    const d = JSON.parse(fs.readFileSync(p, 'utf8'));
+    const perms = d.permissions || {};
+    let removed = 0;
+    for (const key of Object.keys(perms)) {
+      if (key.startsWith('mcp__omega-memory__') || key.startsWith('mcp__omega__')) {
+        delete perms[key];
+        removed++;
+      }
+    }
+    if (removed > 0) {
+      fs.writeFileSync(p, JSON.stringify(d, null, 2) + '\n');
+      console.log('Removed ' + removed + ' stale omega permission entries from settings.local.json');
+    }
+  "
+fi
+```
+
+Idempotent — no-ops when no omega entries exist.
+
 ## User-friendly prompt
 
 Default to **dry-run** — a non-Oren user just upgrading CC shouldn't
