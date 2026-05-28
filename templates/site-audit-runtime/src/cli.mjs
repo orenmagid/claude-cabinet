@@ -5,6 +5,7 @@
 // "not yet wired" notice until then so the binary runs without crashing.
 
 import { isSafeHref } from './security.mjs';
+import { discoverChecks, auditSite, allSkipped } from './orchestrator.mjs';
 
 /**
  * @typedef {Object} CliOptions
@@ -76,6 +77,31 @@ export function validateOptions(opts) {
  * @param {string[]} argv
  * @returns {Promise<number>} process exit code
  */
+function printSummary(report) {
+  process.stdout.write(`\n  Site: ${report.url}\n`);
+  process.stdout.write(`  Time: ${(report.totalDurationMs / 1000).toFixed(1)}s\n\n`);
+  for (const r of report.results) {
+    const score = r.score !== null ? ` ${r.score}/100` : '';
+    const grade = r.grade ? ` (${r.grade})` : '';
+    const icon = r.status === 'pass' ? '+' : r.status === 'fail' ? '!' : r.status === 'skip' ? '-' : 'x';
+    const reason = r.reason ? ` — ${r.reason}` : '';
+    process.stdout.write(`  [${icon}] ${r.tool}${score}${grade}${reason}\n`);
+    if (r.findings.length > 0) {
+      const top = r.findings.slice(0, 3);
+      for (const f of top) {
+        process.stdout.write(`      ${f.severity}: ${f.message}\n`);
+      }
+      if (r.findings.length > 3) {
+        process.stdout.write(`      ... and ${r.findings.length - 3} more\n`);
+      }
+    }
+  }
+}
+
+/**
+ * @param {string[]} argv
+ * @returns {Promise<number>} process exit code
+ */
 export async function main(argv) {
   const opts = parseArgs(argv);
   const err = validateOptions(opts);
@@ -83,11 +109,47 @@ export async function main(argv) {
     process.stderr.write(`${err}\n`);
     return 2;
   }
-  // Engine wiring (orchestrator + checks + report) lands in Phase 1+.
-  process.stdout.write(
-    `cc-site-audit ${opts.mode} mode\n` +
-      `  targets: ${opts.urls.join(', ')}\n` +
-      '  (audit engine not yet wired — Phase 0 scaffold only)\n'
-  );
+  const checks = await discoverChecks();
+  if (checks.length === 0) {
+    process.stderr.write('no check modules found in src/checks/ — nothing to audit\n');
+    return 1;
+  }
+
+  const auditOpts = {
+    fixtureDir: opts.fixtureDir,
+    overallTimeoutMs: opts.overallTimeoutMs,
+  };
+
+  if (opts.mode === 'single') {
+    const report = await auditSite(opts.urls[0], checks, auditOpts);
+
+    if (allSkipped(report)) {
+      process.stderr.write(
+        'all checks skipped — no audit tools available.\n' +
+        'Install at least one: lighthouse, @axe-core/cli, pa11y, linkinator, testssl.sh\n'
+      );
+      return 1;
+    }
+
+    printSummary(report);
+    // HTML report wiring lands in Phase 5.
+    return 0;
+  }
+
+  // Compare mode: auditSite() × 2 in parallel — no mode-branching inside checks.
+  const [reportA, reportB] = await Promise.all([
+    auditSite(opts.urls[0], checks, auditOpts),
+    auditSite(opts.urls[1], checks, auditOpts),
+  ]);
+
+  if (allSkipped(reportA) && allSkipped(reportB)) {
+    process.stderr.write('all checks skipped for both sites — no audit tools available.\n');
+    return 1;
+  }
+
+  printSummary(reportA);
+  process.stdout.write('\n---\n\n');
+  printSummary(reportB);
+  // Diff + HTML comparison report wiring lands in Phase 5.
   return 0;
 }
