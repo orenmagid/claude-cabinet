@@ -62,6 +62,18 @@ from other projects on this machine go into `cross-<project>.md`
 files (e.g., `cross-flow.md`). Unattributed memories go to
 `unscoped.md`.
 
+**Already have native (non-omega) memory in that directory?**
+Migration is additive — it never overwrites your existing files.
+If the memory dir already has native memory that wasn't written by
+a prior omega migration, the omega memories land in an
+`omega-migrated/` subdirectory and an indexed section is appended to
+your existing `MEMORY.md`. Your native files are left exactly as they
+were, and the whole directory is backed up to
+`<memory-dir>.pre-omega-merge-<timestamp>` first. (Earlier in the
+v0.27.0 release this case was skipped, which meant omega memories
+were silently not migrated for projects that already had native
+memory — v0.27.1 fixes that with the merge.)
+
 ## What will I notice change?
 
 **During sessions:**

@@ -267,16 +267,138 @@ test('migrateFromOmega: force overrides already-migrated', async () => {
   }
 });
 
-test('migrateFromOmega: refuses on foreign content (existing decisions.md without preamble)', async () => {
+test('migrateFromOmega: foreign content triggers merge — native files preserved, omega in subdir', async () => {
   const ctx = runOpts();
   process.env.FAKE_OMEGA_FIXTURE = 'small';
   fs.mkdirSync(ctx.outputDir, { recursive: true });
-  fs.writeFileSync(path.join(ctx.outputDir, 'decisions.md'), '# User wrote this\n');
+  // Native memory dir with an index (no migration preamble) + a curated file.
+  fs.writeFileSync(path.join(ctx.outputDir, 'MEMORY.md'), '# Memory Index\n\n- [Stuff](user_role.md) — native\n');
+  fs.writeFileSync(path.join(ctx.outputDir, 'user_role.md'), '# User wrote this\n');
   try {
     const r = await migrateFromOmega(ctx.opts);
-    assert.strictEqual(r.migrated, 0);
-    assert.ok(r.reason === 'partial-or-foreign' || r.reason === 'foreign-content');
-    assert.strictEqual(fs.readFileSync(path.join(ctx.outputDir, 'decisions.md'), 'utf8'), '# User wrote this\n');
+    assert.strictEqual(r.mode, 'merge');
+    assert.strictEqual(r.migrated, 8);
+    assert.ok(r.backupDir && fs.existsSync(r.backupDir), 'backup dir created');
+
+    // Native files untouched at top level.
+    assert.strictEqual(
+      fs.readFileSync(path.join(ctx.outputDir, 'user_role.md'), 'utf8'),
+      '# User wrote this\n'
+    );
+    // Omega content isolated in subdir — zero collision with native files.
+    const omegaDir = path.join(ctx.outputDir, 'omega-migrated');
+    assert.ok(fs.existsSync(omegaDir), 'omega-migrated/ subdir created');
+    assert.ok(fs.readdirSync(omegaDir).some((f) => f.endsWith('.md')), 'topic files in subdir');
+
+    // MEMORY.md keeps the native entry AND gains the omega section with preamble.
+    const memoryMd = fs.readFileSync(path.join(ctx.outputDir, 'MEMORY.md'), 'utf8');
+    assert.ok(memoryMd.includes('[Stuff](user_role.md)'), 'native index entry preserved');
+    assert.ok(memoryMd.includes(PREAMBLE_MARKER), 'omega section carries preamble marker');
+    assert.ok(memoryMd.includes('omega-migrated/'), 'omega section links into subdir');
+  } finally {
+    delete process.env.FAKE_OMEGA_FIXTURE;
+    ctx.cleanup();
+  }
+});
+
+test('migrateFromOmega: merge is idempotent — re-run detects already-migrated', async () => {
+  const ctx = runOpts();
+  process.env.FAKE_OMEGA_FIXTURE = 'small';
+  fs.mkdirSync(ctx.outputDir, { recursive: true });
+  fs.writeFileSync(path.join(ctx.outputDir, 'MEMORY.md'), '# Memory Index\n\n- native\n');
+  try {
+    const first = await migrateFromOmega(ctx.opts);
+    assert.strictEqual(first.mode, 'merge');
+    const second = await migrateFromOmega(ctx.opts);
+    assert.strictEqual(second.reason, 'already-migrated');
+    assert.strictEqual(second.migrated, 0);
+  } finally {
+    delete process.env.FAKE_OMEGA_FIXTURE;
+    ctx.cleanup();
+  }
+});
+
+test('migrateFromOmega: partial-or-foreign (no MEMORY.md) merges, creating an index', async () => {
+  const ctx = runOpts();
+  process.env.FAKE_OMEGA_FIXTURE = 'small';
+  fs.mkdirSync(ctx.outputDir, { recursive: true });
+  // Native curated file but NO MEMORY.md → partial-or-foreign.
+  fs.writeFileSync(path.join(ctx.outputDir, 'naming_lessons.md'), '# Native lesson\n');
+  try {
+    const r = await migrateFromOmega(ctx.opts);
+    assert.strictEqual(r.mode, 'merge');
+    assert.strictEqual(r.indexedInto, 'created-new');
+    assert.strictEqual(
+      fs.readFileSync(path.join(ctx.outputDir, 'naming_lessons.md'), 'utf8'),
+      '# Native lesson\n'
+    );
+    const memoryMd = fs.readFileSync(path.join(ctx.outputDir, 'MEMORY.md'), 'utf8');
+    assert.ok(memoryMd.includes(PREAMBLE_MARKER));
+    assert.ok(memoryMd.includes('omega-migrated/'));
+  } finally {
+    delete process.env.FAKE_OMEGA_FIXTURE;
+    ctx.cleanup();
+  }
+});
+
+test('migrateFromOmega: merge refuses to clobber a pre-existing omega-migrated/ — native data survives', async () => {
+  const ctx = runOpts();
+  process.env.FAKE_OMEGA_FIXTURE = 'small';
+  fs.mkdirSync(ctx.outputDir, { recursive: true });
+  fs.writeFileSync(path.join(ctx.outputDir, 'MEMORY.md'), '# Native index\n');
+  // User happens to have a dir literally named omega-migrated with their data.
+  const collidingDir = path.join(ctx.outputDir, 'omega-migrated');
+  fs.mkdirSync(collidingDir, { recursive: true });
+  fs.writeFileSync(path.join(collidingDir, 'mine.md'), '# Precious native data\n');
+  try {
+    await assert.rejects(migrateFromOmega(ctx.opts), /already exists/);
+    // Native data inside the colliding dir is untouched.
+    assert.strictEqual(
+      fs.readFileSync(path.join(collidingDir, 'mine.md'), 'utf8'),
+      '# Precious native data\n'
+    );
+  } finally {
+    delete process.env.FAKE_OMEGA_FIXTURE;
+    ctx.cleanup();
+  }
+});
+
+test('migrateFromOmega: merge refuses when an explicit backup path already exists', async () => {
+  const ctx = runOpts();
+  process.env.FAKE_OMEGA_FIXTURE = 'small';
+  fs.mkdirSync(ctx.outputDir, { recursive: true });
+  fs.writeFileSync(path.join(ctx.outputDir, 'MEMORY.md'), '# Native index\n');
+  const backupDir = path.join(ctx.tmp, 'stale-backup');
+  fs.mkdirSync(backupDir, { recursive: true });
+  try {
+    await assert.rejects(
+      migrateFromOmega({ ...ctx.opts, backupDir }),
+      /backup path .* already exists/
+    );
+    // No omega subdir created when we refuse.
+    assert.ok(!fs.existsSync(path.join(ctx.outputDir, 'omega-migrated')));
+  } finally {
+    delete process.env.FAKE_OMEGA_FIXTURE;
+    ctx.cleanup();
+  }
+});
+
+test('migrateFromOmega: merge with empty omega DB leaves native memory untouched', async () => {
+  const ctx = runOpts();
+  process.env.FAKE_OMEGA_FIXTURE = 'empty';
+  fs.mkdirSync(ctx.outputDir, { recursive: true });
+  fs.writeFileSync(path.join(ctx.outputDir, 'MEMORY.md'), '# Native index\n\n- keep me\n');
+  try {
+    const r = await migrateFromOmega(ctx.opts);
+    assert.strictEqual(r.reason, 'empty-db');
+    assert.strictEqual(r.mode, 'merge');
+    assert.strictEqual(r.noop, true);
+    // Native MEMORY.md unchanged; no omega subdir, no preamble injected.
+    assert.strictEqual(
+      fs.readFileSync(path.join(ctx.outputDir, 'MEMORY.md'), 'utf8'),
+      '# Native index\n\n- keep me\n'
+    );
+    assert.ok(!fs.existsSync(path.join(ctx.outputDir, 'omega-migrated')));
   } finally {
     delete process.env.FAKE_OMEGA_FIXTURE;
     ctx.cleanup();
