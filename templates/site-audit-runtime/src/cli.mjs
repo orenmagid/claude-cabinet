@@ -4,8 +4,12 @@
 // checks, and report wiring land in later phases — main() prints a clear
 // "not yet wired" notice until then so the binary runs without crashing.
 
-import { isSafeHref } from './security.mjs';
+import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { isSafeHref, sanitizeHostname } from './security.mjs';
 import { discoverChecks, auditSite, allSkipped } from './orchestrator.mjs';
+import { renderSingle, renderComparison } from './report.mjs';
+import { diff } from './diff.mjs';
 
 /**
  * @typedef {Object} CliOptions
@@ -77,6 +81,24 @@ export function validateOptions(opts) {
  * @param {string[]} argv
  * @returns {Promise<number>} process exit code
  */
+function writeReport(html, report, outDir, suffix = '') {
+  const dir = outDir || 'reports';
+  mkdirSync(dir, { recursive: true });
+  const host = sanitizeHostname(report.url);
+  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  let base = `site-audit-${host}-${ts}${suffix ? '-' + suffix : ''}`;
+  let path = join(dir, `${base}.html`);
+  if (existsSync(path)) {
+    const hex = Math.random().toString(16).slice(2, 6);
+    base = `${base}-${hex}`;
+    path = join(dir, `${base}.html`);
+  }
+  writeFileSync(path, html, 'utf8');
+  const jsonPath = join(dir, `${base}.json`);
+  writeFileSync(jsonPath, JSON.stringify(report, null, 2), 'utf8');
+  process.stdout.write(`\n  Report: ${path}\n  JSON:   ${jsonPath}\n`);
+}
+
 function printSummary(report) {
   process.stdout.write(`\n  Site: ${report.url}\n`);
   process.stdout.write(`  Time: ${(report.totalDurationMs / 1000).toFixed(1)}s\n\n`);
@@ -132,7 +154,7 @@ export async function main(argv) {
     }
 
     printSummary(report);
-    // HTML report wiring lands in Phase 5.
+    writeReport(renderSingle(report), report, opts.out);
     return 0;
   }
 
@@ -150,6 +172,8 @@ export async function main(argv) {
   printSummary(reportA);
   process.stdout.write('\n---\n\n');
   printSummary(reportB);
-  // Diff + HTML comparison report wiring lands in Phase 5.
+
+  const delta = diff(reportA, reportB);
+  writeReport(renderComparison(delta), reportA, opts.out, 'compare');
   return 0;
 }
