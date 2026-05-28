@@ -114,6 +114,19 @@ Local SQLite database for actions, projects, and status tracking. Claude
 reads and writes it directly — no external service needed. Skip this if
 you already use GitHub Issues, Linear, or something else.
 
+### Memory (included in lean)
+
+Claude Code has built-in file memory, but no guardrails around it.
+The memory module adds structure:
+
+- **`/cc-remember`** — write a new memory with automatic indexing.
+  Every memory gets its own file and an entry in `MEMORY.md` so
+  `/orient` can find it next session.
+- **`/memory`** — browse and search what Claude remembers.
+- **Validation** — `validate-memory.mjs` checks that the index stays
+  within Claude Code's session-start budget and that every file is
+  indexed. A PostToolUse hook flags unindexed writes in real time.
+
 ### Compliance Stack (full install)
 
 Scoped instructions in `.claude/rules/` that load by file path. An

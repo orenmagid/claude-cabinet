@@ -36,17 +36,20 @@ for Claude Code projects. Small codebase: 11 files in `lib/`, templates in
 ## Modules
 
 - **session-loop** (mandatory): orient + debrief skeleton skills
-- **hooks**, **work-tracking**, **planning**, **compliance**, **audit**,
-  **lifecycle**, **validate** (default-installed)
+- **hooks**, **work-tracking**, **planning**, **compliance**, **memory**,
+  **audit**, **lifecycle**, **validate** (default-installed)
 - **verify** (opt-in, off by default): Cucumber + Playwright walkthrough
   harness. Runtime at `~/.claude-cabinet/verify/<version>/`. /verify
   skeleton skill + opt-in /plan, /execute, /debrief integration phases.
 
-Nine modules total. The former **memory** module (omega-memory engine,
-Python venv) was retired in the v0.27 omega wind-down: CC and consumers
-now use Claude Code's built-in file memory. The CLI still ships the
-one-time migration tooling (`--migrate-memory`) for projects upgrading
-off omega — see `MIGRATION-0.27.md`.
+Ten modules total. The **memory** module (v0.27.2+) provides a curated
+write/validate layer over Claude Code's built-in file memory: `/cc-remember`
+writes indexed memories, `/memory` browses them, `validate-memory.mjs`
+guards MEMORY.md integrity, and `memory-index-guard.sh` (PostToolUse hook)
+flags unindexed writes. This replaced the retired omega-memory engine
+(Python venv) from the v0.27 wind-down. The CLI still ships one-time
+migration tooling (`--migrate-memory`) for projects upgrading off omega
+— see `MIGRATION-0.27.md`.
 
 ## Conventions
 

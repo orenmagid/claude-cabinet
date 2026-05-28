@@ -3,7 +3,7 @@
 ## What's Built
 
 - CLI installer with interactive and flag-based module selection
-- 9 modules: session-loop, hooks, work-tracking, planning, compliance, audit, lifecycle, validate, verify (the `memory` module was retired in the v0.27 omega wind-down — CC and consumers now use Claude Code's built-in file memory; one-time `--migrate-memory` tooling still ships)
+- 10 modules: session-loop, hooks, work-tracking, planning, compliance, memory, audit, lifecycle, validate, verify. The `memory` module (v0.27.2+) ships `/cc-remember`, `/memory`, `validate-memory.mjs`, `write-memory-file.mjs`, `project-context.cjs`, `memory-capture.md` rule, and `memory-index-guard.sh` PostToolUse hook — a curated layer over Claude Code's built-in file memory. One-time `--migrate-memory` tooling still ships for omega upgrades.
 - Verify module (opt-in, off by default): Cucumber + Playwright walkthrough harness with human-in-the-loop P/I/S/N verdict pauses; ships `/verify` skeleton skill (subcommands: bare run, `learn`, `update`, `backfill`) + `cabinet-verify` npm runtime at `~/.claude-cabinet/verify/<version>/` + opt-in phase hooks into `/plan`, `/execute`, `/debrief`, `/orient` (orient `verify-backfill` phase surfaces pending UI actions missing a Verify Plan)
 - Verify runtime hardening: `cabinet-verify` tolerates multi-token `checkId` args (quoted Gherkin args with spaces) and the tarball install path is robust to partial/corrupt prior installs (re-pack on missing/zero-byte tgz)
 - Verify runtime v0.2.0: `cabinet-verify` exposes a public registration API — `setSignInHandler(fn)` for projects with real authentication and `registerCheck(id, fn)` for per-checkId handlers; ships `CheckHandler` / `SignInHandler` TypeScript types. `baseline-steps.ts` auto-registers the 5 Cucumber baseline steps (sign-in, navigation, check dispatch, verdict pause) so consuming projects only write project-specific check handlers — no Cucumber boilerplate.
@@ -68,7 +68,7 @@
 - Template source guard: `template-source-guard.sh` PreToolUse hook (Edit|Write) blocks edits to installed copies when a template upstream exists; CC-source-repo-only (prevents template/source divergence, root cause of v0.19.2)
 - Orient briefing strengthened: default orient now requires 5 sections (State of the World, What's Active, Decision Queue, Health, Suggested Focus)
 - better-sqlite3 error handling: distinguishes version mismatch from missing module
-- settings-merge.js: MEMORY_HOOKS constant and `includeMemory` param for memory module hook injection
+- settings-merge.js: memory-index-guard.sh hook folded into DEFAULT_HOOKS (MEMORY_HOOKS constant and `includeMemory` param removed in v0.27.2 — the hook is now unconditional)
 - db-setup.js: no longer injects `type:module` into package.json (removed to prevent CLI breakage)
 - Work-tracker: auto-detects a free port at startup (no hardcoded port conflicts)
 - Work-tracker UI: displays project name in header and browser tab (reads from package.json)
@@ -78,7 +78,7 @@
 - $ARGUMENTS support: 7 skills (audit, plan, cabinet, investigate, execute, orient, debrief) accept arguments via `argument-hint` frontmatter
 - `resolve-arguments.cjs`: resolves raw argument strings against cabinet member names and committees.yaml
 - settings-merge.js: dedup logic uses `h.command || h.prompt` key (handles both hook types if needed)
-- domain-memories.sh hook type fix: registered as `type: 'command'` (was incorrectly `'prompt'`); install-time migration normalizes any stale entry with the wrong type
+- domain-memories.sh hook type fix (RETIRED v0.27.2): hook replaced by `memory-index-guard.sh` (PostToolUse) in the memory module wiring
 - User-settings healing: `healUserSettings()` in settings-merge.js strips CC hook entries with project-relative paths (`.claude/hooks/*.sh`) from `~/.claude/settings.json` — those entries leak into every non-CC project. Runs unconditionally on every install, idempotent, logs "Removed N stale CC hook entries" when it heals.
 - pib-db shared library: `pib-db-lib.mjs` exports all db operations, consumed by both CLI and MCP server
 - pib-db MCP server: JSON-RPC 2.0 over stdio, 10 tools (pib_create_action enforces Surface Area format)
@@ -100,13 +100,19 @@
 - Execute: post-extraction type checking, .d.ts verification mandate
 - cc-feedback: outbox-only delivery for non-dogfood consumers (removed linked direct-write)
 - cc-publish: staging reset before consumer commits, mandatory Step 6 continuation gate
+- Memory module wired into installer (v0.27.2): new `memory` module (10 modules total) ships 6 artifacts — `/cc-remember` skill, `/memory` reader skill, `memory-capture.md` rule, `write-memory-file.mjs`, `validate-memory.mjs`, `project-context.cjs` — plus `memory-index-guard.sh` PostToolUse hook. Dead `domain-memories.sh` hook replaced. Module is `lean:true` so lean installs get the full memory triad.
+- Manifest-integrity regression test: 6 assertions covering module-count, template-existence, instruction-phase inclusion, hook-manifest entries, and no-overlap across modules
+- prepublishOnly guard in package.json: `node -c lib/cli.js` runs before every `npm publish`, catching syntax errors before they reach npm
+- Bug fix (v0.27.2): migration-only `.ccrc.json` (no `modules` key) no longer crashes the installer
+- Bug fix (v0.27.3): instruction phases now overwrite stale copies during install (previously skipped if file existed with different hash)
+- Bug fix (v0.27.3): `settings.local.json` omega permissions cleaned during install (stale omega MCP allowlists removed)
 
 ## What's Active
 
-- Published at v0.27.1 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
+- Published at v0.27.4 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
 - Debrief routing discipline: `record-lessons.md` is now an instruction phase shipping to all consumers — teaches a decision tree for routing session outputs (built-in memory via `/cc-remember` for decisions/lessons/preferences, CLAUDE.md/briefing for load-bearing project facts, pib-db deferred triggers for conditional revisits, upstream-feedback for CC friction) and explicitly calls out the `feedback-project-*.md` anti-pattern (observed rot rate 4/5 within 7 days). Four instruction phases total: audit-pattern-capture, methodology-capture, record-lessons, upstream-feedback.
 - Orient feedback pipeline hardened: flush does skip-if-exists against feedback/ and feedback/resolved/, atomic outbox reset on clean pass; wrong-write scan excludes `feedback-project-*.md` and `scope: project-specific` files.
-- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory (v0.27.1, Phase 8b)
+- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.27.4
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)
 - organized-mind scoped to human cognition (cognitive load ≠ AI load)
