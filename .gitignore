@@ -12,6 +12,9 @@ __pycache__/
 # Ephemeral act verification artifacts
 .claude/verification/
 
+# omega-winddown consumer-walk resume state (Phase 8b, maintainer-local)
+.claude/migrate-all-consumers-walk-state.json
+
 # Local CC install (dogfooding — not part of the distributable package).
 # The source of truth lives in templates/. Anything the installer drops
 # into working locations (.claude/, scripts/, .ccrc.json) is downstream
