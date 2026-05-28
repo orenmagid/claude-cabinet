@@ -265,6 +265,10 @@ Check `~/.claude/` for old global files:
 Update the registry entry for this project with the current version
 and correct path.
 
+**Omega detection (v0.10–v0.26 → v0.27.0+):** if
+`~/.claude-cabinet/omega-venv/` exists OR `~/.claude/settings.json`
+contains `omega-venv`, run `phases/omega-migration-detect.md`.
+
 ### 3. Explain What Changed
 
 Read `phases/explain-changes.md` for how to present changes.
