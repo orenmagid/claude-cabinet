@@ -17,6 +17,10 @@ Return true if ANY of:
 4. `~/.claude/settings.json.mcpServers` or
    `~/.claude.json.mcpServers` has any key matching
    `/^omega(-memory)?$/i` OR any command containing `omega-venv`
+5. Any inert omega file artifact remains in the project (a migration
+   that tore down the venv/hooks/MCP can still leave these on disk):
+   `.claude/hooks/omega-memory-guard.sh`, `.claude/hooks/domain-memories.sh`,
+   `scripts/cabinet-memory-adapter.py`, `scripts/migrate-memory-to-omega.py`
 
 Full detection check:
 
@@ -38,9 +42,34 @@ for p in ['$HOME/.claude/settings.json', '$HOME/.claude.json']:
         pass
 raise SystemExit(1)
 " 2>/dev/null && HAS_OMEGA=1
+for f in .claude/hooks/omega-memory-guard.sh .claude/hooks/domain-memories.sh \
+         scripts/cabinet-memory-adapter.py scripts/migrate-memory-to-omega.py; do
+  test -f "$f" && HAS_OMEGA=1
+done
 ```
 
 If `HAS_OMEGA=1`, proceed. If 0, skip this phase silently.
+
+## Inert-artifact sweep (always runs when this phase proceeds)
+
+A consumer whose omega was already migrated (`migrated_from_omega.state
+=== 'complete'`, venv/hooks/MCP gone) can still carry inert omega files
+that the teardown didn't remove. Remove them by exact name. This is
+idempotent — `rm -f` no-ops when the file is absent, so it's safe to
+run on every cc-upgrade:
+
+```bash
+rm -f .claude/hooks/omega-memory-guard.sh \
+      .claude/hooks/domain-memories.sh \
+      scripts/cabinet-memory-adapter.py \
+      scripts/migrate-memory-to-omega.py
+```
+
+Report which files were actually removed (test before/after, or capture
+`rm -v` output). Only remove these exact paths — do not glob or remove
+anything else. If omega is still ACTIVE (conditions 1–4 above), run the
+full migration flow below FIRST; the sweep cleans up what teardown
+leaves behind, it does not replace migration.
 
 ## User-friendly prompt
 

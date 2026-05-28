@@ -8,7 +8,7 @@ const os = require('node:os');
 
 let validateMemoryDir;
 test.before(async () => {
-  const mod = await import('../../scripts/validate-memory.mjs');
+  const mod = await import('../../templates/scripts/validate-memory.mjs');
   validateMemoryDir = mod.validateMemoryDir;
 });
 

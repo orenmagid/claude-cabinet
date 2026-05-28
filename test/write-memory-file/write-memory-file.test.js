@@ -8,7 +8,7 @@ const os = require('node:os');
 
 let writeMemoryFile, normalizeSlug;
 test.before(async () => {
-  const mod = await import('../../scripts/write-memory-file.mjs');
+  const mod = await import('../../templates/scripts/write-memory-file.mjs');
   writeMemoryFile = mod.writeMemoryFile;
   normalizeSlug = mod.normalizeSlug;
 });

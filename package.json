@@ -24,7 +24,8 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "node --test test/**/*.test.js"
+    "test": "node --test test/**/*.test.js",
+    "prepublishOnly": "node -e \"if (!process.env.CC_ALLOW_PUBLISH) { console.error('\\n\\u2717 Use /cc-publish (which runs the mandatory consumer-walk), not raw npm publish.\\n  Raw npm publish on v0.27.1 left every consumer stale on v0.26.\\n  To publish manually anyway, set CC_ALLOW_PUBLISH=1.\\n'); process.exit(1); }\""
   },
   "dependencies": {
     "better-sqlite3": "^12.8.0",

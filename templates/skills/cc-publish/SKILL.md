@@ -63,7 +63,10 @@ With user confirmation:
 1. Update `version` in `package.json`
 2. Commit: `Bump to <version>`
 3. Tag: `git tag v<version>`
-4. `npm publish`
+4. `CC_ALLOW_PUBLISH=1 npm publish` — the `prepublishOnly` guard blocks
+   a bare `npm publish` (raw publish on v0.27.1 left every consumer
+   stale on v0.26); the env var is the deliberate escape, and reaching
+   this step via /cc-publish guarantees Step 6's consumer walk follows.
 5. `git push && git push --tags`
 
 ### 5. Post-Publish
