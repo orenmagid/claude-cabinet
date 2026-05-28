@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-05-28T00:18:16.091Z",
+  "paths": {
+    "homeDir": "/Users/orenmagid",
+    "cwd": "/Users/orenmagid/claude-cabinet",
+    "settingsPath": "/Users/orenmagid/.claude/settings.json",
+    "claudeMdPath": "/Users/orenmagid/.claude/CLAUDE.md",
+    "omegaBin": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/omega",
+    "repoRoot": "/Users/orenmagid/claude-cabinet"
+  },
+  "omegaBin": {
+    "path": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/omega",
+    "present": true
+  },
+  "hooks": {
+    "entries": [
+      {
+        "event": "SessionStart",
+        "matcher": null,
+        "command": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/python3 /Users/orenmagid/.claude-cabinet/omega-venv/lib/python3.13/site-packages/omega/hooks/fast_hook.py session_start",
+        "type": "command",
+        "indexInHandler": 0
+      },
+      {
+        "event": "Stop",
+        "matcher": null,
+        "command": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/python3 /Users/orenmagid/.claude-cabinet/omega-venv/lib/python3.13/site-packages/omega/hooks/fast_hook.py assistant_capture",
+        "type": "command",
+        "indexInHandler": 0
+      },
+      {
+        "event": "Stop",
+        "matcher": null,
+        "command": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/python3 /Users/orenmagid/.claude-cabinet/omega-venv/lib/python3.13/site-packages/omega/hooks/fast_hook.py session_stop",
+        "type": "command",
+        "indexInHandler": 0
+      },
+      {
+        "event": "UserPromptSubmit",
+        "matcher": null,
+        "command": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/python3 /Users/orenmagid/.claude-cabinet/omega-venv/lib/python3.13/site-packages/omega/hooks/fast_hook.py auto_capture",
+        "type": "command",
+        "indexInHandler": 0
+      },
+      {
+        "event": "PostToolUse",
+        "matcher": "Edit|Write|NotebookEdit|Bash|Read",
+        "command": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/python3 /Users/orenmagid/.claude-cabinet/omega-venv/lib/python3.13/site-packages/omega/hooks/fast_hook.py surface_memories",
+        "type": "command",
+        "indexInHandler": 0
+      }
+    ]
+  },
+  "omegaBlock": {
+    "present": true,
+    "wellFormed": true,
+    "beginCount": 1,
+    "endCount": 1,
+    "blockText": "<!-- OMEGA:BEGIN — managed by omega setup, do not edit this block -->\n## Memory (OMEGA)\n\nYou have OMEGA persistent memory. At session start:\n1. Call `omega_welcome()` for context briefing\n2. Call `omega_protocol()` for your operating instructions — it's your coordination playbook\n3. Follow the protocol it returns\n\nQuick reference (protocol has full details):\n- `[MEMORY]`/`[HANDOFF]`/`[COORD]` blocks from hooks = ground truth\n- Before non-trivial tasks: `omega_query()` for prior context\n- Before spawning subagents: `omega_query()` first, inject results into agent prompt (subagents can't call OMEGA)\n- After completing tasks: `omega_store(content, \"decision\")` for key outcomes — minimum 1 store per session\n- User says \"remember\": `omega_store(text, \"user_preference\")`\n- Context getting full: `omega_checkpoint` to save state\n- Load user context: `omega_profile()` after welcome/protocol\n- Before architecture decisions: `omega_reflect(action=\"evolution\", topic=<domain>)` to check prior thinking\n- After `omega_store`: check `omega_memory(similar)` and link related memories to build the knowledge graph\n- NEVER fabricate URLs — read from files, query OMEGA, or verify via web fetch\n\nIf OMEGA is unavailable, use basic coordination:\n- Before state changes: check `git log` and ask before deploying\n- After tasks: store decisions with `omega_store()`\n<!-- OMEGA:END -->",
+    "fileBytes": 1385
+  },
+  "mcp": {
+    "userSettings": {
+      "path": "/Users/orenmagid/.claude/settings.json",
+      "exists": true,
+      "entries": [
+        {
+          "key": "omega",
+          "command": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/omega",
+          "args": [
+            "serve"
+          ],
+          "env": {}
+        }
+      ]
+    },
+    "userClaudeJson": {
+      "path": "/Users/orenmagid/.claude.json",
+      "exists": true,
+      "entries": [
+        {
+          "key": "omega-memory",
+          "command": "/Users/orenmagid/.claude-cabinet/omega-venv/bin/python3",
+          "args": [
+            "-m",
+            "omega.server.mcp_server"
+          ],
+          "env": {}
+        }
+      ]
+    },
+    "projectMcp": {
+      "path": "/Users/orenmagid/claude-cabinet/.mcp.json",
+      "exists": true,
+      "entries": []
+    }
+  },
+  "omegaStats": {
+    "stdout": "╭─────────────╮\n│ OMEGA Stats │\n╰─────────────╯\n  Memories: 568\n  DB size: 4.61 MB\n  Edges: 0\n  Backend: sqlite\n\n                       Type Distribution                       \n┏━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃ Type            ┃ Count ┃     % ┃                           ┃\n┡━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩\n│ lesson_learned  │   221 │ 38.9% │ ███████████████████       │\n│ decision        │   178 │ 31.3% │ ███████████████           │\n│ constraint      │    50 │  8.8% │ ████                      │\n│ memory          │    49 │  8.6% │ ████                      │\n│ session_summary │    23 │  4.0% │ ██                        │\n│ user_preference │    22 │  3.9% │ █                         │\n│ lesson          │    10 │  1.8% │                           │\n│ advisor_insight │     5 │  0.9% │                           │\n│ error_pattern   │     4 │  0.7% │                           │\n│ compaction      │     2 │  0.4% │                           │\n│ pattern         │     2 │  0.4% │                           │\n│ task_completion │     2 │  0.4% │                           │\n└─────────────────┴───────┴───────┴───────────────────────────┘"
+  },
+  "projectKeys": {
+    "distinctKeys": {
+      "article-rewriter": 123,
+      "/Users/orenmagid/article-rewriter": 106,
+      "claude-cabinet": 104,
+      "/Users/orenmagid/flow": 52,
+      "flow": 39,
+      "desicify": 21,
+      "theater-cheater": 10,
+      "/Users/orenmagid/claude-cabinet": 7,
+      "/Users/orenmagid/theater-cheater": 7,
+      "deify": 6,
+      "gifted-haibt": 6,
+      "claudeconsult-maginnis": 4,
+      "/Users/orenmagid/flow/.claude/worktrees/practical-chaplygin-f29e59": 4,
+      "hungry-hodgkin": 3,
+      "/Users/orenmagid/article-rewriter/e2e": 1,
+      "/Users/orenmagid/flow/areas/school/courses/COUN_6000/modules/14/assignments": 1,
+      "agent-a7a007c59fc2fdc02": 1,
+      "agent-a0146bca": 1,
+      "/Users/orenmagid/article-rewriter/webapp/frontend": 1,
+      "/Users/orenmagid/flow/.claude/worktrees/optimistic-lichterman-54dbbf": 1,
+      "/Users/orenmagid/go-duck-yourself": 1
+    },
+    "nullCount": 87,
+    "totalDistinct": 21
+  },
+  "gitSha": {
+    "templates/skills/memory/": "36412d99670b6aecd9150874833486aa1a3f9bd1",
+    "templates/skills/memory/SKILL.md": "442467e8fc4fe8dc72404384d0e0f3552f9d6088"
+  }
+}
