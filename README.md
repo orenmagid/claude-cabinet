@@ -186,7 +186,7 @@ absent to use the default. No config files, no YAML, no DSL.
 
 ## Adding Modules to an Existing Install
 
-Some modules (like `verify` and `memory`) are opt-in. To add one
+Some modules (like `verify`) are opt-in. To add one
 without touching anything else in your install:
 
 ```
@@ -196,7 +196,7 @@ npx create-claude-cabinet --modules verify --yes
 The `--modules` flag **merges** with your existing install — it adds
 the listed modules to what's already there, it doesn't replace your
 module set. Safe to run on a mature project without losing
-customization. You can pass multiple modules: `--modules verify,memory`.
+customization. You can pass multiple modules: `--modules verify,audit`.
 
 ## CLI Options
 
