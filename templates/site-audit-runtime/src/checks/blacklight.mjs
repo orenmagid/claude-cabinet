@@ -71,8 +71,9 @@ export function normalize(raw, durationMs) {
     return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const hasSerious = findings.some(f => f.severity === 'serious' || f.severity === 'critical');
   return {
-    checkId, tool, status: 'pass',
+    checkId, tool, status: hasSerious ? 'fail' : 'pass',
     score: null, grade: null, severity: worstSev, findings, durationMs,
   };
 }

@@ -39,6 +39,7 @@ import { safeSpawn } from './security.mjs';
  * @property {number} [overallTimeoutMs]
  * @property {string|null} [fixtureDir]
  * @property {Set<string>|null} [enabledChecks]       null = all
+ * @property {Record<string, object>} [checkOpts]    Per-check options: { checkId: { ... } }
  */
 
 /**
@@ -200,7 +201,8 @@ export async function auditSite(url, checks, opts = {}) {
       const timeoutPromise = new Promise((resolve) =>
         setTimeout(() => resolve({ __timedOut: true }), perToolTimeout)
       );
-      const runPromise = check.run(url, executor);
+      const perCheckOpts = (opts.checkOpts ?? {})[check.checkId] ?? {};
+      const runPromise = check.run(url, executor, perCheckOpts);
       const raw = await Promise.race([runPromise, timeoutPromise]);
 
       if (raw && raw.__timedOut) {

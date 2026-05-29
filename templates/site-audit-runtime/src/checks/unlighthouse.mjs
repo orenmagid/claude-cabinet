@@ -50,9 +50,14 @@ export function normalize(raw, durationMs) {
 
   const avg = count > 0 ? Math.round(totalScore / count) : null;
 
+  const worstSev = findings.length ? findings.reduce((w, f) => {
+    const o = { critical: 0, serious: 1, moderate: 2, info: 3 };
+    return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
+  }, 'info') : null;
+
   return {
     checkId, tool, status: avg !== null && avg >= 50 ? 'pass' : 'fail',
-    score: avg, grade: null, severity: findings.length ? findings[0].severity : null,
+    score: avg, grade: null, severity: worstSev,
     findings, durationMs,
   };
 }

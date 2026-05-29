@@ -1,7 +1,7 @@
 # Claude Cabinet — Project Instructions
 
 Node CLI package (`create-claude-cabinet`) that scaffolds process infrastructure
-for Claude Code projects. Small codebase: 11 files in `lib/`, templates in
+for Claude Code projects. Small codebase: 12 files in `lib/`, templates in
 `templates/`. Two dependencies (`prompts`, `better-sqlite3`). No build step.
 
 ## Key Files

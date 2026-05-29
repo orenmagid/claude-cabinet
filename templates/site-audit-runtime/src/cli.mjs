@@ -29,7 +29,7 @@ import { diff } from './diff.mjs';
  */
 export function parseArgs(argv) {
   /** @type {CliOptions} */
-  const opts = { mode: 'single', urls: [], fixtureDir: null, overallTimeoutMs: null, out: null };
+  const opts = { mode: 'single', urls: [], fixtureDir: null, overallTimeoutMs: null, out: null, authorizeActiveScan: null };
   const positional = [];
 
   for (let i = 0; i < argv.length; i++) {
@@ -40,6 +40,7 @@ export function parseArgs(argv) {
     else if (a.startsWith('--overall-timeout=')) opts.overallTimeoutMs = toMs(a.slice('--overall-timeout='.length));
     else if (a === '--out') opts.out = argv[++i] ?? null;
     else if (a.startsWith('--out=')) opts.out = a.slice('--out='.length);
+    else if (a.startsWith('--i-authorize-active-scan=')) opts.authorizeActiveScan = a.slice('--i-authorize-active-scan='.length);
     else positional.push(a);
   }
 
@@ -140,7 +141,11 @@ export async function main(argv) {
   const auditOpts = {
     fixtureDir: opts.fixtureDir,
     overallTimeoutMs: opts.overallTimeoutMs,
+    checkOpts: {},
   };
+  if (opts.authorizeActiveScan) {
+    auditOpts.checkOpts.nuclei = { authorizedDomain: opts.authorizeActiveScan };
+  }
 
   if (opts.mode === 'single') {
     const report = await auditSite(opts.urls[0], checks, auditOpts);
