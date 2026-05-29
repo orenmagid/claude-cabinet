@@ -281,24 +281,27 @@ the skill handles all `e2e/` directory navigation internally.** No
    | `--demo` | `npm run verify:demo` | (script sets `CABINET_VERIFY_DEMO=1 HEADLESS=0`) |
    | `--demo --full` | `npm run verify:full` | `CABINET_VERIFY_DEMO=1 HEADLESS=0` |
 
-   **CRITICAL: Do NOT run this command via the Bash tool.** Verify
-   scenarios require interactive stdin (human verdict P/I/S/N prompts)
-   and demo mode requires display server access (visible browser). The
-   Bash tool's sandboxed subprocess has neither.
+   **Execution method depends on whether human verdicts are needed:**
 
-   Instead, tell the user to run the command with `!` prefix:
-   ```
-   Type this in the prompt:  ! cd e2e && <composed command>
-   ```
+   - **No human verdicts** (smoke run, demo presentation, CI): Run via
+     the Bash tool. Set `CABINET_VERIFY_AUTO_SKIP_HUMAN=1` to auto-skip
+     verdict prompts. The headed browser (demo mode) works from Bash on
+     macOS — Playwright inherits display access. Use this for demos
+     where the audience watches the browser but nobody needs to type
+     P/I/S/N.
 
-   The `!` prefix runs the command in the user's interactive terminal
-   with full display + stdin access. The output lands in the
-   conversation so the skill can read results afterward.
+   - **Human verdicts needed** (interactive verification): The Bash
+     tool cannot provide interactive stdin for readline prompts. Tell
+     the user to run with `!` prefix:
+     ```
+     Type this in the prompt:  ! cd e2e && <composed command>
+     ```
+     The `!` prefix runs in the user's terminal with stdin access.
+     Output lands in the conversation for post-run analysis.
 
-   For headless smoke runs with `CABINET_VERIFY_AUTO_SKIP_HUMAN=1`
-   (no human verdicts, no visible browser), Bash execution is safe.
-   Only use Bash when BOTH conditions are true: headless AND no
-   interactive prompts.
+   **Default to Bash** with `CABINET_VERIFY_AUTO_SKIP_HUMAN=1` unless
+   the user explicitly wants interactive verdicts. Most demo runs and
+   smoke checks don't need them.
 
 7. **Update `.last-verify-run`** with `endedAt` timestamp, `exitCode`,
    and scenario counts (parse from Cucumber output if available):
