@@ -164,6 +164,7 @@ PACKAGE_JSON=$(cat <<JSON
     "verify:full": "npm run preflight && ${CUCUMBER_CMD} --tags 'not @manual'",
     "verify:manual": "npm run preflight && ${CUCUMBER_CMD} --tags '@manual'",
     "verify:scenario": "npm run preflight && ${CUCUMBER_CMD}",
+    "verify:demo": "CABINET_VERIFY_DEMO=1 HEADLESS=0 npm run verify",
     "report:last": "cabinet-verify-report-last",
     "report:status": "cabinet-verify-report-status",
     "install:browsers": "playwright install chromium"
@@ -451,7 +452,7 @@ fi
 
 # .gitignore updates at project root.
 GITIGNORE_ROOT=".gitignore"
-GITIGNORE_ENTRIES=("e2e/reports/" "e2e/screenshots/" "e2e/fixtures/articles/" "e2e/.env.local" "e2e/node_modules/" "e2e/.last-verify-run")
+GITIGNORE_ENTRIES=("e2e/reports/" "e2e/screenshots/" "e2e/traces/" "e2e/fixtures/articles/" "e2e/.env.local" "e2e/node_modules/" "e2e/.last-verify-run")
 
 if [[ $DRY_RUN -eq 1 ]]; then
   for entry in "${GITIGNORE_ENTRIES[@]}"; do

@@ -45,6 +45,11 @@ export {
 } from './demo-recorder.js';
 
 export {
+  traceEnabled,
+  traceFilePath,
+} from './trace.js';
+
+export {
   computePathHash,
   computePathHashSafe,
   extractCheckIdFromStep,

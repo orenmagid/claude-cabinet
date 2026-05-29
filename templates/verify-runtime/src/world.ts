@@ -42,6 +42,7 @@ import {
 } from '@cucumber/cucumber';
 import { chromium, type Browser, type BrowserContext, type Page, type Locator } from '@playwright/test';
 import * as fs from 'node:fs';
+import { resolve } from 'node:path';
 import {
   startRun,
   endRun,
@@ -51,6 +52,7 @@ import { out, narrateStep } from './output.js';
 import { resolveLaunchOptions, isDemoMode } from './launch-options.js';
 import { initDemo, drainDemo } from './demo-recorder.js';
 import { pauseOnFailure } from './pause-on-failure.js';
+import { traceEnabled, traceFilePath } from './trace.js';
 
 // Default 240s — catches real hangs without killing legit long steps.
 // Steps that legitimately take longer (rewrites, manual think-time)
@@ -130,6 +132,7 @@ export class CabinetVerifyWorld extends World {
   page!: Page;
   role: string = 'unknown';
   baseUrl: string;
+  tracing: boolean = false;
 
   constructor(options: IWorldOptions) {
     super(options);
@@ -152,6 +155,15 @@ Before(async function (this: CabinetVerifyWorld, scenario) {
     acceptDownloads: true,
   });
   this.page = await this.context.newPage();
+
+  if (traceEnabled(process.env)) {
+    await this.context.tracing.start({
+      screenshots: true,
+      snapshots: true,
+      title: scenario.pickle.name,
+    });
+    this.tracing = true;
+  }
 
   this.role = extractRoleFromTags(scenario.pickle.tags);
 
@@ -186,6 +198,20 @@ After(async function (this: CabinetVerifyWorld, scenario) {
       // Page may already be closed; ignore.
     }
   }
+
+  if (this.tracing) {
+    const tracePath = traceFilePath(scenario.pickle.name, Date.now());
+    try {
+      fs.mkdirSync('traces', { recursive: true });
+      await this.context.tracing.stop({ path: tracePath });
+      out.writeln(`  ${out.c.dim('trace')}  ${out.link(resolve(process.cwd(), tracePath), tracePath.split('/').pop() ?? tracePath)}`);
+      out.writeln(`  ${out.c.dim('open with: npx playwright show-trace ' + tracePath)}`);
+    } catch {
+      // Tracing may have already stopped; ignore.
+    }
+    this.tracing = false;
+  }
+
   await this.context?.close();
 });
 

@@ -128,6 +128,43 @@ project-specific concerns (e.g., `DESICIFY_DEV_URL` for the dev stack
 URL, then pass it to cabinet-verify's `CABINET_VERIFY_DEV_URL` in their
 own preflight wrapper).
 
+## Demo Mode Env Vars
+
+Demo mode makes a visible (`HEADLESS=0`) run presentable for an
+audience and inspectable during iterative debugging. The flags are
+composable — set individually for fine control, or use the `DEMO`
+profile shortcut to enable all of them.
+
+| Env var | Effect |
+|---|---|
+| `CABINET_VERIFY_DEMO=1` | Profile shortcut — enables all demo behaviors below; forces `HEADLESS=0`; defaults `SLOW_MO=500` when unset |
+| `CABINET_VERIFY_PAUSE_ON_FAIL=1` | On step failure: screenshot, print error, prompt `[C]ontinue / [A]bort` (TTY only; auto-continues non-TTY) |
+| `CABINET_VERIFY_NARRATE=1` | Print a bold human-readable description before each step |
+| `CABINET_VERIFY_TRACE=1` | Record a Playwright trace per scenario to `traces/<name>-<ts>.zip` |
+
+Each individual flag also activates when `CABINET_VERIFY_DEMO=1`. So
+`CABINET_VERIFY_PAUSE_ON_FAIL` is true when either its own var is `1`
+OR demo mode is on.
+
+**Trace artifacts.** When `CABINET_VERIFY_TRACE=1` (or demo mode), each
+scenario produces `traces/<scenario-slug>-<timestamp>.zip`. Open with:
+
+```bash
+npx playwright show-trace traces/<file>.zip
+```
+
+Or upload to https://trace.playwright.dev (no local Node required —
+useful for clients). The trace viewer provides timeline scrubbing, DOM
+snapshots at every action, a network panel, and source mapping.
+
+**Element highlighting.** In step definitions, call
+`this.spotlight(locator)` before interacting with an element to briefly
+outline it for the viewer. No-op when demo flags are off — calls
+Playwright's built-in `locator.highlight()` (transient overlay, no DOM
+mutation, no layout shift).
+
+`traces/` is gitignored by `install.sh`.
+
 ## pathHash Spec
 
 Each human verdict is keyed by a content-aware hash of the path through
