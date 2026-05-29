@@ -137,7 +137,7 @@ profile shortcut to enable all of them.
 
 | Env var | Effect |
 |---|---|
-| `CABINET_VERIFY_DEMO=1` | Profile shortcut — enables all demo behaviors below; forces `HEADLESS=0`; defaults `SLOW_MO=500` when unset |
+| `CABINET_VERIFY_DEMO=1` | Profile shortcut — enables all demo behaviors below; forces `HEADLESS=0`; defaults `SLOW_MO=1000` when unset |
 | `CABINET_VERIFY_PAUSE_ON_FAIL=1` | On step failure: screenshot, print error, prompt `[C]ontinue / [A]bort` (TTY only; auto-continues non-TTY) |
 | `CABINET_VERIFY_NARRATE=1` | Print a bold human-readable description before each step |
 | `CABINET_VERIFY_TRACE=1` | Record a Playwright trace per scenario to `traces/<name>-<ts>.zip` |

@@ -19,9 +19,9 @@ describe('isDemoMode', () => {
 });
 
 describe('resolveLaunchOptions', () => {
-  it('DEMO=1 defaults slowMo to 500 when SLOW_MO unset', () => {
+  it('DEMO=1 defaults slowMo to 1000 when SLOW_MO unset', () => {
     const opts = resolveLaunchOptions({ CABINET_VERIFY_DEMO: '1' });
-    assert.equal(opts.slowMo, 500);
+    assert.equal(opts.slowMo, 1000);
     assert.equal(opts.headless, false);
   });
 

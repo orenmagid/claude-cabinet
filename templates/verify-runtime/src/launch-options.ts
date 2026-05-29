@@ -17,7 +17,7 @@ export function resolveLaunchOptions(env: Record<string, string | undefined>): L
     const parsed = Number.parseInt(env.SLOW_MO, 10);
     slowMo = Number.isFinite(parsed) ? parsed : 0;
   } else if (demo) {
-    slowMo = 500;
+    slowMo = 1000;
   }
 
   return {
