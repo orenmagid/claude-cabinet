@@ -2,12 +2,12 @@ export const checkId = 'linkinator';
 export const tool = 'Linkinator (broken links)';
 
 export async function detect(executor) {
-  const r = await executor.spawn('npx', ['linkinator', '--version'], { timeoutMs: 15_000 });
+  const r = await executor.spawn('linkinator', ['--version'], { timeoutMs: 15_000 });
   return r.code === 0;
 }
 
 export async function run(url, executor) {
-  return executor.spawn('npx', ['linkinator', url, '--format', 'json', '--timeout', '10000'], { timeoutMs: 60_000 });
+  return executor.spawn('linkinator', [url, '--format', 'json', '--timeout', '10000'], { timeoutMs: 60_000 });
 }
 
 export function normalize(raw, durationMs) {

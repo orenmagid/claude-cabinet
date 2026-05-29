@@ -2,12 +2,12 @@ export const checkId = 'axe-core';
 export const tool = 'axe-core (WCAG AA)';
 
 export async function detect(executor) {
-  const r = await executor.spawn('npx', ['@axe-core/cli', '--version'], { timeoutMs: 15_000 });
+  const r = await executor.spawn('axe', ['--version'], { timeoutMs: 15_000 });
   return r.code === 0;
 }
 
 export async function run(url, executor) {
-  return executor.spawn('npx', ['@axe-core/cli', url, '--exit'], { timeoutMs: 60_000 });
+  return executor.spawn('axe', [url, '--exit'], { timeoutMs: 60_000 });
 }
 
 const IMPACT_TO_SEVERITY = { critical: 'critical', serious: 'serious', moderate: 'moderate', minor: 'info' };

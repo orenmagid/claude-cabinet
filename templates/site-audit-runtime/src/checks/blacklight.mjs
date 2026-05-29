@@ -7,12 +7,12 @@ export const tool = 'Blacklight (tracker detection)';
 export const defaultTimeoutMs = 120_000;
 
 export async function detect(executor) {
-  const r = await executor.spawn('npx', ['@themarkup/blacklight-collector', '--help'], { timeoutMs: 15_000 });
+  const r = await executor.spawn('blacklight-collector', ['--help'], { timeoutMs: 15_000 });
   return r.code === 0 || r.stdout.includes('blacklight');
 }
 
 export async function run(url, executor) {
-  return executor.spawn('npx', ['@themarkup/blacklight-collector', url, '--json'], { timeoutMs: 120_000 });
+  return executor.spawn('blacklight-collector', [url, '--json'], { timeoutMs: 120_000 });
 }
 
 const TRACKER_SEVERITY = {

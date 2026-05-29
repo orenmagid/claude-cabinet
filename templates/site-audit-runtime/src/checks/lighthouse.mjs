@@ -3,13 +3,13 @@ export const tool = 'Lighthouse';
 export const defaultTimeoutMs = 120_000;
 
 export async function detect(executor) {
-  const r = await executor.spawn('npx', ['lighthouse', '--version'], { timeoutMs: 15_000 });
+  const r = await executor.spawn('lighthouse', ['--version'], { timeoutMs: 15_000 });
   return r.code === 0;
 }
 
 export async function run(url, executor) {
-  const r = await executor.spawn('npx', [
-    'lighthouse', url,
+  const r = await executor.spawn('lighthouse', [
+    url,
     '--output=json',
     '--chrome-flags=--headless=new --no-sandbox',
     '--only-categories=performance,accessibility,best-practices,seo',

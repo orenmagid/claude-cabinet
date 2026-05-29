@@ -2,12 +2,12 @@ export const checkId = 'pa11y';
 export const tool = 'Pa11y (WCAG AAA)';
 
 export async function detect(executor) {
-  const r = await executor.spawn('npx', ['pa11y', '--version'], { timeoutMs: 15_000 });
+  const r = await executor.spawn('pa11y', ['--version'], { timeoutMs: 15_000 });
   return r.code === 0;
 }
 
 export async function run(url, executor) {
-  return executor.spawn('npx', ['pa11y', url, '--reporter', 'json', '--standard', 'WCAG2AAA'], { timeoutMs: 60_000 });
+  return executor.spawn('pa11y', [url, '--reporter', 'json', '--standard', 'WCAG2AAA'], { timeoutMs: 60_000 });
 }
 
 const TYPE_TO_SEVERITY = { error: 'serious', warning: 'moderate', notice: 'info' };

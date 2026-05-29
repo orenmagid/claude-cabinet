@@ -2,13 +2,13 @@ export const checkId = 'observatory';
 export const tool = 'MDN HTTP Observatory';
 
 export async function detect(executor) {
-  const r = await executor.spawn('npx', ['@mdn/mdn-http-observatory', '--version'], { timeoutMs: 15_000 });
+  const r = await executor.spawn('mdn-http-observatory', ['--version'], { timeoutMs: 15_000 });
   return r.code === 0;
 }
 
 export async function run(url, executor) {
   const hostname = new URL(url).hostname;
-  return executor.spawn('npx', ['@mdn/mdn-http-observatory', hostname], { timeoutMs: 60_000 });
+  return executor.spawn('mdn-http-observatory', [hostname], { timeoutMs: 60_000 });
 }
 
 const GRADE_SCORES = { 'A+': 100, 'A': 95, 'A-': 90, 'B+': 85, 'B': 80, 'B-': 75, 'C+': 70, 'C': 65, 'C-': 60, 'D+': 55, 'D': 50, 'D-': 45, 'F': 20 };

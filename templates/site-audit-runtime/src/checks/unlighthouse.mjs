@@ -7,13 +7,13 @@ export const tool = 'Unlighthouse (full-site crawl)';
 export const defaultTimeoutMs = 300_000;
 
 export async function detect(executor) {
-  const r = await executor.spawn('npx', ['unlighthouse', '--version'], { timeoutMs: 15_000 });
+  const r = await executor.spawn('unlighthouse', ['--version'], { timeoutMs: 15_000 });
   return r.code === 0;
 }
 
 export async function run(url, executor) {
-  return executor.spawn('npx', [
-    'unlighthouse', '--site', url, '--ci', '--reporter', 'json',
+  return executor.spawn('unlighthouse', [
+    '--site', url, '--ci', '--reporter', 'json',
   ], { timeoutMs: 300_000 });
 }
 

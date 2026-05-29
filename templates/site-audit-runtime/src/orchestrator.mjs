@@ -180,13 +180,16 @@ export async function auditSite(url, checks, opts = {}) {
 
     const start = Date.now();
     let available;
+    let detectError = '';
     try {
       available = await check.detect(executor);
-    } catch {
+    } catch (err) {
       available = false;
+      detectError = err instanceof Error ? err.message : String(err);
     }
 
     if (!available) {
+      const hint = detectError ? ` (${detectError})` : ' (binary not found in PATH)';
       return {
         checkId: check.checkId,
         tool: check.tool,
@@ -196,7 +199,7 @@ export async function auditSite(url, checks, opts = {}) {
         severity: null,
         findings: [],
         durationMs: Date.now() - start,
-        reason: `${check.tool} not available`,
+        reason: `${check.tool} not available${hint}`,
       };
     }
 

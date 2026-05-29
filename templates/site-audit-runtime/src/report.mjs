@@ -137,10 +137,12 @@ export function generateSummary(delta) {
   const biggest = sorted[0];
 
   let summary = '';
+  const sA = hostnameLabel(delta.urlA);
+  const sB = hostnameLabel(delta.urlB);
   if (bWins > aWins) {
-    summary += `Site B outperforms Site A on ${bWins} of ${scored.length} scored dimension${scored.length > 1 ? 's' : ''}`;
+    summary += `${esc(sB)} outperforms ${esc(sA)} on ${bWins} of ${scored.length} scored dimension${scored.length > 1 ? 's' : ''}`;
   } else if (aWins > bWins) {
-    summary += `Site A outperforms Site B on ${aWins} of ${scored.length} scored dimension${scored.length > 1 ? 's' : ''}`;
+    summary += `${esc(sA)} outperforms ${esc(sB)} on ${aWins} of ${scored.length} scored dimension${scored.length > 1 ? 's' : ''}`;
   } else {
     summary += `Sites are evenly matched across ${scored.length} scored dimension${scored.length > 1 ? 's' : ''}`;
   }
@@ -236,7 +238,13 @@ function classifyFindings(a, b) {
  * @param {import('./diff.mjs').DeltaReport} delta
  * @returns {string}
  */
+function hostnameLabel(url) {
+  try { return new URL(url).hostname; } catch { return url; }
+}
+
 export function renderComparison(delta) {
+  const labelA = hostnameLabel(delta.urlA);
+  const labelB = hostnameLabel(delta.urlB);
   const title = `Site Comparison — ${delta.urlA} vs ${delta.urlB}`;
 
   let html = head(title);
@@ -248,14 +256,14 @@ export function renderComparison(delta) {
   const { aOnly, bOnly } = delta.summary;
   if (aOnly > 0 || bOnly > 0) {
     html += `<div class="asymmetric-warning">Asymmetric availability: `;
-    if (aOnly > 0) html += `${aOnly} check${aOnly > 1 ? 's' : ''} ran only for Site A. `;
-    if (bOnly > 0) html += `${bOnly} check${bOnly > 1 ? 's' : ''} ran only for Site B. `;
+    if (aOnly > 0) html += `${aOnly} check${aOnly > 1 ? 's' : ''} ran only for ${esc(labelA)}. `;
+    if (bOnly > 0) html += `${bOnly} check${bOnly > 1 ? 's' : ''} ran only for ${esc(labelB)}. `;
     html += `Deltas for one-sided checks show N/A.</div>`;
   }
 
   // ── Comparison grid with drill-down links ──
   html += '<div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);overflow:hidden;margin-bottom:2rem">';
-  html += `<div class="compare-row"><span>Check</span><span>Site A</span><span>Site B</span><span>Delta</span></div>`;
+  html += `<div class="compare-row"><span>Check</span><span>${esc(labelA)}</span><span>${esc(labelB)}</span><span>Delta</span></div>`;
 
   for (const d of delta.deltas) {
     const aDisplay = d.a && d.a.status !== 'skip'
@@ -308,8 +316,8 @@ export function renderComparison(delta) {
     if (d.availability === 'both') {
       const { shared, aOnly: aOnlyF, bOnly: bOnlyF } = classifyFindings(d.a, d.b);
       html += '<div class="side-by-side">';
-      html += `<div class="site-column"><h4>Site A</h4>${compareCardFindings('Site A only', aOnlyF, d.a)}</div>`;
-      html += `<div class="site-column"><h4>Site B</h4>${compareCardFindings('Site B only', bOnlyF, d.b)}</div>`;
+      html += `<div class="site-column"><h4>${esc(labelA)}</h4>${compareCardFindings(esc(labelA) + ' only', aOnlyF, d.a)}</div>`;
+      html += `<div class="site-column"><h4>${esc(labelB)}</h4>${compareCardFindings(esc(labelB) + ' only', bOnlyF, d.b)}</div>`;
       html += '</div>';
       if (shared.length) {
         html += `<div class="finding-group-label" style="margin-top:1rem">Shared issues (both sites)</div>${renderFindings(shared)}`;
