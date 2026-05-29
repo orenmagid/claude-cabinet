@@ -10,8 +10,12 @@ export const whyItMatters = "Scans for known security vulnerabilities (CVEs) tha
 export const defaultTimeoutMs = 300_000;
 
 export async function detect(executor) {
-  const r = await executor.spawn('nuclei', ['-version'], { timeoutMs: 10_000 });
-  return r.code === 0 || r.stderr?.includes('nuclei');
+  try {
+    const r = await executor.spawn('nuclei', ['-version'], { timeoutMs: 10_000 });
+    return r.code === 0;
+  } catch {
+    return false;
+  }
 }
 
 export async function run(url, executor, opts = {}) {
