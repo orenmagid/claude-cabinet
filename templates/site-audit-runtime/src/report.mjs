@@ -40,7 +40,7 @@ h1{font-size:1.75rem;margin-bottom:.25rem}
 .sev-info{color:#888}
 .finding-url{font-size:.8rem;color:#06c;word-break:break-all}
 .pass-summary{color:#0a7;font-size:.9rem;font-style:italic;padding:.25rem 0}
-.compare-row{display:grid;grid-template-columns:1fr 100px 100px 80px;gap:.5rem;align-items:center;padding:.75rem 1.25rem;border-bottom:1px solid #f0f0f0;cursor:pointer;text-decoration:none;color:inherit}
+.compare-row{display:grid;grid-template-columns:1fr 150px 150px 80px;gap:.5rem;align-items:center;padding:.75rem 1.25rem;border-bottom:1px solid #f0f0f0;cursor:pointer;text-decoration:none;color:inherit}
 .compare-row:hover{background:#f8f9fc}
 .compare-row:first-child{font-weight:700;background:#f8f9fc;cursor:default}
 .delta-pos{color:#0a7;font-weight:600}
@@ -260,7 +260,18 @@ function classifyFindings(a, b) {
  * @returns {string}
  */
 function hostnameLabel(url) {
-  try { return new URL(url).hostname; } catch { return url; }
+  try {
+    const u = new URL(url);
+    const h = u.hostname;
+    const platformDomains = ['railway.app', 'herokuapp.com', 'vercel.app', 'netlify.app', 'fly.dev', 'render.com'];
+    const isPlat = platformDomains.some(d => h.endsWith(d));
+    if (isPlat && u.pathname && u.pathname !== '/') {
+      return u.pathname.split('/').filter(Boolean)[0] + ' (staging)';
+    }
+    if (isPlat) return 'staging';
+    if (h.length <= 25) return h;
+    return h.slice(0, 22) + '...';
+  } catch { return url; }
 }
 
 export function renderComparison(delta) {
