@@ -16,8 +16,11 @@ export async function detect(executor) {
 
 export async function run(url, executor, opts = {}) {
   const hostname = new URL(url).hostname;
-  if (!opts.authorizedDomain || opts.authorizedDomain !== hostname) {
-    return { __skipped: true, reason: `active scan not authorized for ${hostname} (pass --i-authorize-active-scan=${hostname})` };
+  const authorized = Array.isArray(opts.authorizedDomains)
+    ? opts.authorizedDomains
+    : (opts.authorizedDomain ? [opts.authorizedDomain] : []);
+  if (!authorized.includes(hostname)) {
+    return { __skipped: true, reason: `active scan not authorized for ${hostname}` };
   }
 
   const r = await executor.spawn('nuclei', [

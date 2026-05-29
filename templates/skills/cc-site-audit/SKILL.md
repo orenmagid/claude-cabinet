@@ -92,13 +92,30 @@ Nuclei sends real exploit probes to the target server. It is legally
 equivalent to unauthorized penetration testing if run against a site
 you don't own.
 
-**Never run Nuclei without explicit authorization.** Before passing
-`--i-authorize-active-scan=<hostname>`:
+**Before running the audit, ask the user about site ownership.** This
+is a single conversational question, not a CLI flag:
 
-1. Confirm the user owns or has written authorization for the domain.
-2. Warn: "Nuclei sends real vulnerability probes. This can trigger
-   IDS/WAF alerts and may violate computer fraud laws if unauthorized."
-3. The user must explicitly confirm by stating the domain name.
+> "Nuclei (CVE scanner) sends real vulnerability probes and should
+> only run on sites you own. Which of these do you own or have
+> authorization to scan?"
+>
+> - `<hostname-a>` (Site A)
+> - `<hostname-b>` (Site B)
+> - Both
+> - Neither
+
+Pass the authorized hostnames to the orchestrator via `checkOpts`:
+```javascript
+checkOpts: {
+  nuclei: { authorizedDomains: ['staging.example.com'] }
+}
+```
+
+The runtime accepts `authorizedDomains` (array) — Nuclei runs only
+on domains in the list and skips the rest with `status: skip`.
+
+In **single-site mode**, ask: "Do you own `<hostname>`? Nuclei sends
+real vulnerability probes — only run on sites you own."
 
 Without authorization, Nuclei skips with `status: skip`.
 
