@@ -30,7 +30,19 @@ export {
   type FixtureSize,
 } from './fixture-loader.js';
 
-export { out } from './output.js';
+export { out, narrateStep } from './output.js';
+
+export {
+  resolveLaunchOptions,
+  isDemoMode,
+  type LaunchOptions,
+} from './launch-options.js';
+
+export {
+  initDemo,
+  demoActive,
+  drainDemo,
+} from './demo-recorder.js';
 
 export {
   computePathHash,
@@ -64,6 +76,8 @@ export {
 } from './preflight.js';
 
 export { CabinetVerifyWorld, type IWorldOptions } from './world.js';
+
+export { pauseOnFailure } from './pause-on-failure.js';
 
 // Side-effect import: registers the five baseline Cucumber steps
 // (Given dev-stack-up, Given signed-in-as-role, When navigate, Then

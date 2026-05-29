@@ -33,20 +33,24 @@
 import {
   Before,
   After,
+  AfterStep,
   BeforeAll,
   AfterAll,
   World,
   setDefaultTimeout,
   type IWorldOptions,
 } from '@cucumber/cucumber';
-import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
+import { chromium, type Browser, type BrowserContext, type Page, type Locator } from '@playwright/test';
 import * as fs from 'node:fs';
 import {
   startRun,
   endRun,
   setScenarioContext,
 } from './verdict-recorder.js';
-import { out } from './output.js';
+import { out, narrateStep } from './output.js';
+import { resolveLaunchOptions, isDemoMode } from './launch-options.js';
+import { initDemo, drainDemo } from './demo-recorder.js';
+import { pauseOnFailure } from './pause-on-failure.js';
 
 // Default 240s — catches real hangs without killing legit long steps.
 // Steps that legitimately take longer (rewrites, manual think-time)
@@ -56,18 +60,15 @@ setDefaultTimeout(240_000);
 let browser: Browser | undefined;
 
 BeforeAll(async () => {
-  const headless = process.env.HEADLESS === '1';
-  const slowMoStr = process.env.SLOW_MO || '0';
-  const slowMo = Number.parseInt(slowMoStr, 10);
+  const opts = resolveLaunchOptions(process.env);
+  initDemo(process.env);
+  if (isDemoMode(process.env) && opts.slowMo > 0) {
+    out.writeln(`  ${out.c.dim('[demo] slowMo: ' + opts.slowMo + 'ms')}`);
+  }
   browser = await chromium.launch({
-    headless,
-    slowMo: Number.isFinite(slowMo) ? slowMo : 0,
-    // 1500x1000 window leaves ~60×100 px slack vs a 1440×900 viewport,
-    // accommodating macOS chrome (tabs/address/bookmarks bar) without
-    // pushing the page bottom below the visible area. Headless ignores
-    // for the window but honors for the rendering surface — safe either
-    // way.
-    args: ['--window-size=1500,1000'],
+    headless: opts.headless,
+    slowMo: opts.slowMo,
+    args: opts.args,
   });
   await startRun();
 
@@ -92,6 +93,7 @@ BeforeAll(async () => {
 });
 
 AfterAll(async () => {
+  drainDemo();
   const summary = await endRun();
   out.runSummary({
     runId: summary.runId,
@@ -133,6 +135,11 @@ export class CabinetVerifyWorld extends World {
     super(options);
     this.baseUrl = process.env.CABINET_VERIFY_DEV_URL || 'http://localhost:5173';
   }
+
+  async spotlight(locator: Locator): Promise<void> {
+    if (!isDemoMode(process.env)) return;
+    await locator.highlight();
+  }
 }
 
 Before(async function (this: CabinetVerifyWorld, scenario) {
@@ -170,9 +177,6 @@ After(async function (this: CabinetVerifyWorld, scenario) {
   if (scenario.result?.status === 'FAILED') {
     const safeName = scenario.pickle.name.replace(/[^\w.-]/g, '_').slice(0, 60);
     try {
-      // Ensure screenshots/ exists before page.screenshot writes into
-      // it (Playwright throws ENOENT otherwise; the surrounding catch
-      // would silently swallow it).
       fs.mkdirSync('screenshots', { recursive: true });
       await this.page?.screenshot({
         path: `screenshots/failure-${safeName}-${Date.now()}.png`,
@@ -183,6 +187,26 @@ After(async function (this: CabinetVerifyWorld, scenario) {
     }
   }
   await this.context?.close();
+});
+
+AfterStep(async function (this: CabinetVerifyWorld, { result, pickleStep }) {
+  const env = process.env;
+  const shouldNarrate = env.CABINET_VERIFY_NARRATE === '1' || isDemoMode(env);
+  if (shouldNarrate && pickleStep?.text) {
+    const narrated = narrateStep(pickleStep.text);
+    if (narrated) {
+      out.writeln(`  ${out.c.bold(out.c.blue('▸'))} ${out.c.bold(narrated)}`);
+    }
+  }
+
+  if (result) {
+    await pauseOnFailure(
+      this.page,
+      { status: result.status.toString(), message: (result as { message?: string }).message },
+      env,
+      process.stdin.isTTY ?? false,
+    );
+  }
 });
 
 export type { IWorldOptions };

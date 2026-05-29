@@ -91,6 +91,23 @@ Then('step text', { timeout: -1 }, async function () { ... })
 steps that wait for human input). Do NOT use the wrapping-object form
 `Then({pattern, timeout}, fn)` — that is not valid Cucumber v11 API.
 
+## Element highlighting (demo mode)
+
+In step definitions, call `this.spotlight(locator)` before interacting
+with an element to briefly highlight it for the viewer:
+
+```ts
+Then('check {string} {string}', async function (this: ProjectWorld, checkId, desc) {
+  const heading = this.page.getByRole('heading', { name: 'Dashboard' });
+  await this.spotlight(heading);
+  await expect(heading).toBeVisible();
+});
+```
+
+`spotlight()` is a no-op when demo flags are off. It calls Playwright's
+built-in `locator.highlight()` — transient overlay, no DOM mutation, no
+layout shift.
+
 ## Stage comments
 
 The scenarios use `# ── Stage name ────────────` comments to separate

@@ -37,6 +37,19 @@ function fileLink(absPath: string, label?: string): string {
   return terminalLink(text, url, { fallback: () => text });
 }
 
+/**
+ * Strip checkId prefix from step text, returning the human-readable
+ * description. Input shapes:
+ *   'check "1.04 heading-visible" the workspace heading is visible'
+ *   → 'the workspace heading is visible'
+ *   'I navigate to "/app"'
+ *   → 'I navigate to "/app"' (no checkId to strip)
+ */
+export function narrateStep(stepText: string): string {
+  const checkPattern = /^check\s+"[^"]+"\s+/;
+  return stepText.replace(checkPattern, '').trim();
+}
+
 export const out = {
   // ─── Run-level chrome ─────────────────────────────────────────────
   runStart(runId: string, gitSha: string, jsonlPath: string): void {
