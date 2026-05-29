@@ -180,8 +180,9 @@ The "learn" flow runs four phases:
    step-definition stubs. If `e2e/` doesn't yet exist, run
    `install.sh` first to scaffold the directory structure.
 
-After generation, the user runs `npm install && npm run verify` from
-`e2e/` to drive the first scenarios.
+After generation, the user runs `/verify run` to drive the first
+scenarios. (The skill handles `npm install` and `e2e/` navigation
+automatically — no `cd` needed.)
 
 ### Mode C: `/verify update <change>` — sync scenarios
 
@@ -231,12 +232,21 @@ once the action runs. Backfill only adds the planning artifact so
 
 The skill owns the full run lifecycle: pre-run setup, timestamp
 recording, script selection, result capture, post-run actions, and
-cleanup offer.
+cleanup offer. **The user runs `/verify run` from the project root —
+the skill handles all `e2e/` directory navigation internally.** No
+`cd e2e` required.
 
 1. Check if `e2e/` exists in the project root. If not, recommend
    `/verify learn` and exit.
 
-2. **Test-isolation nudge.** If `e2e/` exists but `e2e/start-test-stack.sh`
+2. **Dependency check.** If `e2e/node_modules/` does not exist, or if
+   `e2e/package.json` is newer than `e2e/node_modules/.package-lock.json`,
+   dependencies are stale or missing. Run `npm install` from `e2e/`
+   automatically and surface the output. If `npm install` fails, stop
+   and surface the error — don't proceed to run scenarios with missing
+   dependencies.
+
+3. **Test-isolation nudge.** If `e2e/` exists but `e2e/start-test-stack.sh`
    does not — and the project's dev stack is suspected to write to a
    real DB (signal: `package.json` references a single `data/`,
    `db/`, or similar shared persistence path) — surface a one-line
@@ -244,11 +254,11 @@ cleanup offer.
    will run against your dev stack. Run `/verify learn` to generate
    an isolation scaffold if your dev DB matters."* Do not block.
 
-3. **Pre-run phase.** Read `phases/run.md` for consumer-specific
+4. **Pre-run phase.** Read `phases/run.md` for consumer-specific
    pre-run configuration (start a test stack, seed data, wait for
    a health endpoint). **Default (absent/empty):** Skip.
 
-4. **Record start timestamp.** Write `e2e/.last-verify-run`:
+5. **Record start timestamp.** Write `e2e/.last-verify-run`:
    ```json
    {
      "startedAt": "<ISO-8601 now>",
@@ -259,7 +269,7 @@ cleanup offer.
    }
    ```
 
-5. **Select and execute the npm script** based on arguments:
+6. **Select and execute the npm script** based on arguments:
 
    | Argument | npm script | Env vars injected |
    |----------|-----------|-------------------|
@@ -271,10 +281,10 @@ cleanup offer.
    | `--demo` | `npm run verify` | `CABINET_VERIFY_DEMO=1 HEADLESS=0` |
    | `--demo --full` | `npm run verify:full` | `CABINET_VERIFY_DEMO=1 HEADLESS=0` |
 
-   Run from the project's `e2e/` directory. Capture exit code and
-   stdout/stderr.
+   All npm commands run with `cwd` set to `e2e/` — the user stays in
+   the project root. Capture exit code and stdout/stderr.
 
-6. **Update `.last-verify-run`** with `endedAt` timestamp, `exitCode`,
+7. **Update `.last-verify-run`** with `endedAt` timestamp, `exitCode`,
    and scenario counts (parse from Cucumber output if available):
    ```json
    {
@@ -287,15 +297,15 @@ cleanup offer.
    }
    ```
 
-7. **Surface results.** Run `npm run report:last` from `e2e/` to
+8. **Surface results.** Run `npm run report:last` (from `e2e/`) to
    display the human verdict summary. If failures or I-verdicts
    landed, highlight them.
 
-8. **Post-run phase.** Read `phases/post-run.md` for consumer-specific
+9. **Post-run phase.** Read `phases/post-run.md` for consumer-specific
    post-run actions (upload screenshots, notify Slack, archive traces).
    **Default (absent/empty):** Skip.
 
-9. **Cleanup offer.** If any scenario failed OR if human-verdict P/I
+10. **Cleanup offer.** If any scenario failed OR if human-verdict P/I
    results indicate test data was created:
    - Read `phases/cleanup.md`. If present, offer to run cleanup now
      (Mode F) using the recorded timestamp.
