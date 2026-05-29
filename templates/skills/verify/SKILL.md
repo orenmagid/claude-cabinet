@@ -3,11 +3,13 @@ name: verify
 description: |
   Walkthrough verification harness. Cucumber + Playwright scenarios with
   human-in-the-loop verdict pauses (P/I/S/N) for subjective checks.
-  Subcommands: bare (run the suite), 'learn' (bootstrap from cold start),
-  'update <change>' (sync feature files to a code change), 'backfill <fid>'
-  (add a Verify Plan section to a pending action's notes). Use when:
-  "verify", "/verify", "/verify learn", "/verify update", "/verify backfill",
-  "run walkthrough", "verify scenarios", after a multi-PR umbrella ships.
+  Subcommands: 'run' (execute suite with lifecycle ownership), 'learn'
+  (bootstrap from cold start), 'update <change>' (sync feature files to
+  a code change), 'backfill <fid>' (add a Verify Plan section to a
+  pending action's notes), 'cleanup' (run consumer-configured test data
+  cleanup). Use when: "verify", "/verify", "/verify run", "/verify learn",
+  "/verify update", "/verify backfill", "/verify cleanup", "run walkthrough",
+  "verify scenarios", after a multi-PR umbrella ships.
 related:
   - type: file
     path: .claude/skills/verify/phases/discover.md
@@ -34,9 +36,18 @@ related:
     path: .claude/skills/verify/phases/recipes.md
     role: "Testability gotchas (dnd-kit drag, dynamic file inputs, hash routing) and their workarounds"
   - type: file
+    path: .claude/skills/verify/phases/run.md
+    role: "Consumer pre-run setup (start test stack, seed data)"
+  - type: file
+    path: .claude/skills/verify/phases/post-run.md
+    role: "Consumer post-run actions (upload screenshots, notify, archive)"
+  - type: file
+    path: .claude/skills/verify/phases/cleanup.md
+    role: "Consumer cleanup command template with {timestamp} placeholder"
+  - type: file
     path: cabinet/_briefing.md
     role: "Project identity and configuration"
-argument-hint: "subcommand — 'learn', 'update <change>', 'backfill <fid>', or empty to run"
+argument-hint: "subcommand — 'run [--demo|--cheap|--full|--manual|--scenario <path>]', 'learn', 'update <change>', 'backfill <fid>', 'cleanup', or empty to run"
 user-invocable: true
 standing-mandate: []
 ---
@@ -46,14 +57,20 @@ standing-mandate: []
 ## Arguments
 
 If `$ARGUMENTS` is provided:
-- **Empty**: Run the verification suite (`npm run verify` in the project's
-  `e2e/` directory). Default behavior.
+- **Empty** or **'run'**: Run the verification suite with full lifecycle
+  ownership — timestamp recording, result capture, cleanup offer. See
+  Mode E. Bare `/verify` aliases to `/verify run`.
+- **'run --demo'**: Run with demo mode env vars (`CABINET_VERIFY_DEMO=1
+  HEADLESS=0`). Also accepts `--cheap`, `--full`, `--manual`,
+  `--scenario <path>` to select npm script variants.
 - **'learn'**: Bootstrap or extend the harness. Discover routes/components,
   draft scenarios, calibrate with the user, generate `.feature` files +
   step stubs. Re-runnable; same flow whether starting from zero or
   extending an existing scenario set.
 - **'update <change-description>'**: Sync feature files to a code change.
   The change can be a pib-db action fid, a diff snippet, or free-text.
+- **'cleanup'**: Run consumer-configured test data cleanup using the
+  timestamp from the last run. See Mode F.
 - **'backfill <fid>'**: Add a `## Verify Plan` section to a pending action's
   notes. For actions that were planned before the verify module existed,
   or planned without Verify Plan questions surfaced. Reads the existing
@@ -124,24 +141,10 @@ scenario change.
 
 ## Workflow
 
-### Mode A: bare `/verify` — run the suite
+### Mode A: bare `/verify` — alias for `run`
 
-1. Check if `e2e/` exists in the project root. If not, recommend
-   `/verify learn` and exit.
-2. **Test-isolation nudge.** If `e2e/` exists but `e2e/start-test-stack.sh`
-   does not — and the project's dev stack is suspected to write to a
-   real DB (signal: `package.json` references a single `data/`,
-   `db/`, or similar shared persistence path) — surface a one-line
-   note before running: *"No isolated test stack detected. Scenarios
-   will run against your dev stack. Run `/verify learn` to generate
-   an isolation scaffold if your dev DB matters."* Do not block.
-3. Run `npm run verify` from the project's `e2e/` dir.
-4. Surface the output. If failures or I-verdicts landed, suggest
-   `npm run report:last` to triage.
-
-This mode is intentionally thin — the harness is the value, not
-the wrapping. If the user wants `verify:cheap` or `verify:full`,
-they invoke npm scripts directly.
+Bare `/verify` (no arguments) aliases to Mode E (`/verify run`).
+See Mode E below for the full workflow.
 
 ### Mode B: `/verify learn` — bootstrap
 
@@ -224,6 +227,115 @@ This mode does NOT modify feature files. That's `/execute`'s job
 once the action runs. Backfill only adds the planning artifact so
 `/execute`'s `verify-emit` phase has something to read.
 
+### Mode E: `/verify run` — execute with lifecycle ownership
+
+The skill owns the full run lifecycle: pre-run setup, timestamp
+recording, script selection, result capture, post-run actions, and
+cleanup offer.
+
+1. Check if `e2e/` exists in the project root. If not, recommend
+   `/verify learn` and exit.
+
+2. **Test-isolation nudge.** If `e2e/` exists but `e2e/start-test-stack.sh`
+   does not — and the project's dev stack is suspected to write to a
+   real DB (signal: `package.json` references a single `data/`,
+   `db/`, or similar shared persistence path) — surface a one-line
+   note before running: *"No isolated test stack detected. Scenarios
+   will run against your dev stack. Run `/verify learn` to generate
+   an isolation scaffold if your dev DB matters."* Do not block.
+
+3. **Pre-run phase.** Read `phases/run.md` for consumer-specific
+   pre-run configuration (start a test stack, seed data, wait for
+   a health endpoint). **Default (absent/empty):** Skip.
+
+4. **Record start timestamp.** Write `e2e/.last-verify-run`:
+   ```json
+   {
+     "startedAt": "<ISO-8601 now>",
+     "endedAt": null,
+     "exitCode": null,
+     "script": "<selected script name>",
+     "args": ["<any flags passed>"]
+   }
+   ```
+
+5. **Select and execute the npm script** based on arguments:
+
+   | Argument | npm script | Env vars injected |
+   |----------|-----------|-------------------|
+   | *(none)* | `npm run verify` | — |
+   | `--cheap` | `npm run verify:cheap` | — |
+   | `--full` | `npm run verify:full` | — |
+   | `--manual` | `npm run verify:manual` | — |
+   | `--scenario <path>` | `npm run verify:scenario -- <path>` | — |
+   | `--demo` | `npm run verify` | `CABINET_VERIFY_DEMO=1 HEADLESS=0` |
+   | `--demo --full` | `npm run verify:full` | `CABINET_VERIFY_DEMO=1 HEADLESS=0` |
+
+   Run from the project's `e2e/` directory. Capture exit code and
+   stdout/stderr.
+
+6. **Update `.last-verify-run`** with `endedAt` timestamp, `exitCode`,
+   and scenario counts (parse from Cucumber output if available):
+   ```json
+   {
+     "startedAt": "2026-05-29T01:30:00.000Z",
+     "endedAt": "2026-05-29T01:32:15.000Z",
+     "exitCode": 0,
+     "script": "verify",
+     "args": ["--demo"],
+     "scenarios": { "passed": 4, "failed": 1, "skipped": 0 }
+   }
+   ```
+
+7. **Surface results.** Run `npm run report:last` from `e2e/` to
+   display the human verdict summary. If failures or I-verdicts
+   landed, highlight them.
+
+8. **Post-run phase.** Read `phases/post-run.md` for consumer-specific
+   post-run actions (upload screenshots, notify Slack, archive traces).
+   **Default (absent/empty):** Skip.
+
+9. **Cleanup offer.** If any scenario failed OR if human-verdict P/I
+   results indicate test data was created:
+   - Read `phases/cleanup.md`. If present, offer to run cleanup now
+     (Mode F) using the recorded timestamp.
+   - If `phases/cleanup.md` is absent, suggest the user create one:
+     *"Test data may have been created. Configure cleanup by adding
+     `phases/cleanup.md` — see `/verify cleanup` for the format."*
+   - If all scenarios passed with no interactive verdicts, skip silently.
+
+### Mode F: `/verify cleanup` — test data cleanup
+
+Run consumer-configured cleanup using the timestamp from the last run.
+
+1. **Read timestamp.** Read `e2e/.last-verify-run` for `startedAt`.
+   If the file is missing or has no `startedAt`:
+   - Ask the user for a manual timestamp, or
+   - Offer to use "beginning of today" as the cutoff.
+
+2. **Read cleanup command.** Read `phases/cleanup.md` for the cleanup
+   command template. The template uses `{timestamp}` as a placeholder
+   for the ISO-8601 start time:
+   ```markdown
+   # Cleanup command for this project's verify runs.
+   # {timestamp} is replaced with the ISO-8601 start time of the last run.
+   command: "railway run --service web bin/rails verify:cleanup SINCE='{timestamp}'"
+   ```
+
+   If `phases/cleanup.md` is absent, tell the user how to create one:
+   *"No cleanup configured. Create `phases/cleanup.md` with a
+   `command:` line. Use `{timestamp}` where the run start time
+   should be substituted. Example:*
+   ```
+   command: "railway run --service web bin/rails verify:cleanup SINCE='{timestamp}'"
+   ```
+   *"*
+
+3. **Substitute and execute.** Replace `{timestamp}` with the actual
+   ISO-8601 value from `.last-verify-run` and run the command.
+
+4. **Report.** Surface the command output (success or failure).
+
 ## Phase Summary
 
 | Phase | Absent = | What it customizes |
@@ -236,6 +348,9 @@ once the action runs. Backfill only adds the planning artifact so
 | `scenario-template.md` | Default: Gherkin with cost+role tags, NN.NN checkIds | Project-specific scenario shape |
 | `backfill.md` | Default: interview-driven Verify Plan section drafting | Project-specific backfill questions |
 | `recipes.md` | Default: dnd-kit, dynamic file input, hash routing gotchas | Project-specific testability recipes |
+| `run.md` | Skip | Consumer pre-run setup (start test stack, seed data) |
+| `post-run.md` | Skip | Consumer post-run actions (upload, notify, archive) |
+| `cleanup.md` | Skip — `/verify cleanup` tells user how to create | Consumer cleanup command template with `{timestamp}` |
 
 ## Principles
 

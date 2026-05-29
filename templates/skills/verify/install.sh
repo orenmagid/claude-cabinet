@@ -451,7 +451,7 @@ fi
 
 # .gitignore updates at project root.
 GITIGNORE_ROOT=".gitignore"
-GITIGNORE_ENTRIES=("e2e/reports/" "e2e/screenshots/" "e2e/fixtures/articles/" "e2e/.env.local" "e2e/node_modules/")
+GITIGNORE_ENTRIES=("e2e/reports/" "e2e/screenshots/" "e2e/fixtures/articles/" "e2e/.env.local" "e2e/node_modules/" "e2e/.last-verify-run")
 
 if [[ $DRY_RUN -eq 1 ]]; then
   for entry in "${GITIGNORE_ENTRIES[@]}"; do
