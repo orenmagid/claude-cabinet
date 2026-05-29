@@ -146,3 +146,22 @@ Return valid JSON matching `scripts/finding-schema.json`.
 
 Your response must be ONLY the JSON object — no markdown fences, no
 commentary outside the JSON.
+
+## Deliberation Fields (Two-Stage Audit)
+
+When the audit runs in two-stage deliberative mode, findings may acquire
+additional fields after initial creation:
+
+- `status` — Set during deliberation. Values: `upheld` (no challenges),
+  `challenged` (critic disagreed), `modified` (author accepted critique),
+  `withdrawn` (author conceded), `rebutted` (author defended).
+- `annotations[]` — Array of Stage-2 critic annotations. Each has
+  `cabinet-member`, `type` (challenge/support/context/correction),
+  `text`, and optional `severity-suggestion`.
+- `rebuttal` — The original author's response to challenges. Has
+  `response` (withdraw/modify/defend) and `comment`.
+
+**Stage-1 members:** Emit findings as normal using the schema above.
+These deliberation fields are added later by the workflow.
+
+**Stage-2 members:** Use `critique-contract.md` instead of this file.

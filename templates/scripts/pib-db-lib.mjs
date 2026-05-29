@@ -285,21 +285,44 @@ export function ingestFindings(db, { runDir }) {
     VALUES (?, ?, ?, ?, ?)
   `).run(runId, dateStr, timestamp, data.meta?.trigger || 'manual', data.findings?.length || 0);
 
-  const insert = db.prepare(`
-    INSERT OR REPLACE INTO audit_findings
-      (id, run_id, cabinet_member, severity, title, description, assumption,
-       evidence, question, file, line, suggested_fix, auto_fixable, type)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+  // Try the full INSERT with deliberation columns first; fall back to the
+  // legacy shape for existing databases that haven't added them yet.
+  let insert;
+  let hasDeliberationCols = true;
+  try {
+    insert = db.prepare(`
+      INSERT OR REPLACE INTO audit_findings
+        (id, run_id, cabinet_member, severity, title, description, assumption,
+         evidence, question, file, line, suggested_fix, auto_fixable, type,
+         status, annotations, rebuttal)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+  } catch {
+    hasDeliberationCols = false;
+    insert = db.prepare(`
+      INSERT OR REPLACE INTO audit_findings
+        (id, run_id, cabinet_member, severity, title, description, assumption,
+         evidence, question, file, line, suggested_fix, auto_fixable, type)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+  }
 
   let count = 0;
   for (const f of (data.findings || [])) {
-    insert.run(
+    const base = [
       f.id, runId, f['cabinet-member'], f.severity, f.title,
       f.description || null, f.assumption || null, f.evidence || null,
       f.question || null, f.file || null, f.line || null,
       f.suggestedFix || null, f.autoFixable ? 1 : 0, f.type || 'finding'
-    );
+    ];
+    if (hasDeliberationCols) {
+      base.push(
+        f.status || null,
+        f.annotations ? JSON.stringify(f.annotations) : null,
+        f.rebuttal ? JSON.stringify(f.rebuttal) : null
+      );
+    }
+    insert.run(...base);
     count++;
   }
   return { count, runId, message: `Ingested ${count} findings from ${runDir} (run: ${runId})` };

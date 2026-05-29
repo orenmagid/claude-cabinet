@@ -90,6 +90,16 @@ few sessions, or before a release) to get a full review from every
 relevant member. You don't need to audit every session. The cabinet
 waits until called.
 
+Each member is also a registered **agent type** — invoke any member
+directly with `@cabinet-security`, `@cabinet-architecture`, etc.
+
+When the Workflow tool is available, `/audit` runs a **deliberative
+workflow**: Stage-1 members investigate, then Stage-2 critics
+(anti-confirmation, QA, architecture) annotate findings — challenging
+assumptions, adding context, or confirming. Findings arrive to triage
+with the debate already attached. Optional `--rebuttal` mode lets
+challenged members respond before triage.
+
 Members are organized into **committees** — groups by concern, so you
 can convene just the experts you need. Security review? Convene the
 security committee. Performance concerns? Just the speed committee.
@@ -235,6 +245,8 @@ source code.
 │                    #   (incl. pib-db-access.md, pib-db-triggers.md)
 ├── briefing/        # project briefing templates
 ├── hooks/           # git guardrails, telemetry
+├── agents/          # generated agent-type wrappers (enables @cabinet-*)
+├── workflows/       # deliberative-audit.js (two-stage audit workflow)
 ├── rules/           # enforcement pipeline
 ├── memory/          # pattern templates
 └── settings.json    # hook configuration

@@ -90,22 +90,31 @@ for (const file of files) {
 const timestamp = new Date().toISOString();
 const runId = `run-${basename(runDir)}`;
 
-const summary = {
-  findings: allFindings,
-  meta: {
-    runId,
-    timestamp,
-    trigger: 'manual',
-    members: Object.keys(memberCounts),
-    counts: {
-      total: allFindings.length,
-      findings: allFindings.length - positiveCount,
-      positive: positiveCount,
-      ...severityCounts,
-    },
-    byMember: memberCounts,
+const meta = {
+  runId,
+  timestamp,
+  trigger: 'manual',
+  members: Object.keys(memberCounts),
+  counts: {
+    total: allFindings.length,
+    findings: allFindings.length - positiveCount,
+    positive: positiveCount,
+    ...severityCounts,
   },
+  byMember: memberCounts,
 };
+
+if (allFindings.some(f => f.annotations && f.annotations.length > 0)) {
+  meta.deliberation = {
+    annotatedCount: allFindings.filter(f => f.annotations && f.annotations.length > 0).length,
+    challengedCount: allFindings.filter(f => f.status === 'challenged' || f.status === 'rebutted').length,
+    upheldCount: allFindings.filter(f => f.status === 'upheld').length,
+    withdrawnCount: allFindings.filter(f => f.status === 'withdrawn').length,
+    modifiedCount: allFindings.filter(f => f.status === 'modified').length,
+  };
+}
+
+const summary = { findings: allFindings, meta };
 
 const summaryPath = join(runDir, 'run-summary.json');
 writeFileSync(summaryPath, JSON.stringify(summary, null, 2));

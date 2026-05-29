@@ -75,6 +75,55 @@
             "type": "array",
             "items": { "type": "string" },
             "description": "Categorization tags for filtering"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["upheld", "challenged", "modified", "withdrawn", "rebutted"],
+            "description": "Set during Stage 2/3 deliberation. Absent for single-stage audits."
+          },
+          "annotations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["cabinet-member", "type", "text"],
+              "properties": {
+                "cabinet-member": {
+                  "type": "string",
+                  "description": "Stage-2 critic who made this annotation"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["challenge", "support", "context", "correction"],
+                  "description": "challenge = disagrees, support = confirms, context = adds info, correction = factual fix"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "The annotation content"
+                },
+                "severity-suggestion": {
+                  "type": "string",
+                  "enum": ["critical", "warn", "info", "idea"],
+                  "description": "Critic's suggested severity change, if any"
+                }
+              }
+            },
+            "description": "Stage-2 critic annotations from deliberative audit. Absent for single-stage audits."
+          },
+          "rebuttal": {
+            "type": "object",
+            "properties": {
+              "response": {
+                "type": "string",
+                "enum": ["withdraw", "modify", "defend"],
+                "description": "Stage-1 member's response to challenges"
+              },
+              "comment": {
+                "type": "string",
+                "description": "Explanation of the response"
+              }
+            },
+            "required": ["response", "comment"],
+            "description": "Stage-1 member's response to Stage-2 challenges (opt-in rebuttal mode). Absent when no rebuttal requested or finding was not challenged."
           }
         }
       }

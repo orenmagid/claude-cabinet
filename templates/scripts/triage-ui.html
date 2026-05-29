@@ -63,11 +63,17 @@
 
     /* Finding rows */
     .finding {
-      padding: 10px 14px;
+      padding: 10px 14px 10px 18px;
       border-top: 1px solid #2c2e33;
+      border-left: 4px solid transparent;
       transition: background 0.1s;
     }
     .finding:hover { background: #25262b; }
+    .finding[data-status="challenged"] { border-left-color: #e03131; background: #1e1a1a; }
+    .finding[data-status="rebutted"]   { border-left-color: #7048e8; background: #1a1820; }
+    .finding[data-status="upheld"]     { border-left-color: #2b8a3e; }
+    .finding[data-status="modified"]   { border-left-color: #f08c00; }
+    .finding[data-status="withdrawn"]  { border-left-color: #868e96; }
     .finding-top {
       display: flex;
       align-items: flex-start;
@@ -93,11 +99,119 @@
     .finding-id { color: #5c5f66; font-size: 11px; font-family: monospace; flex-shrink: 0; }
 
     .commentary {
-      color: #909296;
-      font-size: 12px;
-      margin: 4px 0 8px 0;
-      padding-left: 2px;
+      color: #c1c2c5;
+      font-size: 13px;
+      margin: 6px 0 8px 0;
+      padding: 0;
       line-height: 1.6;
+    }
+
+    .finding-detail {
+      margin: 6px 0;
+      padding: 8px 10px;
+      background: #1a1b1e;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #c1c2c5;
+    }
+    .finding-detail p { margin: 0 0 6px 0; }
+    .finding-detail p:last-child { margin-bottom: 0; }
+    .detail-label {
+      color: #909296;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .detail-section { margin-bottom: 8px; }
+    .detail-section:last-child { margin-bottom: 0; }
+    .detail-fix {
+      border-left: 2px solid #2b8a3e;
+      padding-left: 8px;
+      margin-top: 4px;
+    }
+    .detail-question {
+      border-left: 2px solid #f08c00;
+      padding-left: 8px;
+      margin-top: 4px;
+      font-style: italic;
+    }
+    .annotation {
+      margin: 6px 0 6px 20px;
+      padding: 7px 12px;
+      border-left: 3px solid;
+      border-radius: 0 4px 4px 0;
+      background: #1e1f22;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #c1c2c5;
+    }
+    .annotation.ann-type-challenge  { border-left-color: #e03131; }
+    .annotation.ann-type-support    { border-left-color: #2b8a3e; }
+    .annotation.ann-type-context    { border-left-color: #1c7ed6; }
+    .annotation.ann-type-correction { border-left-color: #f08c00; }
+    .annotation-header {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 2px;
+      font-size: 11px;
+    }
+    .annotation-member { color: #909296; font-family: monospace; }
+    .ann-badge {
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .ann-challenge { background: #e03131; color: #fff; }
+    .ann-support { background: #2b8a3e; color: #fff; }
+    .ann-context { background: #1c7ed6; color: #fff; }
+    .ann-correction { background: #f08c00; color: #fff; }
+    .finding-rebuttal {
+      margin: 6px 0 6px 40px;
+      padding: 7px 12px;
+      border-left: 3px solid #7048e8;
+      border-radius: 0 4px 4px 0;
+      background: #1e1f22;
+      font-size: 12px;
+      color: #c1c2c5;
+    }
+    .rebuttal-header { color: #7048e8; font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+    .status-badge {
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+    .status-challenged { background: #e03131; color: #fff; }
+    .status-upheld { background: #2b8a3e; color: #fff; }
+    .status-modified { background: #f08c00; color: #fff; }
+    .status-withdrawn { background: #868e96; color: #fff; }
+    .status-rebutted { background: #7048e8; color: #fff; }
+    .annotation-section-label {
+      color: #5c5f66;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 8px 0 4px 16px;
+    }
+    .no-objections {
+      color: #5c5f66;
+      font-size: 11px;
+      font-style: italic;
+      margin: 6px 0 2px 16px;
+      padding: 4px 0;
+    }
+    .critique-zone {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #2c2e33;
     }
 
     .controls {
@@ -398,12 +512,15 @@
         group.className = 'member-group';
 
         // Header
+        const challenged = items.filter(f => f.status === 'challenged' || f.status === 'rebutted').length;
+
         const header = document.createElement('div');
         header.className = 'member-header';
         header.innerHTML = `
           <span class="member-name">${member} (${items.length})</span>
           <span class="member-stats">
             ${triaged}/${items.length} triaged
+            ${challenged ? ` · <span style="color:#e03131">${challenged} contested</span>` : ''}
           </span>
         `;
         header.addEventListener('click', () => {
@@ -418,15 +535,71 @@
         items.forEach(f => {
           const row = document.createElement('div');
           row.className = 'finding';
+          if (f.status) row.dataset.status = f.status;
           const v = verdicts[f.id]?.verdict || '';
+
+          // --- Finding detail section ---
+          const detailParts = [];
+          if (f.description) {
+            detailParts.push(`<div class="detail-section"><div class="detail-label">Description</div><p>${esc(f.description)}</p></div>`);
+          }
+          if (f.evidence) {
+            detailParts.push(`<div class="detail-section"><div class="detail-label">Evidence</div><p>${esc(f.evidence)}</p></div>`);
+          }
+          if (f.assumption) {
+            detailParts.push(`<div class="detail-section"><div class="detail-label">Assumption</div><p>${esc(f.assumption)}</p></div>`);
+          }
+          if (f.question) {
+            detailParts.push(`<div class="detail-section"><div class="detail-label">Open question</div><div class="detail-question">${esc(f.question)}</div></div>`);
+          }
+          if (f.suggestedFix) {
+            detailParts.push(`<div class="detail-section"><div class="detail-label">Suggested fix</div><div class="detail-fix">${esc(f.suggestedFix)}</div></div>`);
+          }
+          if (f.file) {
+            detailParts.push(`<div class="detail-section"><div class="detail-label">Location</div><p>${esc(f.file)}${f.line ? ':' + f.line : ''}</p></div>`);
+          }
+          const detailHtml = detailParts.length > 0
+            ? `<div class="finding-detail">${detailParts.join('')}</div>`
+            : '';
+
+          // --- Annotations section ---
+          const anns = f.annotations || [];
+          let annHtml = '';
+          if (anns.length > 0) {
+            annHtml = `<div class="annotation-section-label">Stage-2 critique (${anns.length})</div>` +
+              anns.map(a => `
+              <div class="annotation ann-type-${a.type || 'context'}">
+                <div class="annotation-header">
+                  <span class="annotation-member">${esc(a['cabinet-member'] || '')}</span>
+                  <span class="ann-badge ann-${a.type || 'context'}">${esc(a.type || 'context')}</span>
+                  ${a['severity-suggestion'] ? `<span class="badge badge-${a['severity-suggestion']}">→ ${esc(a['severity-suggestion'])}</span>` : ''}
+                </div>
+                ${esc(a.text || '')}
+              </div>`).join('');
+          } else if (f.status === 'upheld') {
+            const allAnns = findings.flatMap(ff => (ff.annotations || []).map(a => a['cabinet-member']));
+            const critics = [...new Set(allAnns)];
+            const criticList = critics.length > 0 ? critics.join(', ') : 'Stage-2 critics';
+            annHtml = `<div class="no-objections">Reviewed by ${esc(criticList)} — no objections</div>`;
+          }
+
+          const rebHtml = f.rebuttal ? `
+            <div class="annotation-section-label">Author response</div>
+            <div class="finding-rebuttal">
+              <div class="rebuttal-header">${esc(f['cabinet-member'])} — ${esc(f.rebuttal.response)}</div>
+              ${esc(f.rebuttal.comment || '')}
+            </div>` : '';
+          const statusHtml = f.status ? `<span class="status-badge status-${f.status}">${esc(f.status)}</span>` : '';
 
           row.innerHTML = `
             <div class="finding-top">
               <span class="badge badge-${f.severity}">${f.severity}</span>
-              <span class="finding-title">${esc(f.title)}</span>
+              <span class="finding-title">${esc(f.title)}${statusHtml}</span>
               <span class="finding-id">${esc(f.id)}</span>
             </div>
             ${f.commentary ? `<div class="commentary">${esc(f.commentary)}</div>` : ''}
+            ${detailHtml}
+            <div class="critique-zone">${annHtml}${rebHtml}</div>
             <div class="controls">
               <button class="verdict-btn ${v === 'fix' ? 'sel-fix' : ''}" data-id="${f.id}" data-v="fix">Fix</button>
               <button class="verdict-btn ${v === 'defer' ? 'sel-defer' : ''}" data-id="${f.id}" data-v="defer">Defer</button>

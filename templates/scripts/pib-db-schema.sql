@@ -66,7 +66,11 @@ CREATE TABLE IF NOT EXISTS audit_findings (
                         CHECK(triage_status IN ('open','approved','rejected','deferred','fixed','archived')),
   triage_notes        TEXT,
   triaged_at          TEXT,
-  fix_description     TEXT
+  fix_description     TEXT,
+  -- Deliberation fields (two-stage audit). Absent for single-stage audits.
+  status              TEXT CHECK(status IS NULL OR status IN ('upheld','challenged','modified','withdrawn','rebutted')),
+  annotations         TEXT,  -- JSON array of Stage-2 critic annotations
+  rebuttal            TEXT   -- JSON object: Stage-1 member's response to challenges
 );
 
 -- Append-only history of trigger-condition evaluations.

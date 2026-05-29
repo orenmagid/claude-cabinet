@@ -178,7 +178,49 @@ and the triage queue becomes useless.
 Read `phases/member-execution.md` for how to spawn and manage
 cabinet member agents.
 
-**Default (absent/empty):** For each selected cabinet member:
+**Default (absent/empty):** Two execution paths — deliberative workflow
+(preferred) or prompt-driven fallback.
+
+#### Path A: Deliberative Workflow (preferred)
+
+If the `Workflow` tool is available and `.claude/workflows/deliberative-audit.js`
+exists, use the two-stage deliberative audit:
+
+1. **Resolve Stage-1 and Stage-2 member lists.** Default: all selected
+   investigative members → Stage 1; anti-confirmation + architecture + QA
+   → Stage 2 (critics). User can override via `/audit --stage2 member1,member2`.
+   Members may appear in both stages.
+2. **Create a timestamped run directory:** `reviews/YYYY-MM-DD/HH-MM-SS/`.
+3. **Build the workflow args:**
+   ```json
+   {
+     "stage1Members": [{ "key": "security", "path": ".claude/skills/cabinet-security/SKILL.md", "agentType": "cabinet-security", "directive": "..." }],
+     "stage2Members": [{ "key": "anti-confirmation", "path": "...", "agentType": "cabinet-anti-confirmation" }],
+     "briefingPath": ".claude/cabinet/_briefing.md",
+     "outputContractPath": ".claude/cabinet/output-contract.md",
+     "critiqueContractPath": ".claude/cabinet/critique-contract.md",
+     "findingSchemaPath": "scripts/finding-schema.json",
+     "suppression": ["finding-id-1", "finding-id-2"],
+     "runDir": "reviews/2026-05-28/21-30-00",
+     "rebuttal": false
+   }
+   ```
+   Set `agentType` to `cabinet-<key>` when `.claude/agents/<key>.md` exists.
+   Set `rebuttal: true` when the user requests it (`/audit --rebuttal`).
+4. **Invoke** `Workflow({ name: 'deliberative-audit', args })`.
+5. When the workflow returns, write its output (the deliberation report)
+   to the run directory and proceed to phase 5 (merge/persist/triage).
+
+Stage-2 critics annotate Stage-1 findings with `challenge`, `support`,
+`context`, or `correction`. When rebuttal mode is on, challenged Stage-1
+members respond (withdraw, modify, or defend). A synthesizer ranks and
+merges everything into a deliberation report. Findings arrive to triage
+pre-annotated with cross-member debate.
+
+#### Path B: Prompt-Driven Fallback
+
+If the Workflow tool is absent, fall back to prompt-driven parallel
+spawning. For each selected cabinet member:
 1. Read the cabinet member's `SKILL.md` for domain knowledge and concerns
 2. Read `cabinet/_briefing.md` for project identity
 3. Read `cabinet/output-contract.md` for output format

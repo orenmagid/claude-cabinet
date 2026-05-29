@@ -38,8 +38,23 @@ for Claude Code projects. Small codebase: 12 files in `lib/`, templates in
 - `templates/skills/cc-site-audit/` — /cc-site-audit skill definition +
   install.sh + phase seams
 - `templates/cabinet/` — cabinet infrastructure (committees, lifecycle, etc.)
+- `templates/cabinet/critique-contract.md` — Stage-2 critic output format
+  for the deliberative audit workflow
+- `templates/workflows/deliberative-audit.js` — dynamic workflow script:
+  four-stage audit (Review → Critique → Rebuttal → Synthesize)
 - `templates/briefing/` — project briefing templates
 - `.ccrc.json` — installation metadata and manifest (generated, gitignored)
+
+### Generated artifacts (not committed)
+
+- `.claude/agents/cabinet-*.md` — thin agent-type wrappers generated at
+  install by `generateAgentWrappers()` in `lib/cli.js`. Each uses
+  `skills: [cabinet-x]` to preload the skill body — zero prose duplication.
+  Gives cabinet members registered subagent identity (`subagent_type:
+  cabinet-security` in transcripts) and `@cabinet-security` invocation.
+  Tools/model derived from skill frontmatter. Unconditional (not audit-gated).
+  Directory reconciled on each install (orphaned wrappers deleted).
+- `.claude/workflows/deliberative-audit.js` — copied from template
 
 ## Modules
 
@@ -53,7 +68,15 @@ for Claude Code projects. Small codebase: 12 files in `lib/`, templates in
   audit. Runtime at `~/.claude-cabinet/site-audit/<version>/`. /cc-site-audit
   skill + comparison mode + standalone HTML report.
 
-Eleven modules total. The **memory** module (v0.27.2+) provides a curated
+Eleven modules total. The **audit** module includes a deliberative workflow
+(`deliberative-audit.js`) that runs audits in two stages: Stage-1 members
+investigate, Stage-2 critics annotate findings (challenge/support/context/
+correction). Optional Stage-3 rebuttal lets challenged members respond.
+Falls back to prompt-driven parallel spawning when the Workflow tool is
+absent. Triage UI renders annotations inline with color-coded badges and
+status strips.
+
+The **memory** module (v0.27.2+) provides a curated
 write/validate layer over Claude Code's built-in file memory: `/cc-remember`
 writes indexed memories, `/memory` browses them, `validate-memory.mjs`
 guards MEMORY.md integrity, and `memory-index-guard.sh` (PostToolUse hook)
