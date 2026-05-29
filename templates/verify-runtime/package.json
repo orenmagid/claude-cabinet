@@ -1,6 +1,6 @@
 {
   "name": "cabinet-verify",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Walkthrough verification harness for Claude Cabinet. Cucumber + Playwright scenarios with human-in-the-loop verdict pause.",
   "type": "module",
   "main": "./dist/src/index.js",
