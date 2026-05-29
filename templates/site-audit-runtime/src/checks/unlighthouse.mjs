@@ -4,6 +4,7 @@
 
 export const checkId = 'unlighthouse';
 export const tool = 'Unlighthouse (full-site crawl)';
+export const whyItMatters = "Runs Lighthouse on every page of your site, not just the homepage — catches performance and accessibility problems hiding on inner pages.";
 export const defaultTimeoutMs = 600_000;
 
 export async function detect(executor) {

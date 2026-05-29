@@ -91,13 +91,14 @@ test('observatory: normalize fixture produces valid CheckResult with grade', () 
 // --- testssl ---
 import * as testssl from '../src/checks/testssl.mjs';
 
-test('testssl: normalize fixture produces valid CheckResult with TLS findings', () => {
+test('testssl: normalize ssl-checker fixture produces valid CheckResult', () => {
   const r = testssl.normalize(ok('testssl'), 30000);
   const { valid, errors } = validateCheckResult(r);
   assert.ok(valid, errors.join('; '));
   assert.equal(r.checkId, 'testssl');
-  assert.ok(r.findings.length >= 2, 'TLS 1.1 + SWEET32');
-  assert.ok(r.findings.some(f => f.context?.includes('CVE')), 'SWEET32 has a CVE');
+  assert.equal(r.status, 'pass');
+  assert.equal(r.findings.length, 0);
+  assert.ok(r.passSummary?.includes('TLSv1.3'));
 });
 
 // --- meta-og ---

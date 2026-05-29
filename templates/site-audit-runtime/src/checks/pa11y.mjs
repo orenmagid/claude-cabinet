@@ -1,5 +1,6 @@
 export const checkId = 'pa11y';
 export const tool = 'Pa11y (WCAG AAA)';
+export const whyItMatters = "Stricter accessibility testing (WCAG AAA) — catches issues that basic checks miss, like low contrast text and missing form labels.";
 
 export async function detect(executor) {
   const r = await executor.spawn('pa11y', ['--version'], { timeoutMs: 15_000 });

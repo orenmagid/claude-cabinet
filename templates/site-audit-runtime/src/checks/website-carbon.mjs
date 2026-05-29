@@ -4,6 +4,7 @@
 
 export const checkId = 'website-carbon';
 export const tool = 'Website Carbon';
+export const whyItMatters = "Estimates your site's carbon footprint per visit — smaller pages are faster, cheaper to host, and better for the environment.";
 
 const KWH_PER_GB = 0.81;
 const CARBON_FACTOR_GRAMS_PER_KWH = 442;

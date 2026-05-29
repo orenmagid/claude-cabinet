@@ -6,6 +6,7 @@
 
 export const checkId = 'nuclei';
 export const tool = 'Nuclei (CVE scan)';
+export const whyItMatters = "Scans for known security vulnerabilities (CVEs) that attackers actively exploit — the kind that make the news.";
 export const defaultTimeoutMs = 300_000;
 
 export async function detect(executor) {

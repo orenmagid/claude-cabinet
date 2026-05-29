@@ -120,6 +120,25 @@ function renderFindings(findings, result) {
   return html;
 }
 
+function renderDetails(result) {
+  if (!result?.details) return '';
+  let html = '';
+  const cats = result.details.categories;
+  if (cats && typeof cats === 'object' && !Array.isArray(cats)) {
+    const items = Object.entries(cats).map(([k, v]) => {
+      const label = k.replace(/-/g, ' ');
+      const cls = v >= 90 ? 'score-pass' : v >= 50 ? '' : 'score-fail';
+      return `<span class="${cls}" style="display:inline-block;margin-right:1rem"><strong>${esc(label)}</strong> ${v}/100</span>`;
+    });
+    html += `<div style="margin-bottom:.75rem;font-size:.9rem">${items.join('')}</div>`;
+  }
+  const types = result.details.types;
+  if (Array.isArray(types) && types.length) {
+    html += `<div style="margin-bottom:.75rem;font-size:.85rem;color:#555">Schema types: ${types.map(t => `<strong>${esc(String(t))}</strong>`).join(', ')}</div>`;
+  }
+  return html;
+}
+
 /**
  * Generate a 2-3 sentence executive summary for a comparison report.
  * @param {import('./diff.mjs').DeltaReport} delta
@@ -171,6 +190,8 @@ function checkSection(result) {
     </div>
   </div>
   <div class="check-body">
+    ${result.whyItMatters ? `<p style="color:#666;font-size:.85rem;font-style:italic;margin-bottom:.5rem">${esc(result.whyItMatters)}</p>` : ''}
+    ${renderDetails(result)}
     ${renderFindings(result.findings, result)}
   </div>
 </div>`;
@@ -306,18 +327,20 @@ export function renderComparison(delta) {
       ? `<span class="${d.deltaScore > 0 ? 'delta-pos' : 'delta-neg'}">(${d.deltaScore > 0 ? '+' : ''}${d.deltaScore})</span>`
       : '';
 
+    const why = d.a?.whyItMatters || d.b?.whyItMatters || '';
     html += `<div class="compare-card" id="compare-${esc(d.checkId)}">
   <div class="compare-card-header">
     <span class="check-title">${STATUS_ICON[d.a?.status || d.b?.status || 'skip'] || ''} ${esc(d.tool)} ${deltaLabel}</span>
     <div class="check-meta">${aBadge} ${bBadge}</div>
   </div>
-  <div class="compare-card-body">`;
+  <div class="compare-card-body">
+  ${why ? `<p style="color:#666;font-size:.85rem;font-style:italic;margin-bottom:.75rem">${esc(why)}</p>` : ''}`;
 
     if (d.availability === 'both') {
       const { shared, aOnly: aOnlyF, bOnly: bOnlyF } = classifyFindings(d.a, d.b);
       html += '<div class="side-by-side">';
-      html += `<div class="site-column"><h4>${esc(labelA)}</h4>${compareCardFindings(esc(labelA) + ' only', aOnlyF, d.a)}</div>`;
-      html += `<div class="site-column"><h4>${esc(labelB)}</h4>${compareCardFindings(esc(labelB) + ' only', bOnlyF, d.b)}</div>`;
+      html += `<div class="site-column"><h4>${esc(labelA)}</h4>${renderDetails(d.a)}${compareCardFindings(esc(labelA) + ' only', aOnlyF, d.a)}</div>`;
+      html += `<div class="site-column"><h4>${esc(labelB)}</h4>${renderDetails(d.b)}${compareCardFindings(esc(labelB) + ' only', bOnlyF, d.b)}</div>`;
       html += '</div>';
       if (shared.length) {
         html += `<div class="finding-group-label" style="margin-top:1rem">Shared issues (both sites)</div>${renderFindings(shared)}`;

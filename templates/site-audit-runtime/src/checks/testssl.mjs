@@ -1,70 +1,75 @@
 export const checkId = 'testssl';
-export const tool = 'testssl.sh (TLS depth)';
-export const defaultTimeoutMs = 180_000;
+export const tool = 'TLS/SSL Check';
+export const whyItMatters = "Weak encryption lets attackers intercept data between your users and your server — passwords, form submissions, everything.";
 
 export async function detect(executor) {
-  const r = await executor.spawn('testssl.sh', ['--version'], { timeoutMs: 5_000 });
-  return r.code === 0 || r.stdout.includes('testssl');
+  try {
+    await import('ssl-checker');
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function run(url, executor) {
   const hostname = new URL(url).hostname;
-  return executor.spawn('testssl.sh', ['--jsonfile-pretty', '/dev/stdout', '--quiet', hostname], { timeoutMs: 180_000 });
+  const sslChecker = (await import('ssl-checker')).default;
+  const result = await sslChecker(hostname);
+  return { code: 0, stdout: JSON.stringify(result), stderr: '', timedOut: false };
 }
 
 export function normalize(raw, durationMs) {
   if (raw.code !== 0 && !raw.stdout) {
-    return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: raw.stderr || 'testssl.sh failed' };
+    return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: raw.stderr || 'ssl-checker failed' };
   }
 
-  let entries;
-  try { entries = JSON.parse(raw.stdout); } catch {
-    const lines = raw.stdout.split('\n').filter(l => l.trim());
-    entries = lines.map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+  let data;
+  try { data = JSON.parse(raw.stdout); } catch {
+    return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: 'failed to parse ssl-checker output' };
   }
-  if (!Array.isArray(entries)) entries = [entries];
 
   const findings = [];
-  for (const e of entries.flat()) {
-    if (!e || !e.severity) continue;
-    const sev = mapSeverity(e.severity);
-    if (sev && e.severity !== 'OK' && e.severity !== 'INFO') {
-      findings.push({
-        severity: sev,
-        message: e.finding || e.id || 'unknown',
-        context: e.cve || undefined,
-      });
+
+  if (!data.valid) {
+    findings.push({ severity: 'critical', message: 'Certificate is not valid' });
+  }
+
+  if (data.daysRemaining != null && data.daysRemaining < 30) {
+    findings.push({
+      severity: data.daysRemaining < 7 ? 'critical' : 'serious',
+      message: `Certificate expires in ${data.daysRemaining} days`,
+    });
+  }
+
+  const protocol = data.protocol || data.tlsVersion || '';
+  if (protocol && !protocol.includes('TLSv1.2') && !protocol.includes('TLSv1.3')) {
+    findings.push({ severity: 'serious', message: `Weak TLS protocol: ${protocol}` });
+  }
+
+  if (data.cipher) {
+    const weak = /RC4|DES|MD5|NULL|EXPORT|anon/i;
+    if (weak.test(data.cipher)) {
+      findings.push({ severity: 'serious', message: `Weak cipher: ${data.cipher}` });
     }
   }
 
-  const worstSev = findings.length ? findings.reduce((w, f) => {
-    const o = { critical: 0, serious: 1, moderate: 2, info: 3 };
-    return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
-  }, 'info') : null;
-
   const hasCritical = findings.some(f => f.severity === 'critical');
   const hasSerious = findings.some(f => f.severity === 'serious');
-
   const isPass = !hasCritical && !hasSerious;
-  const totalChecked = entries.flat().filter(e => e && e.severity).length;
-  const passSummary = isPass
-    ? (findings.length === 0
-      ? `TLS configuration clean — ${totalChecked} check${totalChecked !== 1 ? 's' : ''} passed`
-      : `No critical/serious TLS issues (${findings.length} low-severity item${findings.length !== 1 ? 's' : ''})`)
-    : undefined;
+
+  const details = [];
+  if (data.valid) details.push('valid certificate');
+  if (data.daysRemaining != null) details.push(`${data.daysRemaining} days until expiry`);
+  if (protocol) details.push(protocol);
+  if (data.cipher) details.push(data.cipher);
+
+  const passSummary = isPass ? details.join(', ') : undefined;
 
   return {
     checkId, tool, status: isPass ? 'pass' : 'fail',
-    score: null, grade: null, severity: worstSev, findings, durationMs,
+    score: null, grade: null,
+    severity: hasCritical ? 'critical' : hasSerious ? 'serious' : findings.length ? 'moderate' : null,
+    findings, durationMs,
     ...(passSummary && { passSummary }),
   };
-}
-
-function mapSeverity(s) {
-  const l = String(s).toUpperCase();
-  if (l === 'CRITICAL' || l === 'HIGH') return 'critical';
-  if (l === 'MEDIUM' || l === 'WARN' || l === 'WARNING') return 'serious';
-  if (l === 'LOW' || l === 'NOT OK') return 'moderate';
-  if (l === 'INFO' || l === 'OK') return 'info';
-  return 'info';
 }

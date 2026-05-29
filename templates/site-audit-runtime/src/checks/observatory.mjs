@@ -1,5 +1,6 @@
 export const checkId = 'observatory';
 export const tool = 'MDN HTTP Observatory';
+export const whyItMatters = "Mozilla's security scorecard — grades your site's defenses against common web attacks like clickjacking and data injection.";
 
 export async function detect(executor) {
   const r = await executor.spawn('mdn-http-observatory-scan', ['--help'], { timeoutMs: 15_000 });

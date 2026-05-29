@@ -1,5 +1,6 @@
 export const checkId = 'lighthouse';
 export const tool = 'Lighthouse';
+export const whyItMatters = "Google's own audit tool — scores four dimensions separately: Performance (page speed), Accessibility (usability for all), Best Practices (security and code quality), and SEO (search visibility). The overall score averages all four.";
 export const defaultTimeoutMs = 120_000;
 
 export async function detect(executor) {

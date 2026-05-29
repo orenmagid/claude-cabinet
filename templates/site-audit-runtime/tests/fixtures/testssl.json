@@ -1,1 +1,1 @@
-[{"id":"TLS1","severity":"OK","finding":"TLS 1.3 offered"},{"id":"TLS1_1","severity":"LOW","finding":"TLS 1.1 still offered"},{"id":"heartbleed","severity":"OK","finding":"not vulnerable"},{"id":"POODLE_SSL","severity":"OK","finding":"not vulnerable"},{"id":"SWEET32","severity":"MEDIUM","finding":"potentially vulnerable, uses 64 bit block ciphers","cve":"CVE-2016-2183"}]
+{"valid":true,"validFrom":"2026-01-01T00:00:00.000Z","validTo":"2027-01-01T00:00:00.000Z","daysRemaining":215,"protocol":"TLSv1.3","cipher":"TLS_AES_256_GCM_SHA384"}

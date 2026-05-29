@@ -55,7 +55,6 @@ const DEFAULT_TIMEOUTS = {
   testssl: 180_000,
   nuclei: 300_000,
   unlighthouse: 600_000,
-  blacklight: 120_000,
 };
 const FALLBACK_TIMEOUT = 60_000;
 const MAX_CONCURRENCY = 4;
@@ -114,7 +113,6 @@ function guessCheckId(cmd, args) {
   if (allTokens.includes('nuclei')) return 'nuclei';
   if (allTokens.includes('unlighthouse')) return 'unlighthouse';
   if (allTokens.includes('observatory')) return 'observatory';
-  if (allTokens.includes('blacklight')) return 'blacklight';
   if (allTokens.includes('dig')) return 'dns';
   if (allTokens.includes('openssl')) return 'ssl-cert';
   return basename(cmd).replace(/\.\w+$/, '');
@@ -242,6 +240,7 @@ export async function auditSite(url, checks, opts = {}) {
           reason: `normalize produced invalid CheckResult: ${errors.join('; ')}`,
         };
       }
+      if (check.whyItMatters) result.whyItMatters = check.whyItMatters;
       return result;
     } catch (err) {
       return {

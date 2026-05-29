@@ -1,5 +1,6 @@
 export const checkId = 'meta-og';
 export const tool = 'Meta & Open Graph';
+export const whyItMatters = "Controls how your site appears when shared on social media and in search results — missing tags mean ugly or blank previews.";
 
 export async function detect() { return true; }
 

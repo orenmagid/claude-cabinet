@@ -10,28 +10,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const fix = (id) => readFileSync(join(__dirname, 'fixtures', `${id}.json`), 'utf8');
 const ok = (id) => ({ code: 0, stdout: fix(id), stderr: '', timedOut: false });
 
-// --- blacklight ---
-import * as blacklight from '../src/checks/blacklight.mjs';
-
-test('blacklight: normalize fixture produces valid CheckResult with tracker findings', () => {
-  const r = blacklight.normalize(ok('blacklight'), 20000);
-  const { valid, errors } = validateCheckResult(r);
-  assert.ok(valid, errors.join('; '));
-  assert.equal(r.checkId, 'blacklight');
-  assert.equal(r.score, null);
-  assert.ok(r.findings.some(f => f.message.includes('Session replay')));
-  assert.ok(r.findings.some(f => f.message.includes('Canvas fingerprinting')));
-  assert.ok(r.findings.some(f => f.message.includes('Facebook Pixel')));
-  assert.ok(r.findings.some(f => f.message.includes('third-party cookies')));
-});
-
-test('blacklight: clean site → no findings', () => {
-  const r = blacklight.normalize({ code: 0, stdout: '{}', stderr: '', timedOut: false }, 5000);
-  const { valid, errors } = validateCheckResult(r);
-  assert.ok(valid, errors.join('; '));
-  assert.equal(r.findings.length, 0);
-});
-
 // --- unlighthouse ---
 import * as unlighthouse from '../src/checks/unlighthouse.mjs';
 

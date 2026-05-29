@@ -1,5 +1,6 @@
 export const checkId = 'ssl-cert';
 export const tool = 'SSL Certificate';
+export const whyItMatters = "An expired or misconfigured certificate shows scary browser warnings that immediately drive visitors away.";
 
 export async function detect(executor) {
   const r = await executor.spawn('openssl', ['version'], { timeoutMs: 5_000 });

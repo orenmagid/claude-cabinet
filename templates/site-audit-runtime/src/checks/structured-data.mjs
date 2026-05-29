@@ -1,5 +1,6 @@
 export const checkId = 'structured-data';
 export const tool = 'Structured Data (JSON-LD)';
+export const whyItMatters = "Tells Google exactly what your business does — enables rich search results like star ratings, FAQ dropdowns, and business info panels.";
 
 export async function detect() { return true; }
 
@@ -70,9 +71,12 @@ export function normalize(html, durationMs) {
     ? `${scripts.length} JSON-LD block${scripts.length !== 1 ? 's' : ''} found with ${types.length} type${types.length !== 1 ? 's' : ''}: ${types.join(', ') || 'none'}`
     : undefined;
 
+  const details = types.length ? { types, blockCount: scripts.length } : undefined;
+
   return {
     checkId, tool, status: isPass ? 'pass' : 'fail',
     score, grade: null, severity: worstSev, findings, durationMs,
     ...(passSummary && { passSummary }),
+    ...(details && { details }),
   };
 }

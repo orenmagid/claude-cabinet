@@ -1,5 +1,6 @@
 export const checkId = 'dns';
 export const tool = 'DNS & Protocol';
+export const whyItMatters = "DNS security prevents attackers from redirecting your visitors to fake versions of your site. HTTP/2 makes pages load faster.";
 
 export async function detect(executor) {
   const r = await executor.spawn('dig', ['-v'], { timeoutMs: 5_000 });

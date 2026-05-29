@@ -1,5 +1,6 @@
 export const checkId = 'axe-core';
 export const tool = 'axe-core (WCAG AA)';
+export const whyItMatters = "Checks whether people with disabilities can use your site — screen readers, keyboard navigation, color contrast. Legal liability if not met.";
 
 export async function detect(executor) {
   const r = await executor.spawn('axe', ['--version'], { timeoutMs: 15_000 });

@@ -1,5 +1,6 @@
 export const checkId = 'linkinator';
 export const tool = 'Linkinator (broken links)';
+export const whyItMatters = "Broken links frustrate visitors and tell search engines your site isn't maintained — hurts both trust and rankings.";
 
 export async function detect(executor) {
   const r = await executor.spawn('linkinator', ['--version'], { timeoutMs: 15_000 });
