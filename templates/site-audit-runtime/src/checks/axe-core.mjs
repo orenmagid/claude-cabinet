@@ -8,7 +8,7 @@ export async function detect(executor) {
 }
 
 export async function run(url, executor) {
-  return executor.spawn('axe', [url, '--exit'], { timeoutMs: 60_000 });
+  return executor.spawn('axe', [url, '--stdout'], { timeoutMs: 60_000 });
 }
 
 const IMPACT_TO_SEVERITY = { critical: 'critical', serious: 'serious', moderate: 'moderate', minor: 'info' };

@@ -2,6 +2,9 @@
 // aggregated scores. Heavier than single-page Lighthouse — use for
 // multi-page audit coverage.
 
+import { readFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
+import { join } from 'node:path';
+
 export const checkId = 'unlighthouse';
 export const tool = 'Unlighthouse (full-site crawl)';
 export const whyItMatters = "Runs Lighthouse on every page of your site, not just the homepage — catches performance and accessibility problems hiding on inner pages.";
@@ -13,14 +16,44 @@ export async function detect(executor) {
 }
 
 export async function run(url, executor) {
-  return executor.spawn('unlighthouse', [
-    '--site', url, '--ci', '--reporter', 'json',
-  ], { timeoutMs: 300_000 });
+  const outDir = join(process.cwd(), '.unlighthouse-tmp');
+  try { rmSync(outDir, { recursive: true, force: true }); } catch { /* ok */ }
+
+  const r = await executor.spawn('unlighthouse-ci', [
+    '--site', url,
+    '--reporter', 'jsonExpanded',
+    '--output-path', outDir,
+    '--samples', '5',
+  ], { timeoutMs: 600_000 });
+
+  // Read the JSON report from the output directory
+  try {
+    const reportDir = join(outDir, 'ci-result');
+    if (existsSync(reportDir)) {
+      const files = readdirSync(reportDir).filter(f => f.endsWith('.json'));
+      if (files.length) {
+        const json = readFileSync(join(reportDir, files[0]), 'utf8');
+        return { code: r.code, stdout: json, stderr: r.stderr, timedOut: r.timedOut };
+      }
+    }
+    // Fallback: try .unlighthouse directory
+    const altDir = join(outDir);
+    const altFiles = existsSync(altDir) ? readdirSync(altDir).filter(f => f.endsWith('.json')) : [];
+    if (altFiles.length) {
+      const json = readFileSync(join(altDir, altFiles[0]), 'utf8');
+      return { code: r.code, stdout: json, stderr: r.stderr, timedOut: r.timedOut };
+    }
+  } catch { /* fall through */ }
+
+  return r;
 }
 
 export function normalize(raw, durationMs) {
+  if (raw.timedOut) {
+    return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: 'timed out (full-site crawl may need more time)' };
+  }
   if (raw.code !== 0 && !raw.stdout) {
-    return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: raw.stderr || 'unlighthouse failed' };
+    return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: raw.stderr?.slice(0, 200) || 'unlighthouse failed' };
   }
 
   let data;

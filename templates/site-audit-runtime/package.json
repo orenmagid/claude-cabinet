@@ -1,6 +1,6 @@
 {
   "name": "@claude-cabinet/site-audit",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Comprehensive deployed-site quality audit engine for Claude Cabinet. Runs checks across performance, accessibility, security, SEO, content, DNS, and privacy against a deployed URL; single-site and comparison modes; standalone HTML report.",
   "type": "module",
   "bin": {
