@@ -12,7 +12,10 @@ export const defaultTimeoutMs = 300_000;
 export async function detect(executor) {
   try {
     const r = await executor.spawn('nuclei', ['-version'], { timeoutMs: 10_000 });
-    return r.code === 0;
+    if (r.code !== 0) return false;
+    // Ensure templates are downloaded (nuclei 3.x ships without them)
+    await executor.spawn('nuclei', ['-update-templates'], { timeoutMs: 60_000 });
+    return true;
   } catch {
     return false;
   }
