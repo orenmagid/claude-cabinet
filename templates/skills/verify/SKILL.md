@@ -269,7 +269,7 @@ the skill handles all `e2e/` directory navigation internally.** No
    }
    ```
 
-6. **Select and execute the npm script** based on arguments:
+6. **Compose the command** based on arguments:
 
    | Argument | npm script | Env vars injected |
    |----------|-----------|-------------------|
@@ -278,11 +278,27 @@ the skill handles all `e2e/` directory navigation internally.** No
    | `--full` | `npm run verify:full` | — |
    | `--manual` | `npm run verify:manual` | — |
    | `--scenario <path>` | `npm run verify:scenario -- <path>` | — |
-   | `--demo` | `npm run verify` | `CABINET_VERIFY_DEMO=1 HEADLESS=0` |
+   | `--demo` | `npm run verify:demo` | (script sets `CABINET_VERIFY_DEMO=1 HEADLESS=0`) |
    | `--demo --full` | `npm run verify:full` | `CABINET_VERIFY_DEMO=1 HEADLESS=0` |
 
-   All npm commands run with `cwd` set to `e2e/` — the user stays in
-   the project root. Capture exit code and stdout/stderr.
+   **CRITICAL: Do NOT run this command via the Bash tool.** Verify
+   scenarios require interactive stdin (human verdict P/I/S/N prompts)
+   and demo mode requires display server access (visible browser). The
+   Bash tool's sandboxed subprocess has neither.
+
+   Instead, tell the user to run the command with `!` prefix:
+   ```
+   Type this in the prompt:  ! cd e2e && <composed command>
+   ```
+
+   The `!` prefix runs the command in the user's interactive terminal
+   with full display + stdin access. The output lands in the
+   conversation so the skill can read results afterward.
+
+   For headless smoke runs with `CABINET_VERIFY_AUTO_SKIP_HUMAN=1`
+   (no human verdicts, no visible browser), Bash execution is safe.
+   Only use Bash when BOTH conditions are true: headless AND no
+   interactive prompts.
 
 7. **Update `.last-verify-run`** with `endedAt` timestamp, `exitCode`,
    and scenario counts (parse from Cucumber output if available):
