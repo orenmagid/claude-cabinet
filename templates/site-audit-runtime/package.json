@@ -1,0 +1,28 @@
+{
+  "name": "@claude-cabinet/site-audit",
+  "version": "0.1.0",
+  "description": "Comprehensive deployed-site quality audit engine for Claude Cabinet. Runs checks across performance, accessibility, security, SEO, content, DNS, and privacy against a deployed URL; single-site and comparison modes; standalone HTML report.",
+  "type": "module",
+  "bin": {
+    "cc-site-audit": "./bin/cc-site-audit"
+  },
+  "files": [
+    "src/",
+    "bin/"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@axe-core/cli": "^4.10.0",
+    "@mdn/mdn-http-observatory": "^1.6.0",
+    "@themarkup/blacklight-collector": "^1.0.0",
+    "lighthouse": "^12.0.0",
+    "linkinator": "^7.0.0",
+    "pa11y": "^9.0.0",
+    "unlighthouse": "^0.16.0"
+  }
+}

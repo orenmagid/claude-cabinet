@@ -1,0 +1,1 @@
+{"links":[{"url":"https://example.com/","status":200,"state":"OK"},{"url":"https://example.com/about","status":200,"state":"OK"},{"url":"https://example.com/broken-page","status":404,"state":"BROKEN","parent":"https://example.com/"},{"url":"https://example.com/old-link","status":301,"state":"OK"}]}

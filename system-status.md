@@ -106,6 +106,7 @@
 - Bug fix (v0.27.2): migration-only `.ccrc.json` (no `modules` key) no longer crashes the installer
 - Bug fix (v0.27.3): instruction phases now overwrite stale copies during install (previously skipped if file existed with different hash)
 - Bug fix (v0.27.3): `settings.local.json` omega permissions cleaned during install (stale omega MCP allowlists removed)
+- Site-audit module (opt-in, off by default): `/cc-site-audit` skill + `@claude-cabinet/site-audit` runtime. 15 checks across performance (Lighthouse), accessibility (axe-core WCAG AA + Pa11y WCAG AAA), security (headers + MDN Observatory grade + testssl.sh TLS depth + Nuclei CVE scan with authorization gate), SEO (meta/OG + JSON-LD structured data), content (Linkinator broken links), DNS (DNSSEC/SPF/DMARC/HTTP2-3), privacy (Blacklight tracker/fingerprint detection), multi-page (Unlighthouse crawl), and sustainability (Website Carbon local calc). Standalone HTML report (XSS-safe, CSP meta, no external CDN). Comparison mode (side-by-side delta scoring with asymmetric availability). Per-check module architecture (`src/checks/<id>.mjs` exporting detect/run/normalize). Security: spawn-only execution (no exec/shell-string), HTML-escaped target content, domain-match authorization gate for Nuclei active scanning. CI testable via fixture injection + per-tool/overall timeouts. 63 unit tests. New `site-audit` MODULES entry; postInstall dispatch refactored to table-driven registry (no more hardcoded verify-setup branch). Eleven modules total.
 
 ## What's Active
 

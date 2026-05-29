@@ -1,7 +1,7 @@
 # Claude Cabinet — Project Instructions
 
 Node CLI package (`create-claude-cabinet`) that scaffolds process infrastructure
-for Claude Code projects. Small codebase: 11 files in `lib/`, templates in
+for Claude Code projects. Small codebase: 12 files in `lib/`, templates in
 `templates/`. Two dependencies (`prompts`, `better-sqlite3`). No build step.
 
 ## Key Files
@@ -21,6 +21,9 @@ for Claude Code projects. Small codebase: 11 files in `lib/`, templates in
 - `lib/verify-setup.js` — cabinet-verify runtime installer (creates
   `~/.claude-cabinet/verify/<version>/dist/cabinet-verify-<version>.tgz`
   via `npm pack`; writes `~/.claude-cabinet/verify/current/VERSION` pointer)
+- `lib/site-audit-setup.js` — site-audit runtime installer (mirrors
+  verify-setup; packs `templates/site-audit-runtime/` to
+  `~/.claude-cabinet/site-audit/<version>/`)
 - `templates/skills/` — skill definitions (SKILL.md) and phase files
 - `templates/skills/onboard/` — conversational onboarding skill
 - `templates/skills/cabinet-*/` — 31 expert cabinet member definitions
@@ -29,6 +32,11 @@ for Claude Code projects. Small codebase: 11 files in `lib/`, templates in
 - `templates/verify-runtime/` — `cabinet-verify` npm package source
   (lifted from de[sic]ify's e2e/support/; packed into the install dir
   by `lib/verify-setup.js`)
+- `templates/site-audit-runtime/` — `@claude-cabinet/site-audit` npm
+  package source (15-check engine with per-check modules in `src/checks/`;
+  packed by `lib/site-audit-setup.js`)
+- `templates/skills/cc-site-audit/` — /cc-site-audit skill definition +
+  install.sh + phase seams
 - `templates/cabinet/` — cabinet infrastructure (committees, lifecycle, etc.)
 - `templates/briefing/` — project briefing templates
 - `.ccrc.json` — installation metadata and manifest (generated, gitignored)
@@ -41,8 +49,11 @@ for Claude Code projects. Small codebase: 11 files in `lib/`, templates in
 - **verify** (opt-in, off by default): Cucumber + Playwright walkthrough
   harness. Runtime at `~/.claude-cabinet/verify/<version>/`. /verify
   skeleton skill + opt-in /plan, /execute, /debrief integration phases.
+- **site-audit** (opt-in, off by default): 15-check deployed-site quality
+  audit. Runtime at `~/.claude-cabinet/site-audit/<version>/`. /cc-site-audit
+  skill + comparison mode + standalone HTML report.
 
-Ten modules total. The **memory** module (v0.27.2+) provides a curated
+Eleven modules total. The **memory** module (v0.27.2+) provides a curated
 write/validate layer over Claude Code's built-in file memory: `/cc-remember`
 writes indexed memories, `/memory` browses them, `validate-memory.mjs`
 guards MEMORY.md integrity, and `memory-index-guard.sh` (PostToolUse hook)

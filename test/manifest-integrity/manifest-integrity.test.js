@@ -105,6 +105,34 @@ test('memory-index-guard.sh is shipped (hooks module) and registered (PostToolUs
   );
 });
 
+test('site-audit module exists, is opt-in (default:false, lean:false), and wires all paths', () => {
+  const sa = MODULES['site-audit'];
+  assert.ok(sa, 'site-audit module must exist');
+  assert.strictEqual(sa.default, false, 'site-audit must be opt-in (default:false)');
+  assert.strictEqual(sa.lean, false, 'site-audit must not be lean');
+  assert.ok(
+    sa.templates.includes('skills/cc-site-audit'),
+    'site-audit module must wire skills/cc-site-audit'
+  );
+  assert.ok(
+    sa.templates.includes('site-audit-runtime'),
+    'site-audit module must wire site-audit-runtime'
+  );
+  assert.ok(sa.postInstall, 'site-audit module must have a postInstall handler');
+});
+
+test('postInstall dispatch is table-driven (no hardcoded verify-setup branch)', () => {
+  const cliSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'lib', 'cli.js'), 'utf8');
+  assert.ok(
+    !cliSrc.includes("=== 'verify-setup'"),
+    'postInstall dispatch must be table-driven, not if/else on verify-setup'
+  );
+  assert.ok(
+    cliSrc.includes('POST_INSTALL_HANDLERS'),
+    'postInstall must use the POST_INSTALL_HANDLERS registry'
+  );
+});
+
 test('no skill under templates/skills/ is orphaned (except allowlist)', () => {
   const referenced = new Set();
   for (const rel of allTemplatePaths()) {

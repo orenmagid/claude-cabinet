@@ -1,0 +1,10 @@
+Grade: B+
+Score: 85
+Tests passed: 8/11
+content-security-policy: PASS
+strict-transport-security: PASS
+x-content-type-options: PASS
+x-frame-options: FAIL - not implemented
+referrer-policy: PASS
+subresource-integrity: FAIL - not implemented
+cookies: WARN - SameSite not set

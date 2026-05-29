@@ -1,0 +1,3 @@
+{"template-id":"git-config","info":{"name":"Git Config File Exposure","severity":"medium","description":"Git configuration file was detected on the target."},"matched-at":"https://example.com/.git/config","host":"https://example.com"}
+{"template-id":"robots-txt","info":{"name":"Robots.txt File","severity":"info","description":"A robots.txt file was detected."},"matched-at":"https://example.com/robots.txt","host":"https://example.com"}
+{"template-id":"cve-2021-44228","info":{"name":"Apache Log4j RCE (Log4Shell)","severity":"critical","description":"Apache Log4j2 <=2.14.1 JNDI features do not protect against attacker-controlled LDAP and other endpoints."},"matched-at":"https://example.com/api","host":"https://example.com"}
