@@ -121,8 +121,11 @@ function guessCheckId(cmd, args) {
 }
 
 function realExecutor() {
+  const runtimeRoot = new URL('..', import.meta.url).pathname;
+  const binDir = join(runtimeRoot, 'node_modules', '.bin');
+  const augmentedEnv = { ...process.env, PATH: binDir + ':' + (process.env.PATH || '') };
   return {
-    spawn: safeSpawn,
+    spawn: (cmd, args, opts = {}) => safeSpawn(cmd, args, { ...opts, env: opts.env ?? augmentedEnv }),
     fetch: globalThis.fetch,
   };
 }
@@ -198,12 +201,14 @@ export async function auditSite(url, checks, opts = {}) {
     }
 
     try {
-      const timeoutPromise = new Promise((resolve) =>
-        setTimeout(() => resolve({ __timedOut: true }), perToolTimeout)
-      );
+      let timeoutHandle;
+      const timeoutPromise = new Promise((resolve) => {
+        timeoutHandle = setTimeout(() => resolve({ __timedOut: true }), perToolTimeout);
+      });
       const perCheckOpts = (opts.checkOpts ?? {})[check.checkId] ?? {};
       const runPromise = check.run(url, executor, perCheckOpts);
       const raw = await Promise.race([runPromise, timeoutPromise]);
+      clearTimeout(timeoutHandle);
 
       if (raw && raw.__timedOut) {
         return {

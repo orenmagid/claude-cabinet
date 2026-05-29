@@ -18,7 +18,17 @@ export function normalize(raw, durationMs) {
   }
   let data;
   try { data = JSON.parse(raw.stdout); } catch {
-    return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: 'failed to parse axe-core JSON' };
+    // @axe-core/cli may output non-JSON prefix lines before the JSON array;
+    // strip lines until we find the opening bracket.
+    const lines = (raw.stdout || '').split('\n');
+    const jsonStart = lines.findIndex(l => l.trimStart().startsWith('[') || l.trimStart().startsWith('{'));
+    if (jsonStart >= 0) {
+      try { data = JSON.parse(lines.slice(jsonStart).join('\n')); } catch {
+        return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: 'failed to parse axe-core JSON' };
+      }
+    } else {
+      return { checkId, tool, status: 'error', score: null, grade: null, severity: null, findings: [], durationMs, reason: 'failed to parse axe-core JSON' };
+    }
   }
 
   const violations = Array.isArray(data) ? data.flatMap(p => p.violations || []) : (data.violations || []);

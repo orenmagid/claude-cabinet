@@ -38,7 +38,11 @@ function unavailableCheck(id) {
 
 function slowCheck(id, delayMs) {
   return fakeCheck(id, {
-    run: async () => new Promise((resolve) => setTimeout(() => resolve({}), delayMs)),
+    run: async () => new Promise((resolve) => {
+      const t = setTimeout(() => resolve({}), delayMs);
+      // unref so lingering timers don't prevent the test process from exiting
+      if (t && typeof t.unref === 'function') t.unref();
+    }),
   });
 }
 
