@@ -281,27 +281,33 @@ the skill handles all `e2e/` directory navigation internally.** No
    | `--demo` | `npm run verify:demo` | (script sets `CABINET_VERIFY_DEMO=1 HEADLESS=0`) |
    | `--demo --full` | `npm run verify:full` | `CABINET_VERIFY_DEMO=1 HEADLESS=0` |
 
-   **Execution method depends on whether human verdicts are needed:**
+   **Always run via the Bash tool** with `run_in_background: true`.
+   The runtime handles both headed browser (demo mode works from Bash
+   on macOS — Playwright inherits display access) and human verdicts
+   (file-based IPC when stdin is not a TTY).
 
-   - **No human verdicts** (smoke run, demo presentation, CI): Run via
-     the Bash tool. Set `CABINET_VERIFY_AUTO_SKIP_HUMAN=1` to auto-skip
-     verdict prompts. The headed browser (demo mode) works from Bash on
-     macOS — Playwright inherits display access. Use this for demos
-     where the audience watches the browser but nobody needs to type
-     P/I/S/N.
+   **Human verdict orchestration:** When the runtime hits a human
+   verdict step in non-TTY mode, it writes
+   `e2e/.verdict-pending.json` and polls for `e2e/.verdict-response.json`.
+   The skill monitors for the pending file while the background
+   command runs:
 
-   - **Human verdicts needed** (interactive verification): The Bash
-     tool cannot provide interactive stdin for readline prompts. Tell
-     the user to run with `!` prefix:
-     ```
-     Type this in the prompt:  ! cd e2e && <composed command>
-     ```
-     The `!` prefix runs in the user's terminal with stdin access.
-     Output lands in the conversation for post-run analysis.
+   1. Start the npm command via Bash with `run_in_background: true`
+   2. Poll `e2e/.verdict-pending.json` (check every 3-5 seconds)
+   3. When found, read it — contains `checkId`, `description`,
+      `screenshotPath` (absolute path to the screenshot)
+   4. Read the screenshot image and show it to the user
+   5. Ask the user for their verdict (P/I/S/N + optional notes)
+   6. Write `e2e/.verdict-response.json`:
+      ```json
+      { "verdict": "P", "notes": "looks great" }
+      ```
+   7. The runtime picks up the response, records it, continues
+   8. Go back to step 2 until the background command completes
 
-   **Default to Bash** with `CABINET_VERIFY_AUTO_SKIP_HUMAN=1` unless
-   the user explicitly wants interactive verdicts. Most demo runs and
-   smoke checks don't need them.
+   The runtime times out after 10 minutes per verdict (auto-skips
+   with `human:S` if no response). The pending/response files are
+   cleaned up after each verdict.
 
 7. **Update `.last-verify-run`** with `endedAt` timestamp, `exitCode`,
    and scenario counts (parse from Cucumber output if available):

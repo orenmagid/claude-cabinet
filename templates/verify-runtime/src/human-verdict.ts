@@ -118,13 +118,6 @@ export async function askHumanVerdict(
     return { verdict: 'S', notes: 'AUTO_SKIP' };
   }
 
-  if (!process.stdin.isTTY) {
-    throw new Error(
-      `Human verdict required for "${checkId}" but stdin is not a TTY. ` +
-        `Run interactively from a real terminal, or set CABINET_VERIFY_AUTO_SKIP_HUMAN=1 for a smoke run.`
-    );
-  }
-
   const screenshotsDir = path.resolve(process.cwd(), 'screenshots');
   await fs.mkdir(screenshotsDir, { recursive: true });
   const safeName = checkId.replace(/[^\w.-]/g, '_').slice(0, 80);
@@ -141,12 +134,85 @@ export async function askHumanVerdict(
     );
   }
 
-  // Auto-opening every screenshot in Preview pushed a new window per
-  // verdict, forcing the user to close them one-by-one and risking
-  // accidentally closing the actual browser/terminal. Default is now:
-  // print the path as a clickable terminal link via humanPrompt; the
-  // user opens only the screenshots they actually want to see. Opt
-  // back in via env var for legacy / single-pause workflows.
+  // ── Non-TTY path: file-based IPC ──────────────────────────────────
+  // When running from Claude Code's Bash tool (no interactive stdin),
+  // write a pending-verdict file and poll for a response file. The
+  // skill orchestrator reads the pending file, presents the screenshot
+  // to the user in the conversation, collects the verdict, and writes
+  // the response file. This lets the skill own the full lifecycle
+  // without requiring the user to run commands via `!`.
+  if (!process.stdin.isTTY) {
+    const pendingPath = path.resolve(process.cwd(), '.verdict-pending.json');
+    const responsePath = path.resolve(process.cwd(), '.verdict-response.json');
+
+    try { await fs.unlink(responsePath); } catch { /* may not exist */ }
+
+    await fs.writeFile(pendingPath, JSON.stringify({
+      checkId,
+      description,
+      screenshotPath: path.resolve(screenshotPath),
+      pathHash,
+      acItemId: options?.acItemId ?? null,
+    }), 'utf8');
+
+    process.stderr.write(`\n  ${out.c.yellow('⏳')} Waiting for verdict on ${out.c.bold(checkId)} via file IPC...\n`);
+
+    // Poll for response (500ms intervals, 10 min timeout)
+    const deadline = Date.now() + 600_000;
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 500));
+      try {
+        const raw = await fs.readFile(responsePath, 'utf8');
+        const resp = JSON.parse(raw);
+        await fs.unlink(responsePath).catch(() => {});
+        await fs.unlink(pendingPath).catch(() => {});
+
+        const verdict = (String(resp.verdict).charAt(0).toUpperCase()) as HumanVerdictChar;
+        if (!VALID.includes(verdict)) {
+          throw new Error(`Invalid verdict "${resp.verdict}" in .verdict-response.json`);
+        }
+        const respNotes = String(resp.notes ?? '').trim();
+        const durationMs = Date.now() - t0;
+
+        await recordVerdict({
+          checkId,
+          stepText: `human-verdict: ${description}`,
+          verdict: `human:${verdict}`,
+          source: 'human',
+          screenshotPath,
+          pathHash,
+          notes: respNotes || null,
+          durationMs,
+          acItemId: options?.acItemId ?? null,
+        });
+
+        out.humanRecorded(verdict, respNotes);
+        return { verdict, notes: respNotes };
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code === 'ENOENT') continue;
+        if (err instanceof SyntaxError) continue;
+        throw err;
+      }
+    }
+
+    // Timeout — auto-skip so the run doesn't hang forever
+    await fs.unlink(pendingPath).catch(() => {});
+    process.stderr.write(`  ${out.c.red('⏰')} Verdict timeout for ${checkId} — auto-skipping\n`);
+    await recordVerdict({
+      checkId,
+      stepText: `human-verdict (IPC timeout): ${description}`,
+      verdict: 'human:S',
+      source: 'human',
+      screenshotPath,
+      pathHash,
+      notes: 'IPC timeout (10 min) — no response file written',
+      durationMs: Date.now() - t0,
+      acItemId: options?.acItemId ?? null,
+    });
+    return { verdict: 'S', notes: 'IPC_TIMEOUT' };
+  }
+
+  // ── TTY path: interactive readline prompt ─────────────────────────
   if (process.env.CABINET_VERIFY_AUTO_OPEN_SCREENSHOTS === '1') {
     spawn('open', [screenshotPath], { detached: true, stdio: 'ignore' }).unref();
     await new Promise((r) => setTimeout(r, 300));
@@ -172,7 +238,6 @@ export async function askHumanVerdict(
     return askHumanVerdict(page, checkId, description, options);
   }
 
-  // Anything after the verdict char is treated as notes (skip optional space).
   const notes = trimmed.slice(1).trim();
   const durationMs = Date.now() - t0;
 
