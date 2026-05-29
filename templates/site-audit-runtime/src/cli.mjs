@@ -85,7 +85,7 @@ export function validateOptions(opts) {
 function writeReport(html, report, outDir, suffix = '') {
   const dir = outDir || 'reports';
   mkdirSync(dir, { recursive: true });
-  const host = sanitizeHostname(report.url);
+  const host = sanitizeHostname(report.url || report.urlA || 'unknown');
   const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   let base = `site-audit-${host}-${ts}${suffix ? '-' + suffix : ''}`;
   let path = join(dir, `${base}.html`);
