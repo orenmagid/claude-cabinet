@@ -53,6 +53,7 @@ import { resolveLaunchOptions, isDemoMode } from './launch-options.js';
 import { initDemo, drainDemo } from './demo-recorder.js';
 import { pauseOnFailure } from './pause-on-failure.js';
 import { traceEnabled, traceFilePath } from './trace.js';
+import { initProgress, emitProgress } from './progress.js';
 
 // Default 240s — catches real hangs without killing legit long steps.
 // Steps that legitimately take longer (rewrites, manual think-time)
@@ -64,6 +65,7 @@ let browser: Browser | undefined;
 BeforeAll(async () => {
   const opts = resolveLaunchOptions(process.env);
   initDemo(process.env);
+  initProgress(process.cwd());
   if (isDemoMode(process.env) && opts.slowMo > 0) {
     out.writeln(`  ${out.c.dim('[demo] slowMo: ' + opts.slowMo + 'ms')}`);
   }
@@ -97,6 +99,7 @@ BeforeAll(async () => {
 AfterAll(async () => {
   drainDemo();
   const summary = await endRun();
+  emitProgress({ event: 'run-end', passed: summary.passed, failed: summary.failed, total: summary.total });
   out.runSummary({
     runId: summary.runId,
     total: summary.total,
@@ -183,6 +186,7 @@ Before(async function (this: CabinetVerifyWorld, scenario) {
 
   out.scenarioStart(scenario.pickle.name, scenario.gherkinDocument.uri || 'unknown');
   setScenarioContext(scenario.gherkinDocument.uri || 'unknown', scenario.pickle.name, this.role);
+  emitProgress({ event: 'scenario-start', name: scenario.pickle.name, file: scenario.gherkinDocument.uri || 'unknown' });
 });
 
 After(async function (this: CabinetVerifyWorld, scenario) {
@@ -212,6 +216,7 @@ After(async function (this: CabinetVerifyWorld, scenario) {
     this.tracing = false;
   }
 
+  emitProgress({ event: 'scenario-end', name: scenario.pickle.name, status: scenario.result?.status ?? 'UNKNOWN' });
   await this.context?.close();
 });
 
@@ -222,6 +227,15 @@ AfterStep(async function (this: CabinetVerifyWorld, { result, pickleStep }) {
     const narrated = narrateStep(pickleStep.text);
     if (narrated) {
       out.writeln(`  ${out.c.bold(out.c.blue('▸'))} ${out.c.bold(narrated)}`);
+    }
+  }
+
+  if (result && pickleStep?.text) {
+    const stepStatus = result.status.toString();
+    if (stepStatus === 'PASSED') {
+      emitProgress({ event: 'check-pass', step: pickleStep.text });
+    } else if (stepStatus === 'FAILED') {
+      emitProgress({ event: 'check-fail', step: pickleStep.text, error: (result as { message?: string }).message ?? '' });
     }
   }
 

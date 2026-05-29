@@ -50,6 +50,11 @@ export {
 } from './trace.js';
 
 export {
+  initProgress,
+  emitProgress,
+} from './progress.js';
+
+export {
   computePathHash,
   computePathHashSafe,
   extractCheckIdFromStep,

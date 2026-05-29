@@ -4,6 +4,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as readline from 'readline';
 import { recordVerdict, getCurrentScenarioFile } from './verdict-recorder.js';
+import { emitProgress } from './progress.js';
 import { getFreshPass } from './fresh-pass-cache.js';
 import { computePathHash } from './path-hash.js';
 import { out } from './output.js';
@@ -155,6 +156,7 @@ export async function askHumanVerdict(
       acItemId: options?.acItemId ?? null,
     }), 'utf8');
 
+    emitProgress({ event: 'verdict-pending', checkId, description, screenshotPath: path.resolve(screenshotPath) });
     process.stderr.write(`\n  ${out.c.yellow('⏳')} Waiting for verdict on ${out.c.bold(checkId)} via file IPC...\n`);
 
     // Poll for response (500ms intervals, 10 min timeout)

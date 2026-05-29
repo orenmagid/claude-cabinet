@@ -286,24 +286,41 @@ the skill handles all `e2e/` directory navigation internally.** No
    on macOS — Playwright inherits display access) and human verdicts
    (file-based IPC when stdin is not a TTY).
 
+   **Progress streaming:** Immediately after starting the background
+   command, arm a Monitor on the progress file:
+
+   ```
+   Monitor({
+     description: "verify progress",
+     command: "tail -f e2e/.verify-progress.jsonl | grep -E --line-buffered 'check-fail|scenario-start|scenario-end|run-end|verdict-pending'",
+     persistent: true
+   })
+   ```
+
+   This streams scenario starts, failures, and verdict requests as
+   real-time conversation notifications. Check passes are filtered
+   out to avoid noise. When a `verdict-pending` event arrives,
+   handle it immediately (see below).
+
    **Human verdict orchestration:** When the runtime hits a human
    verdict step in non-TTY mode, it writes
-   `e2e/.verdict-pending.json` and polls for `e2e/.verdict-response.json`.
-   The skill monitors for the pending file while the background
-   command runs:
+   `e2e/.verdict-pending.json` and emits a `verdict-pending` event
+   to the progress file. The Monitor delivers the event as a
+   notification. On receiving a `verdict-pending` notification:
 
-   1. Start the npm command via Bash with `run_in_background: true`
-   2. Poll `e2e/.verdict-pending.json` (check every 3-5 seconds)
-   3. When found, read it — contains `checkId`, `description`,
-      `screenshotPath` (absolute path to the screenshot)
-   4. Read the screenshot image and show it to the user
-   5. Ask the user for their verdict (P/I/S/N + optional notes)
-   6. Write `e2e/.verdict-response.json`:
+   1. Read `e2e/.verdict-pending.json` — contains `checkId`,
+      `description`, `screenshotPath` (absolute path to screenshot)
+   2. Read the screenshot image and show it to the user
+   3. Ask the user for their verdict (P/I/S/N + optional notes)
+   4. Write `e2e/.verdict-response.json`:
       ```json
       { "verdict": "P", "notes": "looks great" }
       ```
-   7. The runtime picks up the response, records it, continues
-   8. Go back to step 2 until the background command completes
+   5. The runtime picks up the response, records it, continues
+
+   When a `check-fail` notification arrives, surface it immediately:
+   show the step text and error message so the user knows what failed
+   without waiting for the end summary.
 
    The runtime times out after 10 minutes per verdict (auto-skips
    with `human:S` if no response). The pending/response files are
