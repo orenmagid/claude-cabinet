@@ -78,6 +78,19 @@ at moments that genuinely need subjective judgment. Don't pause for
 mechanical checks — auto-check them. Don't auto-check things you
 actually need to see ("does this layout feel right?") — pause.
 
+## Per-step timeout override (Cucumber v11)
+
+Pass an options object as the **second argument** to disable or change
+the timeout for a single step:
+
+```ts
+Then('step text', { timeout: -1 }, async function () { ... })
+```
+
+`timeout: -1` disables the timeout entirely (used by `ask the human`
+steps that wait for human input). Do NOT use the wrapping-object form
+`Then({pattern, timeout}, fn)` — that is not valid Cucumber v11 API.
+
 ## Stage comments
 
 The scenarios use `# ── Stage name ────────────` comments to separate

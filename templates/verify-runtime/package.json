@@ -20,7 +20,7 @@
     "test": "node --test dist/test/*.test.js"
   },
   "dependencies": {
-    "@cucumber/cucumber": "^11.2.0",
+    "@cucumber/cucumber": "11.2.0",
     "@playwright/test": "^1.49.0",
     "boxen": "^8.0.1",
     "dotenv": "^16.4.7",

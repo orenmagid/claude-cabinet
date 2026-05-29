@@ -126,6 +126,7 @@ Then(
 
 Then(
   'ask the human {string}',
+  { timeout: -1 },
   async function (this: CabinetVerifyWorld, idAndDescription: string) {
     const space = idAndDescription.indexOf(' ');
     const checkId = space >= 0 ? idAndDescription.slice(0, space) : idAndDescription;
