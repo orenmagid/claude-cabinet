@@ -33,12 +33,19 @@ export function normalize(raw, durationMs) {
   }
 
   const violations = Array.isArray(data) ? data.flatMap(p => p.violations || []) : (data.violations || []);
-  const findings = violations.map(v => ({
-    severity: IMPACT_TO_SEVERITY[v.impact] || 'info',
-    message: v.description || v.id,
-    url: v.helpUrl || undefined,
-    context: v.nodes?.[0]?.html?.slice(0, 200) || undefined,
-  }));
+  const findings = violations.map(v => {
+    const targets = (v.nodes || []).slice(0, 3).map(n =>
+      (n.target || []).flat().join(' > ')
+    ).filter(Boolean);
+    return {
+      severity: IMPACT_TO_SEVERITY[v.impact] || 'info',
+      message: v.description || v.id,
+      url: v.helpUrl || undefined,
+      context: targets.length
+        ? `Elements: ${targets.join(', ')}${v.nodes?.length > 3 ? ` (+${v.nodes.length - 3} more)` : ''}`
+        : (v.nodes?.[0]?.html?.slice(0, 200) || undefined),
+    };
+  });
 
   const worstSev = findings.length ? findings.reduce((w, f) => {
     const o = { critical: 0, serious: 1, moderate: 2, info: 3 };

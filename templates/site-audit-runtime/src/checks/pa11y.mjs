@@ -28,8 +28,8 @@ export function normalize(raw, durationMs) {
   const findings = issues.map(i => ({
     severity: TYPE_TO_SEVERITY[i.type] || 'info',
     message: i.message || i.code || 'unknown',
-    context: i.context?.slice(0, 200) || undefined,
-    url: i.selector || undefined,
+    context: [i.code, i.selector ? `Element: ${i.selector}` : null].filter(Boolean).join(' — ') || undefined,
+    url: i.context?.slice(0, 150) || undefined,
   }));
 
   const errors = findings.filter(f => f.severity === 'serious' || f.severity === 'critical').length;

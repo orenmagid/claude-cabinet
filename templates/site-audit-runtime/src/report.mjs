@@ -132,6 +132,13 @@ function renderDetails(result) {
     });
     html += `<div style="margin-bottom:.75rem;font-size:.9rem">${items.join('')}</div>`;
   }
+  const metrics = result.details.metrics;
+  if (metrics && typeof metrics === 'object') {
+    const items = Object.entries(metrics).map(([label, value]) =>
+      `<span style="display:inline-block;margin-right:1.2rem"><strong>${esc(label)}</strong> ${esc(String(value))}</span>`
+    );
+    html += `<div style="margin-bottom:.75rem;font-size:.85rem;color:#555">Core Web Vitals: ${items.join('')}</div>`;
+  }
   const types = result.details.types;
   if (Array.isArray(types) && types.length) {
     html += `<div style="margin-bottom:.75rem;font-size:.85rem;color:#555">Schema types: ${types.map(t => `<strong>${esc(String(t))}</strong>`).join(', ')}</div>`;
