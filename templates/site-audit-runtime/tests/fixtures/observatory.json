@@ -1,10 +1,1 @@
-Grade: B+
-Score: 85
-Tests passed: 8/11
-content-security-policy: PASS
-strict-transport-security: PASS
-x-content-type-options: PASS
-x-frame-options: FAIL - not implemented
-referrer-policy: PASS
-subresource-integrity: FAIL - not implemented
-cookies: WARN - SameSite not set
+{"scan":{"grade":"B+","score":85,"testsFailed":2,"testsPassed":8,"testsQuantity":10},"tests":{"content-security-policy":{"pass":true,"result":"csp-implemented","scoreModifier":0},"strict-transport-security":{"pass":true,"result":"hsts-implemented","scoreModifier":0},"x-content-type-options":{"pass":true,"result":"x-content-type-options-nosniff","scoreModifier":0},"x-frame-options":{"pass":false,"result":"x-frame-options-not-implemented","scoreModifier":-20},"referrer-policy":{"pass":true,"result":"referrer-policy-private","scoreModifier":0},"subresource-integrity":{"pass":false,"result":"sri-not-implemented","scoreModifier":-5},"cookies":{"pass":true,"result":"cookies-secure","scoreModifier":0}}}
