@@ -3,7 +3,7 @@
 ## What's Built
 
 - CLI installer with interactive and flag-based module selection
-- 10 modules: session-loop, hooks, work-tracking, planning, compliance, memory, audit, lifecycle, validate, verify. The `memory` module (v0.27.2+) ships `/cc-remember`, `/memory`, `validate-memory.mjs`, `write-memory-file.mjs`, `project-context.cjs`, `memory-capture.md` rule, and `memory-index-guard.sh` PostToolUse hook — a curated layer over Claude Code's built-in file memory. One-time `--migrate-memory` tooling still ships for omega upgrades.
+- 11 modules: session-loop, hooks, work-tracking, planning, compliance, memory, audit, lifecycle, validate, verify, site-audit. The `memory` module (v0.27.2+) ships `/cc-remember`, `/memory`, `validate-memory.mjs`, `write-memory-file.mjs`, `project-context.cjs`, `memory-capture.md` rule, and `memory-index-guard.sh` PostToolUse hook — a curated layer over Claude Code's built-in file memory. One-time `--migrate-memory` tooling still ships for omega upgrades.
 - Verify module (opt-in, off by default): Cucumber + Playwright walkthrough harness with human-in-the-loop P/I/S/N verdict pauses; ships `/verify` skeleton skill (subcommands: bare run, `learn`, `update`, `backfill`) + `cabinet-verify` npm runtime at `~/.claude-cabinet/verify/<version>/` + opt-in phase hooks into `/plan`, `/execute`, `/debrief`, `/orient` (orient `verify-backfill` phase surfaces pending UI actions missing a Verify Plan)
 - Verify runtime hardening: `cabinet-verify` tolerates multi-token `checkId` args (quoted Gherkin args with spaces) and the tarball install path is robust to partial/corrupt prior installs (re-pack on missing/zero-byte tgz)
 - Verify runtime v0.2.0: `cabinet-verify` exposes a public registration API — `setSignInHandler(fn)` for projects with real authentication and `registerCheck(id, fn)` for per-checkId handlers; ships `CheckHandler` / `SignInHandler` TypeScript types. `baseline-steps.ts` auto-registers the 5 Cucumber baseline steps (sign-in, navigation, check dispatch, verdict pause) so consuming projects only write project-specific check handlers — no Cucumber boilerplate.
@@ -110,10 +110,10 @@
 
 ## What's Active
 
-- Published at v0.27.4 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
+- Published at v0.28.0 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
 - Debrief routing discipline: `record-lessons.md` is now an instruction phase shipping to all consumers — teaches a decision tree for routing session outputs (built-in memory via `/cc-remember` for decisions/lessons/preferences, CLAUDE.md/briefing for load-bearing project facts, pib-db deferred triggers for conditional revisits, upstream-feedback for CC friction) and explicitly calls out the `feedback-project-*.md` anti-pattern (observed rot rate 4/5 within 7 days). Four instruction phases total: audit-pattern-capture, methodology-capture, record-lessons, upstream-feedback.
 - Orient feedback pipeline hardened: flush does skip-if-exists against feedback/ and feedback/resolved/, atomic outbox reset on clean pass; wrong-write scan excludes `feedback-project-*.md` and `scope: project-specific` files.
-- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.27.4
+- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.28.0
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)
 - organized-mind scoped to human cognition (cognitive load ≠ AI load)
