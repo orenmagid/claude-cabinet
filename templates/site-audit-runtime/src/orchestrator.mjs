@@ -54,7 +54,7 @@ const DEFAULT_TIMEOUTS = {
   lighthouse: 120_000,
   testssl: 180_000,
   nuclei: 300_000,
-  unlighthouse: 300_000,
+  unlighthouse: 600_000,
   blacklight: 120_000,
 };
 const FALLBACK_TIMEOUT = 60_000;

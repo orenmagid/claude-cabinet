@@ -4,7 +4,7 @@
 
 export const checkId = 'unlighthouse';
 export const tool = 'Unlighthouse (full-site crawl)';
-export const defaultTimeoutMs = 300_000;
+export const defaultTimeoutMs = 600_000;
 
 export async function detect(executor) {
   const r = await executor.spawn('unlighthouse', ['--version'], { timeoutMs: 15_000 });
