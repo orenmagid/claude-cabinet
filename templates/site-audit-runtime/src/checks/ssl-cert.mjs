@@ -50,8 +50,22 @@ export function normalize(raw, durationMs) {
     return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const isPass = !findings.some(f => f.severity === 'critical' || f.severity === 'serious');
+  let passSummary;
+  if (isPass) {
+    const notAfterMatch = (raw.stdout || '').match(/notAfter=(.+)/);
+    if (notAfterMatch) {
+      const expiry = new Date(notAfterMatch[1]);
+      const daysLeft = Math.floor((expiry - Date.now()) / 86_400_000);
+      passSummary = `Certificate valid, ${daysLeft} days until expiry`;
+    } else {
+      passSummary = 'Certificate valid, no critical issues';
+    }
+  }
+
   return {
-    checkId, tool, status: findings.some(f => f.severity === 'critical' || f.severity === 'serious') ? 'fail' : 'pass',
+    checkId, tool, status: isPass ? 'pass' : 'fail',
     score: null, grade: null, severity: worstSev, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

@@ -54,9 +54,16 @@ export function normalize(html, durationMs) {
     return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const isPass = !findings.some(f => f.severity === 'serious');
+  const present = total - missing;
+  const passSummary = isPass
+    ? `${present}/${total} meta tags present (score: ${score})`
+    : undefined;
+
   return {
-    checkId, tool, status: findings.some(f => f.severity === 'serious') ? 'fail' : 'pass',
+    checkId, tool, status: isPass ? 'pass' : 'fail',
     score, grade: null, severity: worstSev, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }
 

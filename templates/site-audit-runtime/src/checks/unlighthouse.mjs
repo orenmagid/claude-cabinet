@@ -55,9 +55,15 @@ export function normalize(raw, durationMs) {
     return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const isPass = avg !== null && avg >= 50;
+  const passSummary = isPass
+    ? `Average score ${avg}/100 across ${count} page${count !== 1 ? 's' : ''}`
+    : undefined;
+
   return {
-    checkId, tool, status: avg !== null && avg >= 50 ? 'pass' : 'fail',
+    checkId, tool, status: isPass ? 'pass' : 'fail',
     score: avg, grade: null, severity: worstSev,
     findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

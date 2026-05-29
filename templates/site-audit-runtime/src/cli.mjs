@@ -179,6 +179,6 @@ export async function main(argv) {
   printSummary(reportB);
 
   const delta = diff(reportA, reportB);
-  writeReport(renderComparison(delta), reportA, opts.out, 'compare');
+  writeReport(renderComparison(delta), delta, opts.out, 'compare');
   return 0;
 }

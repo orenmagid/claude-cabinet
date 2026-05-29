@@ -69,9 +69,17 @@ export function normalize(raw, durationMs) {
     return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const isPass = !findings.some(f => f.severity === 'critical' || f.severity === 'serious');
+  const passSummary = isPass
+    ? (findings.length === 0
+      ? `No vulnerabilities found across ${lines.length} probe${lines.length !== 1 ? 's' : ''}`
+      : `No critical/serious vulnerabilities (${findings.length} info-level item${findings.length !== 1 ? 's' : ''})`)
+    : undefined;
+
   return {
     checkId, tool,
-    status: findings.some(f => f.severity === 'critical' || f.severity === 'serious') ? 'fail' : 'pass',
+    status: isPass ? 'pass' : 'fail',
     score: null, grade: null, severity: worstSev, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

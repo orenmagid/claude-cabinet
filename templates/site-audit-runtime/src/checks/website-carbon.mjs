@@ -45,10 +45,16 @@ export function normalize(raw, durationMs) {
   const maxBytes = 5 * 1024 * 1024;
   const score = Math.max(0, Math.min(100, Math.round((1 - bytes / maxBytes) * 100)));
 
+  const isPass = gCO2 <= 1.0;
+  const passSummary = isPass
+    ? `${gCO2.toFixed(2)}g CO2/view — ${kbSize} KB page (score: ${score})`
+    : undefined;
+
   return {
-    checkId, tool, status: gCO2 <= 1.0 ? 'pass' : 'fail',
+    checkId, tool, status: isPass ? 'pass' : 'fail',
     score, grade: null,
     severity: findings[0]?.severity || null,
     findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

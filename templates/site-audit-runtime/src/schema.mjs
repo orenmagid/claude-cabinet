@@ -30,6 +30,8 @@
  * @property {string|null} grade         e.g. 'A+', or null
  * @property {Severity|null} severity    Worst severity across findings, or null
  * @property {Finding[]} findings        May be empty
+ * @property {Object} [details]          Structured tool output for drill-down (optional)
+ * @property {string} [passSummary]      Positive confirmation when status=pass, e.g. "Performance: 92, Accessibility: 98"
  * @property {string} [rawOutput]        Path to raw tool output on disk (optional)
  * @property {number} durationMs         Wall-clock runtime of the check
  * @property {string} [reason]           Required when status is 'skip' or 'error'

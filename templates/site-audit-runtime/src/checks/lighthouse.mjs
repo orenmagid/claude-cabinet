@@ -39,11 +39,17 @@ export function normalize(raw, durationMs) {
   const audits = data.audits || {};
   for (const [id, audit] of Object.entries(audits)) {
     if (audit.score !== null && audit.score < 0.5 && audit.title) {
-      findings.push({
+      const f = {
         severity: audit.score === 0 ? 'serious' : 'moderate',
         message: audit.title,
         context: audit.displayValue || undefined,
-      });
+      };
+      if (audit.details?.items?.length) {
+        f.url = audit.details.items.slice(0, 5).map(
+          item => item.url || item.source?.url || item.node?.selector || ''
+        ).filter(Boolean).join(', ') || undefined;
+      }
+      findings.push(f);
     }
   }
 
@@ -52,9 +58,15 @@ export function normalize(raw, durationMs) {
     return (order[f.severity] ?? 3) < (order[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const details = { categories: scores };
+  const passSummary = Object.entries(scores)
+    .map(([k, v]) => `${k.replace(/-/g, ' ')}: ${v}`)
+    .join(', ');
+
   return {
     checkId, tool, status: avg !== null && avg >= 50 ? 'pass' : 'fail',
-    score: avg, grade: scoreToGrade(avg), severity: worstSev, findings, durationMs,
+    score: avg, grade: scoreToGrade(avg), severity: worstSev, findings,
+    details, passSummary, durationMs,
   };
 }
 

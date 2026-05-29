@@ -44,8 +44,14 @@ export function normalize(raw, durationMs) {
     return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const pages = Array.isArray(data) ? data.length : 1;
+  const passSummary = findings.length === 0
+    ? `No WCAG AA violations across ${pages} page${pages !== 1 ? 's' : ''}`
+    : undefined;
+
   return {
     checkId, tool, status: findings.length === 0 ? 'pass' : 'fail',
     score: null, grade: null, severity: worstSev, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

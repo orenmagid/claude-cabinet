@@ -53,13 +53,24 @@ export function normalize(raw, durationMs) {
   const passing = total - findings.filter(f => f.severity !== 'info').length;
   const score = Math.round((passing / total) * 100);
 
+  const isPass = !findings.some(f => f.severity !== 'info');
+  const passed = [];
+  if (!findings.some(f => f.message.includes('DNSSEC'))) passed.push('DNSSEC');
+  if (!findings.some(f => f.message.includes('SPF'))) passed.push('SPF');
+  if (!findings.some(f => f.message.includes('DMARC'))) passed.push('DMARC');
+  if (httpVersion && (httpVersion.startsWith('2') || httpVersion.startsWith('3'))) passed.push(`HTTP/${httpVersion}`);
+  const passSummary = isPass
+    ? `${passed.join(', ')} verified`
+    : undefined;
+
   return {
-    checkId, tool, status: findings.some(f => f.severity !== 'info') ? 'fail' : 'pass',
+    checkId, tool, status: isPass ? 'pass' : 'fail',
     score, grade: null,
     severity: findings.length ? findings.reduce((w, f) => {
       const o = { critical: 0, serious: 1, moderate: 2, info: 3 };
       return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
     }, 'info') : null,
     findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

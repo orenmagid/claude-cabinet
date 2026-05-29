@@ -65,8 +65,14 @@ export function normalize(html, durationMs) {
     return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const isPass = !findings.some(f => f.severity === 'serious');
+  const passSummary = isPass
+    ? `${scripts.length} JSON-LD block${scripts.length !== 1 ? 's' : ''} found with ${types.length} type${types.length !== 1 ? 's' : ''}: ${types.join(', ') || 'none'}`
+    : undefined;
+
   return {
-    checkId, tool, status: findings.some(f => f.severity === 'serious') ? 'fail' : 'pass',
+    checkId, tool, status: isPass ? 'pass' : 'fail',
     score, grade: null, severity: worstSev, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

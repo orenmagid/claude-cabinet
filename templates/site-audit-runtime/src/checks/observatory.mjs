@@ -30,8 +30,14 @@ export function normalize(raw, durationMs) {
     findings.push({ severity: 'moderate', message: line.trim() });
   }
 
+  const isPass = grade && /^[A-B]/.test(grade);
+  const passSummary = isPass
+    ? `Observatory grade ${grade}${score != null ? ` (score: ${score}/100)` : ''}`
+    : undefined;
+
   return {
-    checkId, tool, status: grade && /^[A-B]/.test(grade) ? 'pass' : 'fail',
+    checkId, tool, status: isPass ? 'pass' : 'fail',
     score, grade, severity: findings.length ? 'moderate' : null, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

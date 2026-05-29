@@ -46,8 +46,13 @@ export function normalize(headers, durationMs) {
     return (o[f.severity] ?? 3) < (o[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
+  const passSummary = findings.length === 0
+    ? `All ${CHECKS.length} required headers present (score: ${score})`
+    : undefined;
+
   return {
     checkId, tool, status: findings.length === 0 ? 'pass' : 'fail',
     score, grade: null, severity: worstSev, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

@@ -45,9 +45,18 @@ export function normalize(raw, durationMs) {
   const hasCritical = findings.some(f => f.severity === 'critical');
   const hasSerious = findings.some(f => f.severity === 'serious');
 
+  const isPass = !hasCritical && !hasSerious;
+  const totalChecked = entries.flat().filter(e => e && e.severity).length;
+  const passSummary = isPass
+    ? (findings.length === 0
+      ? `TLS configuration clean — ${totalChecked} check${totalChecked !== 1 ? 's' : ''} passed`
+      : `No critical/serious TLS issues (${findings.length} low-severity item${findings.length !== 1 ? 's' : ''})`)
+    : undefined;
+
   return {
-    checkId, tool, status: hasCritical || hasSerious ? 'fail' : 'pass',
+    checkId, tool, status: isPass ? 'pass' : 'fail',
     score: null, grade: null, severity: worstSev, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }
 

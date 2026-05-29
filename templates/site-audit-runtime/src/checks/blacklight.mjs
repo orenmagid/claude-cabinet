@@ -72,8 +72,15 @@ export function normalize(raw, durationMs) {
   }, 'info') : null;
 
   const hasSerious = findings.some(f => f.severity === 'serious' || f.severity === 'critical');
+  const passSummary = !hasSerious
+    ? (findings.length === 0
+      ? 'No trackers, fingerprinters, or session recorders detected'
+      : `No serious trackers detected (${findings.length} low-severity item${findings.length !== 1 ? 's' : ''} only)`)
+    : undefined;
+
   return {
     checkId, tool, status: hasSerious ? 'fail' : 'pass',
     score: null, grade: null, severity: worstSev, findings, durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

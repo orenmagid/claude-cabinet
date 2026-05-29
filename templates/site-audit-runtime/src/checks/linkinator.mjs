@@ -43,11 +43,16 @@ export function normalize(raw, durationMs) {
   const broken = findings.filter(f => f.severity !== 'info').length;
   const total = links.filter(l => l.state !== 'SKIPPED').length;
 
+  const passSummary = broken === 0
+    ? `All ${total} link${total !== 1 ? 's' : ''} valid`
+    : undefined;
+
   return {
     checkId, tool, status: broken === 0 ? 'pass' : 'fail',
     score: null, grade: null,
     severity: broken > 0 ? 'serious' : null,
     findings: findings.filter(f => f.severity !== 'info'),
     durationMs,
+    ...(passSummary && { passSummary }),
   };
 }

@@ -11,6 +11,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .container{max-width:1100px;margin:0 auto}
 h1{font-size:1.75rem;margin-bottom:.25rem}
 .subtitle{color:#666;margin-bottom:1.5rem;font-size:.9rem}
+.executive-summary{background:#fff;border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.05);font-size:.95rem;line-height:1.6;color:#333}
 .score-cards{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
 .score-card{background:#fff;border-radius:12px;padding:1.25rem;flex:1;min-width:140px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .score-card .score{font-size:2.5rem;font-weight:700;line-height:1}
@@ -38,18 +39,34 @@ h1{font-size:1.75rem;margin-bottom:.25rem}
 .sev-moderate{color:#f80}
 .sev-info{color:#888}
 .finding-url{font-size:.8rem;color:#06c;word-break:break-all}
-.compare-row{display:grid;grid-template-columns:1fr 100px 100px 80px;gap:.5rem;align-items:center;padding:.75rem 1.25rem;border-bottom:1px solid #f0f0f0}
-.compare-row:first-child{font-weight:700;background:#f8f9fc}
+.pass-summary{color:#0a7;font-size:.9rem;font-style:italic;padding:.25rem 0}
+.compare-row{display:grid;grid-template-columns:1fr 100px 100px 80px;gap:.5rem;align-items:center;padding:.75rem 1.25rem;border-bottom:1px solid #f0f0f0;cursor:pointer;text-decoration:none;color:inherit}
+.compare-row:hover{background:#f8f9fc}
+.compare-row:first-child{font-weight:700;background:#f8f9fc;cursor:default}
 .delta-pos{color:#0a7;font-weight:600}
 .delta-neg{color:#e44;font-weight:600}
 .delta-na{color:#aaa}
 .asymmetric-warning{background:#fff7e6;border:1px solid #ffd666;border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:.9rem}
+.compare-card{background:#fff;border-radius:10px;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.05);overflow:hidden}
+.compare-card-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;user-select:none;border-bottom:1px solid #f0f0f0}
+.compare-card-header:hover{background:#fafbfd}
+.compare-card-body{display:none;padding:1rem 1.25rem}
+.compare-card.open .compare-card-body{display:block}
+.side-by-side{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+@media(max-width:768px){.side-by-side{grid-template-columns:1fr}}
+.site-column h4{font-size:.85rem;color:#888;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em}
+.finding-group-label{font-size:.8rem;font-weight:600;color:#555;margin:.75rem 0 .25rem;text-transform:uppercase;letter-spacing:.03em}
+.avail-badge{display:inline-block;padding:.1rem .5rem;border-radius:12px;font-size:.7rem;font-weight:600;margin-left:.5rem}
+.avail-both{background:#e8e8e8;color:#555}
+.avail-a-only{background:#dbeafe;color:#1d4ed8}
+.avail-b-only{background:#fef3c7;color:#b45309}
 footer{margin-top:2rem;padding-top:1rem;border-top:1px solid #e0e0e0;font-size:.8rem;color:#999;text-align:center}
 `;
 }
 
 function js() {
-  return `document.querySelectorAll('.check-header').forEach(h=>{h.onclick=()=>h.parentElement.classList.toggle('open')})`;
+  return `document.querySelectorAll('.check-header,.compare-card-header').forEach(h=>{h.onclick=()=>h.parentElement.classList.toggle('open')});
+document.querySelectorAll('.compare-row[href]').forEach(r=>{r.onclick=e=>{e.preventDefault();const t=document.querySelector(r.getAttribute('href'));if(t){t.classList.add('open');t.scrollIntoView({behavior:'smooth',block:'start'})}}})`;
 }
 
 function head(title) {
@@ -82,8 +99,13 @@ function scoreCard(label, score, status) {
 </div>`;
 }
 
-function renderFindings(findings) {
-  if (!findings.length) return '<p style="color:#888;font-size:.9rem">No findings.</p>';
+function renderFindings(findings, result) {
+  if (!findings.length) {
+    if (result?.passSummary) {
+      return `<p class="pass-summary">✓ ${esc(result.passSummary)}</p>`;
+    }
+    return '<p style="color:#888;font-size:.9rem">No findings.</p>';
+  }
   let html = '';
   for (const f of findings) {
     const urlPart = f.url
@@ -96,6 +118,41 @@ function renderFindings(findings) {
 </div>`;
   }
   return html;
+}
+
+/**
+ * Generate a 2-3 sentence executive summary for a comparison report.
+ * @param {import('./diff.mjs').DeltaReport} delta
+ * @returns {string}
+ */
+export function generateSummary(delta) {
+  const scored = delta.deltas.filter(d => d.deltaScore !== null);
+  if (!scored.length) return 'No scored checks available for comparison.';
+
+  const bWins = scored.filter(d => d.deltaScore > 0).length;
+  const aWins = scored.filter(d => d.deltaScore < 0).length;
+  const ties = scored.filter(d => d.deltaScore === 0).length;
+
+  const sorted = [...scored].sort((a, b) => Math.abs(b.deltaScore) - Math.abs(a.deltaScore));
+  const biggest = sorted[0];
+
+  let summary = '';
+  if (bWins > aWins) {
+    summary += `Site B outperforms Site A on ${bWins} of ${scored.length} scored dimension${scored.length > 1 ? 's' : ''}`;
+  } else if (aWins > bWins) {
+    summary += `Site A outperforms Site B on ${aWins} of ${scored.length} scored dimension${scored.length > 1 ? 's' : ''}`;
+  } else {
+    summary += `Sites are evenly matched across ${scored.length} scored dimension${scored.length > 1 ? 's' : ''}`;
+  }
+  if (ties > 0) summary += ` (${ties} tied)`;
+  summary += '. ';
+
+  if (biggest && biggest.deltaScore !== 0) {
+    const direction = biggest.deltaScore > 0 ? 'improvement' : 'decline';
+    summary += `Largest delta: ${esc(biggest.tool)} (${biggest.deltaScore > 0 ? '+' : ''}${biggest.deltaScore} ${direction}).`;
+  }
+
+  return summary;
 }
 
 function checkSection(result) {
@@ -112,7 +169,7 @@ function checkSection(result) {
     </div>
   </div>
   <div class="check-body">
-    ${renderFindings(result.findings)}
+    ${renderFindings(result.findings, result)}
   </div>
 </div>`;
 }
@@ -151,6 +208,29 @@ export function renderSingle(report) {
   return html;
 }
 
+function compareCardFindings(label, findings, result) {
+  if (!findings.length && result?.passSummary) {
+    return `<p class="pass-summary">✓ ${esc(result.passSummary)}</p>`;
+  }
+  if (!findings.length) return '';
+  return `<div class="finding-group-label">${esc(label)}</div>${renderFindings(findings, result)}`;
+}
+
+function classifyFindings(a, b) {
+  if (!a && !b) return { shared: [], aOnly: [], bOnly: [] };
+  const aFindings = a?.findings || [];
+  const bFindings = b?.findings || [];
+
+  const aMessages = new Set(aFindings.map(f => f.message));
+  const bMessages = new Set(bFindings.map(f => f.message));
+
+  return {
+    shared: aFindings.filter(f => bMessages.has(f.message)),
+    aOnly: aFindings.filter(f => !bMessages.has(f.message)),
+    bOnly: bFindings.filter(f => !aMessages.has(f.message)),
+  };
+}
+
 /**
  * Render a comparison report as a standalone HTML string.
  * @param {import('./diff.mjs').DeltaReport} delta
@@ -163,14 +243,17 @@ export function renderComparison(delta) {
   html += `<h1>${esc(title)}</h1>`;
   html += `<div class="subtitle">${esc(delta.auditedAt)}</div>`;
 
+  html += `<div class="executive-summary">${generateSummary(delta)}</div>`;
+
   const { aOnly, bOnly } = delta.summary;
   if (aOnly > 0 || bOnly > 0) {
     html += `<div class="asymmetric-warning">Asymmetric availability: `;
-    if (aOnly > 0) html += `${aOnly} check${aOnly > 1 ? 's' : ''} ran only for site A. `;
-    if (bOnly > 0) html += `${bOnly} check${bOnly > 1 ? 's' : ''} ran only for site B. `;
+    if (aOnly > 0) html += `${aOnly} check${aOnly > 1 ? 's' : ''} ran only for Site A. `;
+    if (bOnly > 0) html += `${bOnly} check${bOnly > 1 ? 's' : ''} ran only for Site B. `;
     html += `Deltas for one-sided checks show N/A.</div>`;
   }
 
+  // ── Comparison grid with drill-down links ──
   html += '<div style="background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);overflow:hidden;margin-bottom:2rem">';
   html += `<div class="compare-row"><span>Check</span><span>Site A</span><span>Site B</span><span>Delta</span></div>`;
 
@@ -193,23 +276,51 @@ export function renderComparison(delta) {
       deltaDisplay = '<span>0</span>';
     }
 
-    html += `<div class="compare-row">
-  <span>${esc(d.tool)}</span>
+    const availBadge = d.availability === 'both' ? ''
+      : d.availability === 'site-a-only' ? '<span class="avail-badge avail-a-only">A only</span>'
+      : d.availability === 'site-b-only' ? '<span class="avail-badge avail-b-only">B only</span>'
+      : '';
+
+    html += `<a class="compare-row" href="#compare-${esc(d.checkId)}">
+  <span>${esc(d.tool)}${availBadge}</span>
   <span>${esc(aDisplay)}</span>
   <span>${esc(bDisplay)}</span>
   <span>${deltaDisplay}</span>
-</div>`;
+</a>`;
   }
-
   html += '</div>';
 
+  // ── Per-check comparison cards ──
   for (const d of delta.deltas) {
-    if (d.a) html += checkSection(d.a);
-    if (d.b && d.availability === 'both') {
-      html += checkSection({ ...d.b, tool: `${d.b.tool} (Site B)` });
-    } else if (d.b && d.availability === 'site-b-only') {
-      html += checkSection(d.b);
+    const aBadge = d.a ? `<span class="check-badge badge-${STATUS_CLASS[d.a.status]}">${esc(d.a.status)}${d.a.score !== null ? ' ' + d.a.score : ''}</span>` : '';
+    const bBadge = d.b ? `<span class="check-badge badge-${STATUS_CLASS[d.b.status]}">${esc(d.b.status)}${d.b.score !== null ? ' ' + d.b.score : ''}</span>` : '';
+    const deltaLabel = d.deltaScore !== null && d.deltaScore !== 0
+      ? `<span class="${d.deltaScore > 0 ? 'delta-pos' : 'delta-neg'}">(${d.deltaScore > 0 ? '+' : ''}${d.deltaScore})</span>`
+      : '';
+
+    html += `<div class="compare-card" id="compare-${esc(d.checkId)}">
+  <div class="compare-card-header">
+    <span class="check-title">${STATUS_ICON[d.a?.status || d.b?.status || 'skip'] || ''} ${esc(d.tool)} ${deltaLabel}</span>
+    <div class="check-meta">${aBadge} ${bBadge}</div>
+  </div>
+  <div class="compare-card-body">`;
+
+    if (d.availability === 'both') {
+      const { shared, aOnly: aOnlyF, bOnly: bOnlyF } = classifyFindings(d.a, d.b);
+      html += '<div class="side-by-side">';
+      html += `<div class="site-column"><h4>Site A</h4>${compareCardFindings('Site A only', aOnlyF, d.a)}</div>`;
+      html += `<div class="site-column"><h4>Site B</h4>${compareCardFindings('Site B only', bOnlyF, d.b)}</div>`;
+      html += '</div>';
+      if (shared.length) {
+        html += `<div class="finding-group-label" style="margin-top:1rem">Shared issues (both sites)</div>${renderFindings(shared)}`;
+      }
+    } else if (d.availability === 'site-a-only') {
+      html += renderFindings(d.a?.findings || [], d.a);
+    } else if (d.availability === 'site-b-only') {
+      html += renderFindings(d.b?.findings || [], d.b);
     }
+
+    html += `</div></div>`;
   }
 
   html += foot(delta.auditedAt);
