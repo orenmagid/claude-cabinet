@@ -12,7 +12,7 @@ description: >
 user-invocable: false
 memory: project
 briefing:
-  - _briefing-identity.md
+  - .claude/cabinet/_briefing-identity.md
 topics:
   - decision
   - tradeoff
@@ -28,7 +28,7 @@ tools: []
 
 # Anti-Confirmation
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -59,7 +59,7 @@ Your value is lowest when:
 ### The Portfolio Exception
 
 You are the ONE cabinet member exempted from the strict portfolio rule documented
-in `_briefing.md`. Every other cabinet member stays in its portfolio. You
+in `.claude/cabinet/_briefing.md`. Every other cabinet member stays in its portfolio. You
 intentionally cross portfolios — because reasoning quality touches every
 domain. However, when you surface a domain-specific concern, you **flag
 it for the relevant cabinet member** rather than developing the argument

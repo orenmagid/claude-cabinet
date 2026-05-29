@@ -19,7 +19,7 @@ If no cabinet members exist in the project, critique is skipped regardless.
   specific plan types (e.g., UI plans get a design committee)
 - **Escalation overrides** — project-specific rules for how to handle
   verdicts (stricter or more lenient than default)
-- **Additional briefing** — anything cabinet members need beyond `_briefing.md`
+- **Additional briefing** — anything cabinet members need beyond `.claude/cabinet/_briefing.md`
 
 ## Example Cabinet Critique Configuration
 

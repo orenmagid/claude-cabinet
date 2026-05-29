@@ -10,9 +10,9 @@ description: >
   exclusions in implementations.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: execute
 tools: []
 directives:

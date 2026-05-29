@@ -9,10 +9,10 @@ description: >
   validation, secret handling, and deployment configuration.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
-  - _briefing-api.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-api.md
 standing-mandate: audit, plan, execute
 tools:
   - npm audit (Node projects -- dependency vulnerabilities)
@@ -43,7 +43,7 @@ The threat model is specific and bounded:
 - **Misconfiguration** -- deployment platform settings wrong, CORS too
   permissive, sync scripts that could overwrite production data
 - **Supply chain** -- dependencies with known vulnerabilities
-- **Data at rest** -- is sensitive data (see `_briefing.md` § Entity Types for
+- **Data at rest** -- is sensitive data (see `.claude/cabinet/_briefing.md` § Entity Types for
   what this project stores) adequately protected?
 
 This is NOT about defending against sophisticated attackers. It's about making
@@ -52,12 +52,12 @@ sure basic hygiene prevents embarrassing or damaging accidents.
 ## Convening Criteria
 
 - **standing-mandate:** audit, plan, execute
-- **files:** .env*, .gitignore, Dockerfile, scripts/*.sh, .claude/settings*.json, .mcp.json, package.json (see `_briefing.md § API / Server` and `_briefing.md § App Source` for actual paths)
+- **files:** .env*, .gitignore, Dockerfile, scripts/*.sh, .claude/settings*.json, .mcp.json, package.json (see `.claude/cabinet/_briefing.md § API / Server` and `.claude/cabinet/_briefing.md § App Source` for actual paths)
 - **topics:** security, auth, secrets, injection, CORS, vulnerability, API protection, environment variables, credentials, tokens, gitignore, deployment security, npm audit
 
 ## Investigation Protocol
 
-See `_briefing.md` for shared codebase context and principles.
+See `.claude/cabinet/_briefing.md` for shared codebase context and principles.
 
 **Two stages: measure first, then reason.** Run automated tools to establish
 a baseline before manual code review. Every tool is optional -- if unavailable,
@@ -140,14 +140,14 @@ Interpret Stage 1 results + manual code reading for what automation misses.
 - **.gitignore coverage** -- Are `.env` files, database files (`*.db`, `*.db-shm`,
   `*.db-wal`), and key files properly gitignored?
 - **Environment variables** -- Are secrets passed via env vars on the deployment
-  platform (see `_briefing.md § Deployment`), not baked into the Docker image
+  platform (see `.claude/cabinet/_briefing.md § Deployment`), not baked into the Docker image
   or code?
 - **API auth secret** -- How is it stored? Is it in Claude Code's environment?
   Could it leak through tool output or logs?
 
 **2b. API protection** (manual -- no tool covers auth design)
 
-Read your API server (see `_briefing.md § API / Server`) and check every
+Read your API server (see `.claude/cabinet/_briefing.md § API / Server`) and check every
 endpoint:
 
 - **Authentication** -- Which endpoints require auth? Are there endpoints that
@@ -164,7 +164,7 @@ endpoint:
 
 **2c. Deployment security** (manual -- requires config reading)
 
-Check the deployment configuration (see `_briefing.md § Deployment`):
+Check the deployment configuration (see `.claude/cabinet/_briefing.md § Deployment`):
 
 - **Dockerfile** -- Does it expose unnecessary ports, run as root, or include
   development dependencies in production? (OWASP A05:2021 Security
@@ -176,7 +176,7 @@ Check the deployment configuration (see `_briefing.md § Deployment`):
 
 **2d. Data sensitivity** (manual -- requires domain understanding)
 
-See `_briefing.md § Entity Types` for the full inventory. For each
+See `.claude/cabinet/_briefing.md § Entity Types` for the full inventory. For each
 sensitive data category (personal data, credentials, third-party data):
 is it encrypted at rest? Could it be accessed by someone who gets the
 deployment URL? Is it backed up securely?
@@ -192,14 +192,14 @@ deployment URL? Is it backed up securely?
 
 ### Scan Scope
 
-- See `_briefing.md § API / Server` -- API endpoints and auth
+- See `.claude/cabinet/_briefing.md § API / Server` -- API endpoints and auth
 - `scripts/*.sh` -- Shell scripts (secret handling)
 - `Dockerfile` -- Build configuration
 - `.gitignore` -- What's excluded from git
 - `.env*` -- Environment files (should be gitignored)
 - `.claude/settings*.json` -- Claude Code permissions
 - `.mcp.json` -- MCP server configuration
-- See `_briefing.md § App Source` -- Dependencies (package.json files)
+- See `.claude/cabinet/_briefing.md § App Source` -- Dependencies (package.json files)
 - Edge/worker configuration (if applicable)
 - Git history -- `git log` for previously committed secrets
 

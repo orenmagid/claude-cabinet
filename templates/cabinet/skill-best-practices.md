@@ -117,7 +117,7 @@ it's reading has faded. Keep related content one link away from the
 entry point.
 
 Links to files outside the skill's directory (e.g.,
-`templates/cabinet/skill-best-practices.md`, `_briefing.md`) don't
+`templates/cabinet/skill-best-practices.md`, `.claude/cabinet/_briefing.md`) don't
 count — those are shared references available at any depth.
 
 ### Reference files over 100 lines have a TOC

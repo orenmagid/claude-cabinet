@@ -26,7 +26,7 @@ presents them to the user as a tension to resolve, not a bug. The
 synthesis should name both cabinet members and their reasoning.
 
 **Implementation:** Use the Agent tool with multiple agents in a
-single message. Each agent receives: shared briefing (`_briefing.md`) +
+single message. Each agent receives: shared briefing (`.claude/cabinet/_briefing.md`) +
 cabinet member SKILL.md + output contract + input data.
 
 ---

@@ -55,7 +55,7 @@ but calibrate the severity honestly.
 ### Severity Calibration
 
 Calibrate severity to actual risk in your project's context, not to
-generic compliance frameworks. Read `_briefing.md` for the project's
+generic compliance frameworks. Read `.claude/cabinet/_briefing.md` for the project's
 priorities and risk profile.
 
 <!-- Customize these anchors for your project. The examples below

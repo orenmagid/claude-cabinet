@@ -7,8 +7,8 @@ description: >
   structure gaps. Activates during audits and when reviewing UI component code.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 tools:
   - axe-core (web projects -- via preview_eval CDN injection)
   - preview_snapshot (web projects -- accessibility tree inspection)
@@ -16,7 +16,7 @@ tools:
 activation:
   standing-mandate: audit
   files:
-    # Adjust to your component paths. See _briefing.md § Scan Scopes — App Source
+    # Adjust to your component paths. See .claude/cabinet/_briefing.md § Scan Scopes — App Source
     - src/**/*.tsx
     - src/components/**/*.tsx
   topics:
@@ -203,7 +203,7 @@ Interpret Stage 1 results + manual evaluation for what automation misses.
 
 ### Scan Scope
 
-<!-- Adjust these paths to your project. See _briefing.md § Scan Scopes — App Source -->
+<!-- Adjust these paths to your project. See .claude/cabinet/_briefing.md § Scan Scopes — App Source -->
 - Live app (via preview_start) — primary testing artifact
 - `src/components/` — All components
 - `src/pages/` — All pages

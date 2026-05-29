@@ -16,12 +16,12 @@ over from a template and never removed. Recommend retirement per
 `_lifecycle.md` criteria."
 Severity: info. Evidence: triage history + project type mismatch.
 
-**Stale context:** "`_briefing.md` lists Express.js 4.x as the server
+**Stale context:** "`.claude/cabinet/_briefing.md` lists Express.js 4.x as the server
 framework, but `package.json` shows the project migrated to Hono three weeks
 ago. Three cabinet members reference Express middleware patterns in their scan
 scopes. These cabinet members are partially blind to the current server
 architecture."
-Severity: warn. Evidence: `_briefing.md` content vs `package.json` delta.
+Severity: warn. Evidence: `.claude/cabinet/_briefing.md` content vs `package.json` delta.
 
 **Telemetry gap:** "Hook telemetry JSONL hasn't been written to in 12 days,
 but the project had 8 Claude Code sessions in that period (per git log).

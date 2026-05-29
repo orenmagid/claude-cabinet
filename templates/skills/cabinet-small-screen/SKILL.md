@@ -7,8 +7,8 @@ description: >
   responsive layout switches. Activates during audits and when reviewing layout code.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 activation:
   standing-mandate: audit
   files:

@@ -13,7 +13,7 @@ description: >
   onboarding flows.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
+  - .claude/cabinet/_briefing-identity.md
 tools: []
 topics:
   - narrative
@@ -34,7 +34,7 @@ topics:
 
 # Narrative Architect
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 

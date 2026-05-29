@@ -59,7 +59,21 @@ export function normalize(raw, durationMs) {
     return (order[f.severity] ?? 3) < (order[w] ?? 3) ? f.severity : w;
   }, 'info') : null;
 
-  const details = { categories: scores };
+  const cwvKeys = {
+    'largest-contentful-paint': 'LCP',
+    'cumulative-layout-shift': 'CLS',
+    'first-contentful-paint': 'FCP',
+    'total-blocking-time': 'TBT',
+    'speed-index': 'Speed Index',
+    'interactive': 'TTI',
+  };
+  const metrics = {};
+  for (const [auditId, label] of Object.entries(cwvKeys)) {
+    const a = audits[auditId];
+    if (a?.displayValue) metrics[label] = a.displayValue;
+  }
+
+  const details = { categories: scores, ...(Object.keys(metrics).length && { metrics }) };
   const passSummary = Object.entries(scores)
     .map(([k, v]) => `${k.replace(/-/g, ' ')}: ${v}`)
     .join(', ');

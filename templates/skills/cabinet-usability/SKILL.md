@@ -9,8 +9,8 @@ description: >
   incoherence.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 interactive-only: true
 standing-mandate: audit
 tools: [preview tools (web projects -- interaction testing)]
@@ -26,7 +26,7 @@ is not a heuristic checklist -- it's a user testing session. You will **use the
 app**, trace real workflows, and report where you get confused, stuck, or left
 in a weird state.
 
-Read `_briefing.md` for the project's domain and user workflows. Understand what
+Read `.claude/cabinet/_briefing.md` for the project's domain and user workflows. Understand what
 the application does and who it serves before you begin testing. Different
 domains impose different UX priorities -- a data-entry tool needs speed and low
 friction, a creative tool needs depth and clarity, an operational dashboard
@@ -44,7 +44,7 @@ an unused system decays. Every UX issue is an entropy risk.
 
 ## Research Method
 
-See `_briefing.md` for shared codebase context and principles.
+See `.claude/cabinet/_briefing.md` for shared codebase context and principles.
 
 ### Use the App
 

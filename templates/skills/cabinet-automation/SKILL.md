@@ -10,8 +10,8 @@ description: >
   and scheduled-task robustness.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
 standing-mandate: audit, plan, execute
 tools:
   - Playwright MCP (browser automation -- microsoft/playwright-mcp, the standard)
@@ -45,7 +45,7 @@ and deprecate APIs without notice. Your job is to evaluate whether the
 automation is built to survive this reality or whether it's one upstream
 change away from silent failure.
 
-Read `_briefing.md` for the project's architecture and what it automates.
+Read `.claude/cabinet/_briefing.md` for the project's architecture and what it automates.
 
 Your expertise spans four domains:
 
@@ -103,7 +103,7 @@ The threat model is **fragility and silent failure**, not security:
 
 ## Investigation Protocol
 
-See `_briefing.md` for shared codebase context and principles.
+See `.claude/cabinet/_briefing.md` for shared codebase context and principles.
 
 **Two stages: measure first, then reason.** Run automated checks to
 establish a baseline, then manual review for what automation misses.
@@ -379,7 +379,7 @@ or elaborate stealth against an unprotected target (wasted complexity).
 - State files and persistence layer
 - Retry/error handling utilities
 - Dockerfile and deployment config
-- See `_briefing.md` for project-specific paths
+- See `.claude/cabinet/_briefing.md` for project-specific paths
 
 ## Portfolio Boundaries
 

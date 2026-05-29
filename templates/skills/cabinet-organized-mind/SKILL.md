@@ -13,8 +13,8 @@ description: >
   architecture for human operators.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
 standing-mandate: audit, plan
 tools: []
 directives:

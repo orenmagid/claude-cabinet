@@ -13,9 +13,9 @@ description: >
 user-invocable: false
 memory: user
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit
 tools: []
 topics:
@@ -33,7 +33,7 @@ topics:
 
 # Vision
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -81,7 +81,7 @@ Use McKinsey's Three Horizons framework adapted for the project:
 
 **Horizon 1 — Core excellence.** The project's primary use case. What
 would it take to be the *best* implementation of what it already does?
-Read `_briefing-identity.md` for the stated purpose. Research what peer
+Read `.claude/cabinet/_briefing-identity.md` for the stated purpose. Research what peer
 tools do well and badly. Ask:
 
 - What do the best implementations in this space do well?
@@ -195,7 +195,7 @@ this project and others.
 
 ### Scan Scope
 
-Read `_briefing-jurisdictions.md` for project-specific paths. Focus on:
+Read `.claude/cabinet/_briefing-jurisdictions.md` for project-specific paths. Focus on:
 - Project identity and philosophy files
 - Status and roadmap documentation
 - Skill/capability ecosystem

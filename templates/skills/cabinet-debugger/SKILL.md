@@ -9,8 +9,8 @@ description: >
   prerequisites before running anything.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
 standing-mandate: execute
 tools:
   - npm ls (Node projects -- dependency chain)
@@ -175,7 +175,7 @@ reasoning: "Summary"
 
 ### For `audit` context (findings)
 
-Standard audit findings format per `_briefing.md`.
+Standard audit findings format per `.claude/cabinet/_briefing.md`.
 
 ## Calibration Examples
 

@@ -153,7 +153,7 @@ Fall back to reading `cabinet-*/SKILL.md` if the index is missing.
 Err toward inclusion. A cabinet member that activates unnecessarily costs
 a few seconds; one that doesn't activate when needed costs rework.
 
-Prepare reusable briefing for agent prompts: read `_briefing.md` once and
+Prepare reusable briefing for agent prompts: read `.claude/cabinet/_briefing.md` once and
 keep the essential facts ready to paste into each agent's prompt. When a
 member has a `directives.execute`, include it in the agent prompt to
 sharpen their focus during execution checkpoints.
@@ -167,7 +167,7 @@ structure.
 Before writing any code, **spawn one Agent per activated cabinet member**
 in a single message. Each receives:
 - The cabinet member's full SKILL.md content
-- Essential project briefing from `_briefing.md`
+- Essential project briefing from `.claude/cabinet/_briefing.md`
 - The plan text and list of files that will change
 - Instructions to evaluate whether the plan is safe to start
 

@@ -95,7 +95,8 @@
 - Debrief methodology-capture phase (`templates/skills/debrief/phases/methodology-capture.md`): instruction phase that detects load-bearing methodology work (new skill, multi-phase gate scripts, convention docs, calibration harnesses, multi-subagent choreography) and captures reasoning chain + narrative summary to `.claude/methodology/`. Quietly skips most sessions; surfaces a four-choice question when detection heuristics fire.
 - Instruction-phase convention: phase files in CC-shipped skills now split into "instruction phases" (always ship, override the skip-phases default in copy.js — e.g., `audit-pattern-capture.md`, `methodology-capture.md`, `upstream-feedback.md`) vs "customization phases" (default: skip unless consumer overrides). Installer manifest in `lib/cli.js` explicitly lists instruction phases for the session-loop module.
 - Validate auto-discover: skeleton scans for scripts/*-validator.sh when phases/validators.md is absent
-- Orient: deployment detection, unmerged branch health check, phase separation guidance
+- Orient: deployment detection, unmerged branch check, briefing file health check, phase separation guidance
+- Briefing path convention: all template references to `_briefing*.md` use `.claude/cabinet/_briefing*.md` (45 files updated 2026-05-29). Orient health check warns when briefing files are missing or misplaced at project root.
 - Debrief: pre-exit unmerged commits check, feedback resolution trigger improvements
 - Execute: post-extraction type checking, .d.ts verification mandate
 - cc-feedback: outbox-only delivery for non-dogfood consumers (removed linked direct-write)
@@ -106,14 +107,15 @@
 - Bug fix (v0.27.2): migration-only `.ccrc.json` (no `modules` key) no longer crashes the installer
 - Bug fix (v0.27.3): instruction phases now overwrite stale copies during install (previously skipped if file existed with different hash)
 - Bug fix (v0.27.3): `settings.local.json` omega permissions cleaned during install (stale omega MCP allowlists removed)
-- Site-audit module (opt-in, off by default): `/cc-site-audit` skill + `@claude-cabinet/site-audit` runtime. 15 checks across performance (Lighthouse), accessibility (axe-core WCAG AA + Pa11y WCAG AAA), security (headers + MDN Observatory grade + testssl.sh TLS depth + Nuclei CVE scan with authorization gate), SEO (meta/OG + JSON-LD structured data), content (Linkinator broken links), DNS (DNSSEC/SPF/DMARC/HTTP2-3), privacy (Blacklight tracker/fingerprint detection), multi-page (Unlighthouse crawl), and sustainability (Website Carbon local calc). Standalone HTML report (XSS-safe, CSP meta, no external CDN). Comparison mode (side-by-side delta scoring with asymmetric availability). Per-check module architecture (`src/checks/<id>.mjs` exporting detect/run/normalize). Security: spawn-only execution (no exec/shell-string), HTML-escaped target content, domain-match authorization gate for Nuclei active scanning. CI testable via fixture injection + per-tool/overall timeouts. 63 unit tests. New `site-audit` MODULES entry; postInstall dispatch refactored to table-driven registry (no more hardcoded verify-setup branch). Eleven modules total.
+- Site-audit module (opt-in, off by default): `/cc-site-audit` skill + `@claude-cabinet/site-audit` runtime. 14 checks across performance (Lighthouse), accessibility (axe-core WCAG AA + Pa11y WCAG AAA), security (headers + MDN Observatory grade + ssl-checker TLS certificate check + Nuclei CVE scan with authorization gate), SEO (meta/OG + JSON-LD structured data), content (Linkinator broken links), DNS (DNSSEC/SPF/DMARC/HTTP2-3), multi-page (Unlighthouse crawl), and sustainability (Website Carbon local calc). Each check exports a `whyItMatters` string surfaced in the HTML report. Standalone HTML report (XSS-safe, CSP meta, no external CDN). Comparison mode (side-by-side delta scoring with asymmetric availability). Per-check module architecture (`src/checks/<id>.mjs` exporting detect/run/normalize). Security: spawn-only execution (no exec/shell-string), HTML-escaped target content, domain-match authorization gate for Nuclei active scanning. CI testable via fixture injection + per-tool/overall timeouts. 71 unit tests. New `site-audit` MODULES entry; postInstall dispatch refactored to table-driven registry (no more hardcoded verify-setup branch). Eleven modules total.
+
 
 ## What's Active
 
-- Published at v0.28.0 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
+- Published at v0.29.13 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
 - Debrief routing discipline: `record-lessons.md` is now an instruction phase shipping to all consumers — teaches a decision tree for routing session outputs (built-in memory via `/cc-remember` for decisions/lessons/preferences, CLAUDE.md/briefing for load-bearing project facts, pib-db deferred triggers for conditional revisits, upstream-feedback for CC friction) and explicitly calls out the `feedback-project-*.md` anti-pattern (observed rot rate 4/5 within 7 days). Four instruction phases total: audit-pattern-capture, methodology-capture, record-lessons, upstream-feedback.
 - Orient feedback pipeline hardened: flush does skip-if-exists against feedback/ and feedback/resolved/, atomic outbox reset on clean pass; wrong-write scan excludes `feedback-project-*.md` and `scope: project-specific` files.
-- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.28.0
+- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.29.13
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)
 - organized-mind scoped to human cognition (cognitive load ≠ AI load)
@@ -129,6 +131,7 @@
 - Data schema: `cabinet-member`/`cabinet_member` across all scripts and templates
 - Two-file committee system: upstream `committees.yaml` + project `committees-project.yaml`
 - `resolve-committees.cjs` script for deterministic merge at runtime
+- Handoff project planned (prj:e104930c): standalone multi-tenant Rails service for consultant-client structured collaboration. Plan at `.claude/plans/packet-standalone.md` with 4-critic critique synthesis. 6 architectural decisions pending, 9 required plan revisions. Not yet started — decisions needed first.
 
 ## What's Planned
 

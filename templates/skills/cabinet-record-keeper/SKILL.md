@@ -11,8 +11,8 @@ description: |
 user-invocable: false
 memory: project
 briefing:
-  - _briefing-identity.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit, debrief
 tools: [grep (all projects -- cross-reference validation)]
 directives:
@@ -40,7 +40,7 @@ topics:
 
 # Record-Keeper
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -76,7 +76,7 @@ There are three kinds of documentation problems:
 ## Convening Criteria
 
 - **Files:** `CLAUDE.md`, `**/CLAUDE.md`, `system-status.md`, configuration
-  files (see `_briefing.md` for project-specific config files)
+  files (see `.claude/cabinet/_briefing.md` for project-specific config files)
 - **Topics:** documentation, convention, stale reference, drift, memory file,
   CLAUDE.md, system-status, config accuracy
 - **Always-on for:** audit
@@ -94,7 +94,7 @@ For every CLAUDE.md file in the system, verify claims against reality:
 - Are entity type descriptions consistent with configuration files and actual usage?
 - Does the deployment architecture section match the current setup?
 
-**Nested CLAUDE.md files** (see `_briefing.md` for project layout):
+**Nested CLAUDE.md files** (see `.claude/cabinet/_briefing.md` for project layout):
 - Do they describe their directory's current contents accurately?
 - Are referenced files, components, and patterns still present?
 - Do "Before Modifying" sections list the right prerequisites?
@@ -127,7 +127,7 @@ Read all files in the project's memory directory:
 
 - Code comments that describe behavior the code no longer has
 - Ancient TODO comments that should be resolved or removed
-- Type definitions (see `_briefing.md` § App Source) that don't match actual
+- Type definitions (see `.claude/cabinet/_briefing.md` § App Source) that don't match actual
   API contracts
 
 ### User-Facing Documentation
@@ -164,7 +164,7 @@ grep -oP '`[^`]+\.(sh|js|ts|tsx|md|yaml|json)`' CLAUDE.md | \
   sort -u | while read f; do test -f "$f" || echo "MISSING: $f"; done
 
 # Run project validation scripts
-# See _briefing.md § Validation Scripts for actual script paths
+# See .claude/cabinet/_briefing.md § Validation Scripts for actual script paths
 ```
 
 ### Scan Scope
@@ -175,8 +175,8 @@ grep -oP '`[^`]+\.(sh|js|ts|tsx|md|yaml|json)`' CLAUDE.md | \
 - `README.md`, `GETTING-STARTED.md`, workflow guides -- User-facing docs
 - The project's memory directory -- All memory files
 - Configuration files -- Entity type definitions, metadata files
-- See `_briefing.md § API / Server` -- Code comments, inline docs
-- See `_briefing.md § App Source` -- Type definitions, convention compliance
+- See `.claude/cabinet/_briefing.md § API / Server` -- Code comments, inline docs
+- See `.claude/cabinet/_briefing.md § App Source` -- Type definitions, convention compliance
 
 ## Portfolio Boundaries
 

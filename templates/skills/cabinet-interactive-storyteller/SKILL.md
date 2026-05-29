@@ -14,7 +14,7 @@ description: >
   interactive artifacts.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
+  - .claude/cabinet/_briefing-identity.md
 tools: [WebSearch (research emerging interactive narrative patterns)]
 topics:
   - interactive
@@ -34,7 +34,7 @@ topics:
 
 # Interactive Storyteller
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 

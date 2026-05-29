@@ -354,6 +354,27 @@ local HEAD. Unpushed commits are invisible to worktree agents. Always
 push before spawning worktree agents, or manually review their diffs
 for spurious deletions of unpushed work.
 
+### Briefing file check
+
+Verify that cabinet briefing files exist at `.claude/cabinet/`. Without
+these, cabinet members run without project context and produce generic
+findings.
+
+Check for `.claude/cabinet/_briefing.md` (the hub file). If absent:
+
+> ⚠ No cabinet briefing files found at `.claude/cabinet/`. Cabinet
+> members will run without project context. Run `/onboard` to generate
+> them.
+
+If briefing files exist at the project root (`_briefing.md`,
+`_briefing-identity.md`, etc.) but NOT in `.claude/cabinet/`:
+
+> ⚠ Briefing files found at project root but not in `.claude/cabinet/`
+> where cabinet members expect them. Move them:
+> `mkdir -p .claude/cabinet && mv _briefing*.md .claude/cabinet/`
+
+Advisory — do not block orient for missing briefings.
+
 > **Orient vs Pulse vs Audit:** Orient health checks verify *operational*
 > state — is the system running, is data fresh, are processes alive?
 > Pulse (embedded in orient) verifies *descriptive* accuracy — do counts

@@ -9,9 +9,9 @@ description: |
   health.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-cabinet.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-cabinet.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit
 tools:
   - grep/file scanning (all projects -- config validation)
@@ -47,7 +47,7 @@ related:
 
 # CC Health
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -219,7 +219,7 @@ consolidation, promotion bottlenecks.
 The project evolves. The CC configuration should evolve with it. Check for
 drift between the two:
 
-- **`_briefing.md` freshness.** Compare the briefing files against the
+- **`.claude/cabinet/_briefing.md` freshness.** Compare the briefing files against the
   actual project state. Do NOT trust what the briefing says — verify it
   against the filesystem. Concrete cross-references to make:
   - `.ccrc.json` modules vs briefing claims about what's installed.
@@ -237,7 +237,7 @@ drift between the two:
     section references. New directories that aren't mentioned? Referenced
     paths that no longer exist?
   - Split vs monolithic briefing: if the project has enough content for
-    split files but is still using a monolithic `_briefing.md`, flag it.
+    split files but is still using a monolithic `.claude/cabinet/_briefing.md`, flag it.
   Stale context means cabinet members are making decisions based on
   outdated information.
 - **Scan scope accuracy.** Do cabinet member `files` frontmatter entries and
@@ -286,20 +286,20 @@ catches the literal string but misses "the shared context file in the
 perspectives directory." You need to read each file and understand what
 it's saying.
 
-**Method:** Read each non-manifest file (phase files, `_briefing.md`,
+**Method:** Read each non-manifest file (phase files, `.claude/cabinet/_briefing.md`,
 custom skills, memory files, custom cabinet members). For each file,
 assess whether its content assumes the current CC world or the old one.
 You're looking for three categories of staleness:
 
 **1. Broken references** — content that points to things that no longer
 exist. A phase file that says "read `perspectives/_context.md`" will
-fail silently because that file is now `briefing/_briefing.md`. A hook
+fail silently because that file is now `.claude/cabinet/_briefing.md`. A hook
 reference to `cor-upstream-guard.sh` points to a deleted file. These
 cause real failures — the system tries to do something and can't.
 
 To help you recognize these, the v0.5 → v0.6 transition changed:
 - `perspectives/` directory → `cabinet-*/` directories + `briefing/`
-- `_context.md` → `_briefing.md`
+- `_context.md` → `.claude/cabinet/_briefing.md`
 - `_context-template.md` → `_briefing-template.md`
 - `_groups.yaml` → `committees.yaml`
 - `cor-upstream-guard.sh` → `cc-upstream-guard.sh`
@@ -361,7 +361,7 @@ directory structure:
 **Directory structure:**
 - `cabinet-*/` directories exist for active cabinet members (not
   `perspectives/`)
-- `briefing/` directory exists with `_briefing.md` (not `_context.md`
+- `briefing/` directory exists with `.claude/cabinet/_briefing.md` (not `_context.md`
   in `perspectives/`)
 - `cabinet/` directory exists for infrastructure files (committees,
   lifecycle, etc.)

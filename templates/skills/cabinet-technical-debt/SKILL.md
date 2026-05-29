@@ -11,8 +11,8 @@ description: >
 user-invocable: false
 memory: project
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
 standing-mandate: audit
 tools:
   - grep patterns (all projects -- dead exports, type safety gaps, TODO aging)

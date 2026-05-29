@@ -9,6 +9,13 @@ or update files as described below, always showing the user what will
 be created or changed before writing. To explicitly skip briefing
 generation, write only `skip: true`.
 
+## Output Location
+
+All briefing files are written to **`.claude/cabinet/`** — this is the
+canonical location. Cabinet members, audit, orient, and debrief all
+resolve briefing paths from `.claude/cabinet/_briefing*.md`. Never write
+briefing files to the project root or any other location.
+
 ## First-Run Generation
 
 Create split briefing files from interview answers. The cabinet system

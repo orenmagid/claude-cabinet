@@ -12,8 +12,8 @@ description: >
 user-invocable: false
 memory: project
 briefing:
-  - _briefing-identity.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit
 tools: []
 topics:
@@ -31,7 +31,7 @@ topics:
 
 # Goal Alignment
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -83,7 +83,7 @@ serves the mission.
 
 ### The Mission
 
-Read `_briefing-identity.md` to understand what this project is meant to
+Read `.claude/cabinet/_briefing-identity.md` to understand what this project is meant to
 be — its stated purpose, core principles, and user context. Then read
 `system-status.md` (or equivalent state file) for what's built and
 planned. These two documents define the gap you're evaluating: what the
@@ -191,7 +191,7 @@ Evaluate the health of the project's feedback loops:
 
 ### Scan Scope
 
-Read `_briefing-jurisdictions.md` for project-specific paths. Focus on:
+Read `.claude/cabinet/_briefing-jurisdictions.md` for project-specific paths. Focus on:
 - Project identity files (CLAUDE.md, README, mission statements)
 - Status and roadmap files
 - Feedback and friction capture directories

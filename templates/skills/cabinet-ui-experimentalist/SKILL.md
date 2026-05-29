@@ -13,9 +13,9 @@ description: >
   patterns from emerging tools.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit
 tools: [WebSearch (all projects -- emerging UI patterns and libraries)]
 topics:
@@ -35,7 +35,7 @@ topics:
 
 # UI Experimentalist
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -195,7 +195,7 @@ visual that acknowledges effort without creating guilt. The line between
 ### Scan Approach
 
 1. **Read the current app** — know what exists, where the friction is,
-   what's begging to be reimagined. Use paths from `_briefing-jurisdictions.md`.
+   what's begging to be reimagined. Use paths from `.claude/cabinet/_briefing-jurisdictions.md`.
 2. **Research obsessively** — spend most of your effort on web search,
    design blogs, experimental repos, conference talks. Go deep.
 3. **Connect to the project's reality** — every experiment must land on

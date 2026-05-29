@@ -10,9 +10,9 @@ description: >
   growth surfaces them.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 interactive-only: true
 standing-mandate: audit
 tools:
@@ -51,7 +51,7 @@ Performance in this system has multiple dimensions:
 
 ## Investigation Protocol
 
-See `_briefing.md` for shared codebase context and principles.
+See `.claude/cabinet/_briefing.md` for shared codebase context and principles.
 
 **Two stages: measure first, then reason.** Run automated measurements to
 establish a baseline before manual code review. Every tool is optional --

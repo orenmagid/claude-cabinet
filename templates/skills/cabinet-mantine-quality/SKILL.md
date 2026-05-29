@@ -13,8 +13,8 @@ description: >
   selection.
 user-invocable: false
 briefing:
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit
 tools: [WebSearch (Mantine docs -- component API reference), preview tools (web projects -- runtime testing)]
 files:
@@ -32,7 +32,7 @@ topics:
 
 # Mantine Quality
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -103,7 +103,7 @@ release.
 
 **Layer 2: Project-Specific Context (how this app uses Mantine)**
 
-Read `_briefing-architecture.md` and `_briefing-jurisdictions.md` to find:
+Read `.claude/cabinet/_briefing-architecture.md` and `.claude/cabinet/_briefing-jurisdictions.md` to find:
 - The project's Mantine reference document (if one exists)
 - The import barrel file (if the project centralizes Mantine imports)
 - The app's conventions around Mantine usage
@@ -263,7 +263,7 @@ Check whether the app is missing opportunities from Mantine's ecosystem:
 
 ### Scan Scope
 
-Read `_briefing-jurisdictions.md` for project-specific paths. Focus on:
+Read `.claude/cabinet/_briefing-jurisdictions.md` for project-specific paths. Focus on:
 - Framework reference documents (Mantine reference, decision guides)
 - Import barrel or re-export files
 - Component directories

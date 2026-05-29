@@ -9,8 +9,8 @@ description: >
   platform alignment and surface ecosystem developments worth adopting.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
 standing-mandate: audit, plan, orient, seed
 tools:
   - fetch_docs (all projects -- Claude Code llms.txt index and capability pages)
@@ -45,7 +45,7 @@ gets maximum value from the platform it runs on, uses official patterns where
 they exist, and stays aligned with ecosystem conventions so it doesn't break
 on updates or miss new capabilities.
 
-Read `_briefing.md` for the project's architecture and stack. Understand what
+Read `.claude/cabinet/_briefing.md` for the project's architecture and stack. Understand what
 the project builds on top of Claude Code before evaluating it.
 
 You bring three kinds of expertise:
@@ -270,7 +270,7 @@ prompt hooks can/cannot Z" is verification.
 - `hooks/` — hook configurations
 - `.lsp.json` — LSP server configurations
 - `CLAUDE.md`, `**/CLAUDE.md` — memory and context files
-- `_briefing*.md` — project briefing files
+- `.claude/cabinet/_briefing*.md` — project briefing files
 - Claude Code docs (via framework-docs MCP) — authoritative reference
 - `changelog.md` / `whats-new/` (via docs) — release tracking
 

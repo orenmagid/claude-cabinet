@@ -13,9 +13,9 @@ description: >
   and visual hierarchy.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 tools: []
 topics:
   - layout
@@ -34,7 +34,7 @@ topics:
 
 # Information Design
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -314,7 +314,7 @@ usability critiques its interaction model.
 ### Before Designing
 
 1. **Read the project's architecture** — understand the technology
-   stack, framework, and theming system from `_briefing-architecture.md`
+   stack, framework, and theming system from `.claude/cabinet/_briefing-architecture.md`
 2. **Read framework documentation** — know what components exist before
    designing with them. Don't propose custom components when the
    framework already provides one.

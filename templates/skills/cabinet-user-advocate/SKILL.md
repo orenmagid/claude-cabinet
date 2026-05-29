@@ -14,9 +14,9 @@ description: >
   perspective.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: orient
 tools: []
 directives:
@@ -43,7 +43,7 @@ topics:
 
 # User Advocate
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -153,8 +153,8 @@ When evaluating plans or implementations, ask:
 
 ### 2. Principle Inventory
 
-Know where the project's principles live. Read `_briefing-identity.md`
-for core principles and `_briefing-architecture.md` for architectural
+Know where the project's principles live. Read `.claude/cabinet/_briefing-identity.md`
+for core principles and `.claude/cabinet/_briefing-architecture.md` for architectural
 principles. Then scan:
 
 - The root `CLAUDE.md` — canonical principles and conventions

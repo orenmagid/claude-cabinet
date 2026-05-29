@@ -22,9 +22,9 @@ description: >
   analyst who...", "Data coherence analyst who...").
 user-invocable: false
 briefing:
-  - _briefing-identity.md
+  - .claude/cabinet/_briefing-identity.md
   # Add other briefing files relevant to this member's domain
-  # Common: _briefing-architecture.md, _briefing-jurisdictions.md, _briefing-api.md
+  # Common: .claude/cabinet/_briefing-architecture.md, _briefing-jurisdictions.md, _briefing-api.md
 standing-mandate: audit
   # Add plan, execute, orient, debrief if this member should activate
   # in those contexts. Most members are audit-only.
@@ -106,7 +106,7 @@ relevant standards by number where applicable (OWASP, WCAG, etc.).
 
 ### 4. Scan Scope
 
-What files and directories to examine. Reference `_briefing.md` for
+What files and directories to examine. Reference `.claude/cabinet/_briefing.md` for
 project-specific paths. Use comments to tell consuming projects where
 to customize.
 

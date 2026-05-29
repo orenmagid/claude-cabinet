@@ -10,9 +10,9 @@ description: >
   infrastructure leverage.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit, plan, investigate
 tools:
   - fetch_docs (all projects -- Claude Code llms.txt and capability pages)
@@ -37,7 +37,7 @@ layers interact, where boundaries are clean or leaking, whether data flows
 make sense, and whether the Claude Code / markdown OS setup is being
 leveraged to its full potential.
 
-Read `_briefing.md` for the project's architecture, stack, and design
+Read `.claude/cabinet/_briefing.md` for the project's architecture, stack, and design
 principles. Understand the system before evaluating it.
 
 You bring two kinds of expertise:
@@ -80,7 +80,7 @@ capabilities that would strengthen the architecture.
 
 #### Layer 2: Project Design Vision
 
-Read `_briefing.md` for the project's design principles, architectural
+Read `.claude/cabinet/_briefing.md` for the project's design principles, architectural
 decisions, and inspirations. Every project has deliberate choices --
 understand them before critiquing them. Check system status or equivalent
 tracking for what's built vs planned. Don't evaluate the system against
@@ -254,7 +254,7 @@ This cabinet member has the broadest scope -- the whole system:
 - `.claude/skills/` -- Skill definitions
 - `.claude/settings*.json` -- Claude Code configuration
 - `.mcp.json` -- MCP server configuration
-- `_briefing.md` -- Project context (if present)
+- `.claude/cabinet/_briefing.md` -- Project context (if present)
 - Server/API entry points -- Express, FastAPI, etc.
 - Frontend app structure -- React, Vue, etc.
 - Schema/model definitions

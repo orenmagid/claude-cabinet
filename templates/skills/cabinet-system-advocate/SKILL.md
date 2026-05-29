@@ -10,8 +10,8 @@ description: >
   feature adoption.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-cabinet.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-cabinet.md
 standing-mandate: orient, debrief
 directives:
   orient: >
@@ -35,7 +35,7 @@ topics:
 
 # System Advocate
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 

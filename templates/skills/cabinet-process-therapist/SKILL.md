@@ -10,9 +10,9 @@ description: |
   process effectiveness.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-cabinet.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-cabinet.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit, seed
 tools: []
 directives:
@@ -43,7 +43,7 @@ related:
 
 # Process Therapist
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -81,7 +81,7 @@ reveal patterns.
 
 For each cabinet member prompt and skill definition, evaluate:
 
-- **Signal vs noise** -- Review audit results (see `_briefing.md § Audit Infrastructure`
+- **Signal vs noise** -- Review audit results (see `.claude/cabinet/_briefing.md § Audit Infrastructure`
   for location). What gets approved vs rejected? If a cabinet member's findings are
   mostly rejected, its prompt is miscalibrated. If a skill's output consistently
   needs manual correction, its instructions are unclear.
@@ -103,7 +103,7 @@ Evaluate the skill ecosystem as a whole:
   things? Are multiple skills trying to do the same job? Map what each
   actually covers against what it claims to cover.
 - **Gaps** -- Are there quality dimensions that no cabinet member catches?
-  Check the friction capture directory (see `_briefing.md § Friction Captures`)
+  Check the friction capture directory (see `.claude/cabinet/_briefing.md § Friction Captures`)
   for issues that should have been caught but weren't. Are there workflows
   that no skill handles?
 - **Balance** -- Are some groups over-represented and others under? Is
@@ -112,7 +112,7 @@ Evaluate the skill ecosystem as a whole:
 
 ### Shared Context Health
 
-The `_briefing.md` file and `_preamble.md` provide shared context:
+The `.claude/cabinet/_briefing.md` file and `_preamble.md` provide shared context:
 - Are they still accurate?
 - Are they too long? (Does shared context dilute attention from specific
   instructions?)
@@ -138,7 +138,7 @@ Beyond audit cabinet members, evaluate the broader skill infrastructure:
 The process infrastructure itself:
 
 - **Audit runner** -- Does standalone mode still work?
-  See `_briefing.md § Audit Infrastructure` for paths.
+  See `.claude/cabinet/_briefing.md § Audit Infrastructure` for paths.
 - **Result aggregation** -- Does the merge step handle all cabinet members?
 - **Suppression list** -- Is the triage feedback loop working? Are
   rejected findings actually suppressed in future runs?
@@ -208,13 +208,13 @@ All findings should be marked as not auto-fixable.
 
 - `skills/` -- All skill definitions
 - `skills/cabinet-*/_prompt-guide.md` -- Prompt authoring guidance
-- `skills/cabinet-*/_briefing.md` -- Shared cabinet member context
+- `.claude/cabinet/_briefing.md` -- Shared cabinet member context
 - Audit infrastructure scripts and schemas —
-  See `_briefing.md § Audit Infrastructure`
+  See `.claude/cabinet/_briefing.md § Audit Infrastructure`
 - Audit results and triage history —
-  See `_briefing.md § Audit Infrastructure`
+  See `.claude/cabinet/_briefing.md § Audit Infrastructure`
 - Friction capture directory —
-  See `_briefing.md § Friction Captures`
+  See `.claude/cabinet/_briefing.md § Friction Captures`
 - WebSearch -- ecosystem evolution, new techniques
 
 ## Portfolio Boundaries

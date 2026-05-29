@@ -19,7 +19,7 @@ this project needs something different from the default.
 
 **`orient/phases/context.md`** — Point at the briefing files generated in
 the previous phase. At minimum:
-- Read `_briefing.md` for project identity and configuration
+- Read `.claude/cabinet/_briefing.md` for project identity and configuration
 - Read `system-status.md` for current state
 - Read `CLAUDE.md` if it has project-specific instructions beyond what
   Claude Code auto-loads

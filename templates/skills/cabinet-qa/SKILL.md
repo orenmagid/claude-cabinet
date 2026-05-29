@@ -10,9 +10,9 @@ description: >
   execute to actively test endpoints, UI, and edge cases.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: plan, execute
 tools: [preview tools (web projects -- behavior verification), curl (API projects -- endpoint testing)]
 directives:

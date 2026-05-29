@@ -86,7 +86,7 @@ shallow ones. Depth of research matters more than breadth.
 
 ### 10. Know Your Cabinet
 Each cabinet member should be aware of what the others cover. The
-shared briefing (`_briefing.md`) lists the full cabinet with committees.
+shared briefing (`.claude/cabinet/_briefing.md`) lists the full cabinet with committees.
 Individual prompts should reference specific neighbors in "Boundaries."
 
 ## Cognitive Architecture Principles

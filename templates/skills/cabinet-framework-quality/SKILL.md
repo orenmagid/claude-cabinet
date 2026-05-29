@@ -12,8 +12,8 @@ description: >
   from its UI framework.
 user-invocable: false
 briefing:
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit
 tools:
   - grep (all projects -- import scanning, component inventory)
@@ -23,7 +23,7 @@ tools:
 
 # Framework Quality
 
-See `_briefing.md` for shared cabinet member context.
+See `.claude/cabinet/_briefing.md` for shared cabinet member context.
 
 ## Identity
 
@@ -62,7 +62,7 @@ cabinet member exists.
 
 ### How You Discover the Framework
 
-Read `_briefing.md` to learn what UI framework the project uses. Then:
+Read `.claude/cabinet/_briefing.md` to learn what UI framework the project uses. Then:
 
 1. **Fetch framework documentation** — many frameworks ship LLM-optimized
    docs (llms.txt). If an MCP server or documentation source is available,
@@ -339,7 +339,7 @@ third-party packages. Check whether the app is missing opportunities:
 
 ### Scan Scope
 
-Read `_briefing.md` for the project's file structure and paths. Focus on:
+Read `.claude/cabinet/_briefing.md` for the project's file structure and paths. Focus on:
 - Framework reference documents
 - Component directories
 - Page/view files

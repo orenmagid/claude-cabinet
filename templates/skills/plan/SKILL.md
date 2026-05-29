@@ -201,7 +201,7 @@ patterns, and topic keywords). Fall back to reading `cabinet-*/SKILL.md`
 if the index is missing. Spawn each matching member as a parallel agent.
 Each receives:
 - The cabinet member's full SKILL.md content
-- Essential project briefing from `_briefing.md`
+- Essential project briefing from `.claude/cabinet/_briefing.md`
 - The draft plan (problem, implementation, surface area, AC)
 - The member's `directives.plan` if it exists (scoped focus for planning)
 - Instructions to evaluate through their lens and return concerns + verdict

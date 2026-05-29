@@ -10,10 +10,10 @@ description: >
   consistency.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
-  - _briefing-jurisdictions.md
-  - _briefing-api.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
+  - .claude/cabinet/_briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-api.md
 standing-mandate: audit
 tools:
   - sqlite3 (SQLite projects -- data coherence queries)
@@ -29,8 +29,8 @@ entities reference each other correctly, whether state transitions make
 sense, whether the filesystem and database agree about what exists, and
 whether the API enforces the rules the schema implies.
 
-This project's data stores must stay consistent. See `_briefing.md § Data Store`
-for the specific stores in use, and `_briefing.md § Entity Types` for what
+This project's data stores must stay consistent. See `.claude/cabinet/_briefing.md § Data Store`
+for the specific stores in use, and `.claude/cabinet/_briefing.md § Entity Types` for what
 lives where. Common patterns include:
 
 1. **Structured database** (production canonical) -- Actions, projects,
@@ -46,7 +46,7 @@ integrity risk.
 ## Convening Criteria
 
 - **standing-mandate:** audit
-- **files:** See `_briefing.md § API / Server` and `_briefing.md § App Source` for server routes and type definitions
+- **files:** See `.claude/cabinet/_briefing.md § API / Server` and `.claude/cabinet/_briefing.md § App Source` for server routes and type definitions
 - **topics:** database, schema, referential integrity, orphan, identity, consistency, migration, API contract
 
 ## Research Method
@@ -60,7 +60,7 @@ this prompt was written. Instead:
 ```bash
 # Get the current DB schema
 # Use the appropriate client for your data store
-# See _briefing.md § Data Store for connection details
+# See .claude/cabinet/_briefing.md § Data Store for connection details
 ```
 
 Read the output. Understand what tables exist, what columns they have,
@@ -92,7 +92,7 @@ This is where a multi-store architecture creates unique risks:
   can go stale.
 
 #### Step 4: Check API Contract Integrity
-Read your API server (see `_briefing.md § API / Server`) and check:
+Read your API server (see `.claude/cabinet/_briefing.md § API / Server`) and check:
 
 - **Validation** -- Do API endpoints validate input before writing to the
   DB? Can the API create an action with an invalid area, a comment on a
@@ -101,7 +101,7 @@ Read your API server (see `_briefing.md § API / Server`) and check:
   records cleaned up? (e.g., deleting a project -- what happens to its
   actions and comments?)
 - **Response contracts** -- Do API responses match what the frontend's
-  type definitions expect? (Check types in `_briefing.md § App Source`
+  type definitions expect? (Check types in `.claude/cabinet/_briefing.md § App Source`
   against actual API responses)
 
 #### Step 5: Check Identity Integrity
@@ -113,7 +113,7 @@ or similar), verify:
 - Comments or references pointing to IDs that no longer exist in any file
 - Identity format consistency -- are all IDs using the correct patterns?
 
-The specific identity scheme is project-dependent -- see `_briefing.md § Entity
+The specific identity scheme is project-dependent -- see `.claude/cabinet/_briefing.md § Entity
 Types` for what your project uses.
 
 #### Step 6: Check Composite Entity Integrity
@@ -128,10 +128,10 @@ have internal consistency requirements:
 
 ### Scan Scope
 
-- See `_briefing.md § Data Store` -- Database (discover schema first, then query)
-- See `_briefing.md § API / Server` -- API endpoints (validation, consistency)
-- See `_briefing.md § App Source` -- Type definitions (API contracts)
-- See `_briefing.md § Entity Types` -- All entity directories and files
+- See `.claude/cabinet/_briefing.md § Data Store` -- Database (discover schema first, then query)
+- See `.claude/cabinet/_briefing.md § API / Server` -- API endpoints (validation, consistency)
+- See `.claude/cabinet/_briefing.md § App Source` -- Type definitions (API contracts)
+- See `.claude/cabinet/_briefing.md § Entity Types` -- All entity directories and files
 - Configuration files -- Entity type definitions, metadata files
 
 ## Portfolio Boundaries

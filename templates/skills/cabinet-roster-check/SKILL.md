@@ -8,8 +8,8 @@ description: |
   Activates during audits and when skill infrastructure is being discussed.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-cabinet.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-cabinet.md
 standing-mandate: audit, seed
 tools: []
 directives:

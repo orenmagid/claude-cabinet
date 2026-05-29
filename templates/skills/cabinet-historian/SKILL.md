@@ -11,8 +11,8 @@ description: >
 user-invocable: false
 memory: user
 briefing:
-  - _briefing-identity.md
-  - _briefing-architecture.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-architecture.md
 standing-mandate: plan, execute, orient, debrief
 tools:
   - grep over ~/.claude/projects/<slug>/memory/ (built-in memory retrieval)

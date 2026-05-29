@@ -9,8 +9,8 @@ description: >
   human-AI collaboration cycles.
 user-invocable: false
 briefing:
-  - _briefing-identity.md
-  - _briefing-jurisdictions.md
+  - .claude/cabinet/_briefing-identity.md
+  - .claude/cabinet/_briefing-jurisdictions.md
 standing-mandate: audit
 tools: []
 ---
@@ -36,10 +36,10 @@ is your concern.
 ## Convening Criteria
 
 - **standing-mandate:** audit
-- **files:** audit results and triage files (see `_briefing.md § Audit Infrastructure`),
+- **files:** audit results and triage files (see `.claude/cabinet/_briefing.md § Audit Infrastructure`),
   `skills/**/*.md`, `.git/hooks/*`, system status document
-  (see `_briefing.md § System Status`), friction captures
-  (see `_briefing.md § Friction Captures`), sync scripts, system scheduler
+  (see `.claude/cabinet/_briefing.md § System Status`), friction captures
+  (see `.claude/cabinet/_briefing.md § Friction Captures`), sync scripts, system scheduler
   configs (LaunchAgents, cron, systemd)
 - **topics:** process, workflow, pipeline, feedback loop, triage, deployment,
   session, continuity, automation, human burden, anti-entropy, guardrails,
@@ -47,7 +47,7 @@ is your concern.
 
 ## Research Method
 
-See `_briefing.md` for shared codebase context and principles.
+See `.claude/cabinet/_briefing.md` for shared codebase context and principles.
 
 Use session history tools (if available) to check recent session patterns,
 repeated errors, and whether sessions engaged with feedback or ignored it.
@@ -92,7 +92,7 @@ When the user reports friction, does it actually get addressed?
 The audit system produces findings. Do they actually lead to improvements?
 
 - **Audit execution** -- Are audits running? Check audit results
-  (see `_briefing.md § Audit Infrastructure`) for recent runs. Are there gaps?
+  (see `.claude/cabinet/_briefing.md § Audit Infrastructure`) for recent runs. Are there gaps?
 - **Triage throughput** -- Are findings being triaged in reasonable time? Check
   triage history for patterns. Are findings piling up untriaged?
 - **Triage to action** -- When findings are approved, do they become plans and
@@ -120,7 +120,7 @@ When work is planned, does it get done well?
 The pipeline from code change to production:
 
 - **Deploy process** -- Is the deployment pipeline
-  (see `_briefing.md § Deployment`) reliable? Are there manual steps that could
+  (see `.claude/cabinet/_briefing.md § Deployment`) reliable? Are there manual steps that could
   be forgotten?
 - **Content sync** -- Does content sync (git-based or otherwise) work reliably?
   Are there cases where content changes don't reach production?
@@ -192,15 +192,15 @@ execution, monitoring, and self-correction.
 ### Scan Scope
 
 - Audit results and triage history —
-  See `_briefing.md § Audit Infrastructure`
+  See `.claude/cabinet/_briefing.md § Audit Infrastructure`
 - Friction capture directory —
-  See `_briefing.md § Friction Captures`
+  See `.claude/cabinet/_briefing.md § Friction Captures`
 - `.git/hooks/` -- Git hooks
 - `skills/` -- Skill definitions
 - Settings and configuration files
 - Automation scripts
-- App server source — See `_briefing.md § App Source`
-- System status document — See `_briefing.md § System Status`
+- App server source — See `.claude/cabinet/_briefing.md § App Source`
+- System status document — See `.claude/cabinet/_briefing.md § System Status`
 - System scheduler configs (LaunchAgents, cron, systemd) -- Scheduled tasks
 - Session history tools (if available) -- Recent session patterns, repeated errors
 
