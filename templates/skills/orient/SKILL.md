@@ -249,6 +249,16 @@ CLI.
    - "N projects may be ready to close (0 open actions)"
    - "N projects have had no activity in 14+ days"
 
+4. **Spring-clean heuristic** — suggest `/spring-clean` when the backlog
+   shows structural cruft. Fire when ANY of:
+   - An active project has 10+ open actions AND no completion in 14+ days
+   - Total active projects > 7
+   Cap at once per 7 days — check if a spring-clean note exists in the
+   last 7 days of session context before surfacing. When it fires,
+   append to Attention Items:
+   *"Backlog may benefit from `/spring-clean` (N stale, M open actions
+   in mega-projects)."*
+
 If pib-db doesn't exist, skip with no warning — the project may use
 a different work tracking system configured in `phases/work-scan.md`.
 
