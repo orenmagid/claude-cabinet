@@ -22,6 +22,8 @@ __pycache__/
 .claude/skills/
 .claude/hooks/
 .claude/cabinet/
+.claude/agents/
+.claude/workflows/
 .claude/settings.json
 .ccrc.json
 .cc-backup/
