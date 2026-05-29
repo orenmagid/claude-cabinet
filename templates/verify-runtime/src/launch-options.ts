@@ -20,9 +20,12 @@ export function resolveLaunchOptions(env: Record<string, string | undefined>): L
     slowMo = 1000;
   }
 
-  return {
-    headless,
-    slowMo,
-    args: ['--window-size=1500,1000'],
-  };
+  const windowSize = env.CABINET_VERIFY_WINDOW_SIZE || (demo ? '1100,750' : '1500,1000');
+  const args = [`--window-size=${windowSize}`];
+  if (demo) {
+    const windowPos = env.CABINET_VERIFY_WINDOW_POSITION || '0,0';
+    args.push(`--window-position=${windowPos}`);
+  }
+
+  return { headless, slowMo, args };
 }

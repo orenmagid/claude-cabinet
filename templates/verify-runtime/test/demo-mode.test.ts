@@ -19,10 +19,12 @@ describe('isDemoMode', () => {
 });
 
 describe('resolveLaunchOptions', () => {
-  it('DEMO=1 defaults slowMo to 1000 when SLOW_MO unset', () => {
+  it('DEMO=1 defaults slowMo to 1000, smaller window, positioned top-left', () => {
     const opts = resolveLaunchOptions({ CABINET_VERIFY_DEMO: '1' });
     assert.equal(opts.slowMo, 1000);
     assert.equal(opts.headless, false);
+    assert.ok(opts.args.includes('--window-size=1100,750'));
+    assert.ok(opts.args.includes('--window-position=0,0'));
   });
 
   it('DEMO=1 respects explicit SLOW_MO=250', () => {
