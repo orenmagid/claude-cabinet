@@ -153,6 +153,16 @@ Unschedulable (no surface area):
 
 **Wait for explicit user approval before executing.**
 
+> **Trade-off — no cabinet checkpoints in parallel execution.** Worktree
+> agents implement and validate, but they do NOT run the cabinet
+> checkpoint reviews that `/execute` performs (a worktree agent cannot
+> spawn the reviewer sub-agents, so those reviews are skipped here). This
+> means no per-member review of security, data-integrity, or boundary
+> concerns before the change merges. For plans touching shared,
+> security-sensitive, or hard-to-revert files, run `/execute <plan>`
+> individually to get the full checkpoint protocol — otherwise you're
+> accepting the parallel-speed / no-review trade explicitly.
+
 ### 5. Execute Each Group
 
 For each group, in order:
@@ -160,8 +170,13 @@ For each group, in order:
 #### a. Spawn Worktree Agents
 For each plan in the group, use the Agent tool with `isolation: "worktree"`:
 - Prompt: the action's full notes (the plan IS the prompt)
-- Include: "Use the /execute skill's checkpoint protocol for implementation.
-  After completing the implementation, run /validate"
+- Include: "Implement the plan, then run /validate. Verify the plan's
+  [auto] acceptance criteria before committing."
+
+Worktree agents implement and validate only — they cannot run cabinet
+checkpoints, because a worktree agent cannot spawn the reviewer
+sub-agents `/execute` relies on. The reviews `/execute` would perform do
+not happen in this path (the user was warned of this trade-off at Step 4).
 
 #### b. Wait for Completion
 All agents in the group run concurrently. Wait for all to finish.
