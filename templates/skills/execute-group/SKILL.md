@@ -147,6 +147,28 @@ If the workflow halted early (a checkpoint returned `stop`, or integration
 failed), report exactly where and why. Nothing was merged on a pre-merge
 halt; on a post-merge CP3 stop, the offending plan was reverted.
 
+#### Recovery steps for parked/failed plans
+
+After a mixed result, present explicit next steps for each status:
+
+- **Merged** — done. No action needed.
+- **Parked** (a merge was reverted after CP3 rejection, or /validate failed
+  post-merge) — the worktree branch is preserved. To retry this plan
+  individually with full cabinet checkpoints (including the per-file-group
+  CP2 that the group path skips), **strip its `grp:` tags first** and then
+  run `/execute <plan>`. If you don't strip the tags, the completion gate
+  will block because the Completion Report shows this plan as "parked," not
+  "merged." Strip with: `pib_update_action --tags "<non-grp-tags-only>"`.
+- **Failed implementation** — the worktree agent could not complete the
+  plan. Investigate the `deviations` in the report, fix the plan, then
+  strip the `grp:` tags and run `/execute <plan>` individually.
+- **No result** — the worktree agent errored entirely. Same recovery:
+  strip tags, retry via `/execute`.
+
+Re-running `/generate-plan-groups` automatically replaces stale `grp:` tags
+on any plans it re-groups — but only for plans it selects. Plans you retry
+individually should have their tags stripped before running `/execute`.
+
 ## Principles
 
 - **The group is a hint, not a contract.** Always re-validate (Step 1)
