@@ -112,10 +112,13 @@
 
 ## What's Active
 
-- Published at v0.29.13 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
+- Published at v0.29.14 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
 - Debrief routing discipline: `record-lessons.md` is now an instruction phase shipping to all consumers — teaches a decision tree for routing session outputs (built-in memory via `/cc-remember` for decisions/lessons/preferences, CLAUDE.md/briefing for load-bearing project facts, pib-db deferred triggers for conditional revisits, upstream-feedback for CC friction) and explicitly calls out the `feedback-project-*.md` anti-pattern (observed rot rate 4/5 within 7 days). Four instruction phases total: audit-pattern-capture, methodology-capture, record-lessons, upstream-feedback.
 - Orient feedback pipeline hardened: flush does skip-if-exists against feedback/ and feedback/resolved/, atomic outbox reset on clean pass; wrong-write scan excludes `feedback-project-*.md` and `scope: project-specific` files.
-- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.29.13
+- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.29.14
+- Verify module: `/verify run` owns full lifecycle (timestamps, result capture, cleanup offer, env-var injection for demo mode). Demo mode: composable flags (DEMO/PAUSE_ON_FAIL/NARRATE/TRACE), file-based IPC for human verdicts in non-TTY mode, JSONL progress streaming via Monitor, Playwright trace recording. Runtime at cabinet-verify@0.2.3.
+- Site-audit module: 14 checks (was 15 — blacklight removed, testssl replaced with ssl-checker). Comparison report UX redesign: executive summary, side-by-side cards with hostname labels, per-check `whyItMatters` explanations, Core Web Vitals, element selectors, WCAG rule codes. `site-audit-setup.js` now extracts tarball + installs deps + Puppeteer Chrome + chromedriver + Observatory data files. Runtime at @claude-cabinet/site-audit@0.1.12.
+- `/spring-clean` skill: work-tracker backlog hygiene with organized-mind assessment, 7 locked categories, defer affordance. Wired into work-tracking module with orient heuristic.
 - MCP-first protocol: all pib-db-touching skills prefer pib_* MCP tools with CLI fallback
 - anthropic-insider has verification mandate (verify platform features before recommending)
 - organized-mind scoped to human cognition (cognitive load ≠ AI load)
