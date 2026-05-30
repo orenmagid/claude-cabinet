@@ -46,6 +46,15 @@ for Claude Code projects. Small codebase: 12 files in `lib/`, templates in
   for the deliberative audit workflow
 - `templates/workflows/deliberative-audit.js` — dynamic workflow script:
   four-stage audit (Review → Critique → Rebuttal → Synthesize)
+- `templates/workflows/execute-group.js` — workflow orchestrator for
+  `/execute-group`: cabinet CP1 → parallel worktree agents → sequential
+  merge with per-plan CP3 → integration → group CP3 → Completion Report
+- `templates/cabinet/checkpoint-protocol.md` — shared checkpoint mechanism
+  (CP1/CP3) read by both `/execute` and `/execute-group`
+- `templates/skills/generate-plan-groups/` — generator skill: groups
+  `grp:`-tagged plans for parallel execution (no execution, generator only)
+- `templates/skills/execute-group/` — execution skill: runs one parallel
+  plan group end-to-end via the execute-group.js workflow
 - `templates/briefing/` — project briefing templates
 - `.ccrc.json` — installation metadata and manifest (generated, gitignored)
 
@@ -59,6 +68,7 @@ for Claude Code projects. Small codebase: 12 files in `lib/`, templates in
   Tools/model derived from skill frontmatter. Unconditional (not audit-gated).
   Directory reconciled on each install (orphaned wrappers deleted).
 - `.claude/workflows/deliberative-audit.js` — copied from template
+- `.claude/workflows/execute-group.js` — copied from template
 
 ## Modules
 
@@ -92,6 +102,17 @@ flags unindexed writes. This replaced the retired omega-memory engine
 (Python venv) from the v0.27 wind-down. The CLI still ships one-time
 migration tooling (`--migrate-memory`) for projects upgrading off omega
 — see `MIGRATION-0.27.md`.
+
+The **planning** module (v0.31.0+) ships `/generate-plan-groups` and
+`/execute-group`. `/generate-plan-groups` reads `grp:`-tagged plans from
+pib-db and groups them for parallel execution (generator only — no
+execution). `/execute-group` runs one group end-to-end via the
+`execute-group.js` Workflow orchestrator: cabinet CP1 review → parallel
+worktree implementation agents → sequential merge with per-plan CP3 →
+integration → group CP3 → Completion Report. The Completion Report is a
+hard gate: grp:-tagged plans require it before the completion hook fires.
+`checkpoint-protocol.md` is the shared contract between `/execute` and
+`/execute-group`.
 
 ## Conventions
 
