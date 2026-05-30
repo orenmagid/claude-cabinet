@@ -98,6 +98,43 @@ orphan memory files not indexed in MEMORY.md, broken references to
 files that don't exist, and oversized topic-style files (>50KB).
 Skips silently if the project has no memory directory yet.
 
+### checkpoint-protocol-reference
+
+```bash
+proto="templates/cabinet/checkpoint-protocol.md"
+[ -f ".claude/cabinet/checkpoint-protocol.md" ] && proto=".claude/cabinet/checkpoint-protocol.md"
+[ -f "$proto" ] || { echo "checkpoint-protocol.md not present — skipping"; exit 0; }
+
+errors=0
+for name in execute execute-group; do
+  f="templates/skills/$name/SKILL.md"
+  [ -f "$f" ] || f=".claude/skills/$name/SKILL.md"
+  [ -f "$f" ] || continue
+  # Require BOTH the filename and the imperative read-phrase. Checking
+  # only the filename would let a re-inline that keeps a stray
+  # "see checkpoint-protocol.md" comment pass while dropping the actual
+  # read-instruction — that is still drift.
+  if ! grep -q "checkpoint-protocol.md" "$f" || ! grep -q "follow it, scoped to" "$f"; then
+    echo "WARN: $name/SKILL.md no longer reads cabinet/checkpoint-protocol.md (missing filename or 'follow it, scoped to' instruction)"
+    errors=$((errors + 1))
+  fi
+done
+
+if [ "$errors" -gt 0 ]; then
+  echo "$errors skill(s) dropped the checkpoint-protocol read-instruction."
+  echo "Cabinet checkpoints rely on it — re-add the 'Read checkpoint-protocol.md and follow it, scoped to ...' step."
+  exit 1
+fi
+echo "Checkpoint-protocol references intact."
+```
+
+Catches drift-by-deletion: `/execute` and `/execute-group` must each
+read `cabinet/checkpoint-protocol.md` rather than inline (and silently
+diverge from) the checkpoint mechanism. If a skill stops referencing the
+protocol, its checkpoints have either been re-inlined or dropped — both
+are drift. Skips silently if the protocol file isn't present (e.g., a
+project that hasn't adopted the split yet).
+
 ## Example Validators (commented — enable for your project)
 
 <!--

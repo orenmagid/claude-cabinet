@@ -10,6 +10,9 @@ related:
   - type: skill
     name: validate
   - type: file
+    path: .claude/cabinet/checkpoint-protocol.md
+    role: "The cabinet checkpoint mechanism — read and followed at Checkpoints 1/2/3"
+  - type: file
     path: .claude/skills/execute/phases/load-plan.md
     role: "Project-specific: where plans live and how to read them"
   - type: file
@@ -162,31 +165,14 @@ If no cabinet members exist in the project, skip all checkpoint steps
 (3, 4b, 5) and execute the plan directly. Checkpoints add depth, not
 structure.
 
-### 3. Checkpoint 1: Pre-Implementation Review (Parallel Agents)
+### 3. Checkpoint 1: Pre-Implementation Review
 
-Before writing any code, **spawn one Agent per activated cabinet member**
-in a single message. Each receives:
-- The cabinet member's full SKILL.md content
-- Essential project briefing from `.claude/cabinet/_briefing.md`
-- The plan text and list of files that will change
-- Instructions to evaluate whether the plan is safe to start
-
-Each agent returns:
-```json
-{
-  "cabinet_member": "name",
-  "verdict": "continue" | "pause" | "stop",
-  "concerns": [
-    { "description": "...", "evidence": "...", "severity": "blocking" | "advisory" }
-  ]
-}
-```
-
-**Collect all verdicts.** Apply escalation:
-- Any **stop** → halt, show concern, require explicit override from user
-- Any **pause** → show concern with options: proceed / address / abort
-- 3+ **pause** → escalate to stop-equivalent
-- All **continue** → proceed with brief summary
+Before writing any code, **read `.claude/cabinet/checkpoint-protocol.md`
+and follow it, scoped to `pre-impl`.** The protocol covers which members
+to spawn, what each receives, the verdict shape, and the escalation
+rules. The reviewed material at this scope is the plan text and the list
+of files that will change — the question each member answers is "is this
+plan safe to start?"
 
 ### 4. Implement (File Group by File Group)
 
@@ -206,22 +192,23 @@ For each group:
      versions — prop APIs change between major versions and guessing
      wastes build cycles.
 3. **Checkpoint 2: File Group Review** — if cabinet members are active,
-   spawn agents for ONLY cabinet members matching the changed files. Each
-   receives the git diff for this file group + plan context. Same
-   escalation rules as Checkpoint 1.
+   **read `.claude/cabinet/checkpoint-protocol.md` and follow it, scoped
+   to `this file group`.** The reviewed material is the git diff for this
+   file group plus plan context; member selection narrows to those
+   matching the changed files.
 4. If all continue, move to the next group
 
 File-group granularity keeps reviews focused. A cabinet member reviewing
 3 changed files gives better feedback than one reviewing 30.
 
-### 5. Checkpoint 3: Pre-Commit Sweep (Parallel Agents)
+### 5. Checkpoint 3: Pre-Commit Sweep
 
-After all implementation is complete, **spawn one Agent per activated
-cabinet member** in a single message. Each receives the full git diff of
-all changes + plan context.
-
-Earlier "continue" concerns are re-checked — a concern that was minor
-in isolation may be significant in the aggregate.
+After all implementation is complete, **read
+`.claude/cabinet/checkpoint-protocol.md` and follow it, scoped to
+`pre-commit`.** The reviewed material is the full git diff of all changes
+plus plan context. As the protocol notes for this scope, earlier
+"continue" concerns are re-checked — a concern that was minor in
+isolation may be significant in the aggregate.
 
 ### 6. Validate and Commit
 
@@ -334,18 +321,15 @@ doesn't define. Execute them at their declared position.
 
 ## Principles
 
-- **Cabinet members are guardrails, not gates.** The user always has the
-  final say. Stop verdicts require explicit override, not automatic
-  rejection.
-- **Err toward inclusion** when selecting cabinet members. Better to have
-  a cabinet member say "looks fine" than to miss a concern.
-- **File-group granularity** keeps checkpoint reviews focused. A
-  cabinet member reviewing 3 changed files gives better feedback than one
-  reviewing 30.
-- **The pre-commit sweep catches emergent issues.** Individual file
-  groups may look fine but create problems in combination (type
-  mismatches across boundaries, security gaps from API + frontend
-  changes together).
+The principles governing the checkpoints themselves — guardrails not
+gates, err toward inclusion, tight scoping, the pre-commit sweep — live
+in `.claude/cabinet/checkpoint-protocol.md` (the single source of truth
+the checkpoints read). The principle specific to `/execute`:
+
+- **Verify every acceptance criterion before marking work done.** The
+  checkpoints catch design and review issues; the QA gate (Step 7)
+  catches "looks complete but the AC was never actually run." Neither
+  substitutes for the other.
 
 ## Calibration
 
