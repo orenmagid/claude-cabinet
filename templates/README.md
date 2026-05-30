@@ -27,7 +27,7 @@ templates, see [EXTENSIONS.md](EXTENSIONS.md).
 | `rules/enforcement-pipeline.md` | Generic enforcement pipeline: capture, classify, promote, encode, monitor. Describes the compliance stack and promotion criteria. |
 | `rules/memory-capture.md` | When and how to capture memories via /cc-remember to the per-file curated layout at ~/.claude/projects/<slug>/memory/. What to capture, what not to, cadence guidance. |
 
-### Skills (22 workflow + 31 cabinet members)
+### Skills (24 workflow + 31 cabinet members)
 
 **Workflow Skills:**
 
@@ -39,7 +39,8 @@ templates, see [EXTENSIONS.md](EXTENSIONS.md).
 | `skills/debrief/` | Session close. Inventory work, close items, run cabinet consultations, update state, persist, record lessons. 9 phase files. |
 | `skills/debrief-quick/` | Quick debrief variant — core phases only, skip presentation. |
 | `skills/execute/` | Execute a plan with cabinet member checkpoints. 3-checkpoint protocol (pre-implementation, per-file-group, pre-commit). 5 phase files. |
-| `skills/execute-plans/` | Batch execution of multiple plans with conflict detection. |
+| `skills/generate-plan-groups/` | Scheduler: find plans with surface-area declarations, build a conflict graph, persist conflict-free parallel groups as pib-db `grp:` tags. Does not execute — hands each group to /execute-group. |
+| `skills/execute-group/` | Runner: execute one generated group via the `execute-group.js` workflow — cabinet pre-review, parallel worktree implementation, sequential merge with per-plan review, integration, informed final review, completion report. |
 | `skills/cc-extract/` | Analyze project artifacts and propose upstream extraction candidates for Claude Cabinet. |
 | `skills/investigate/` | Structured codebase exploration: frame, observe, hypothesize, test, conclude. |
 | `skills/cc-link/` | Set up local development linking for Claude Cabinet source repo work. |
@@ -103,6 +104,7 @@ mandates and scoped directives.
 | `cabinet/eval-protocol.md` | Structured assessment framework for evaluating skill/cabinet member effectiveness. |
 | `cabinet/lifecycle.md` | When to adopt, retire, and assess cabinet members. |
 | `cabinet/output-contract.md` | How cabinet members produce structured findings for the audit system. |
+| `cabinet/checkpoint-protocol.md` | The cabinet checkpoint mechanism (member selection, verdict schema, escalation) shared by /execute and /execute-group — read, not copied, so both stay in sync. |
 | `cabinet/prompt-guide.md` | Craft knowledge for writing cabinet member prompts. 17 principles. |
 
 ### Scripts (12)

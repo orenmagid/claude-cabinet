@@ -36,8 +36,8 @@ spawn sub-agents (no Agent-tool access — empirically verified). So a worktree
 agent cannot run its own cabinet checkpoints. The workflow script solves this
 by being the single orchestrator: it spawns worktree agents for
 implementation AND cabinet agents for review as first-class parallel
-participants. This is the capability the old all-in-one `/execute-plans`
-could not provide.
+participants. This is the capability the old all-in-one parallel-execution
+skill could not provide.
 
 ## Prerequisites
 

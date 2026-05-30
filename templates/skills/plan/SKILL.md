@@ -151,7 +151,8 @@ re-exploring.
 
 ## Surface Area
 Every file that will be created or modified. This enables conflict
-detection if multiple plans are executed in parallel.
+detection when `/generate-plan-groups` schedules independent plans into
+conflict-free parallel groups and `/execute-group` runs them.
 - files: path/to/file1.ext
 - files: path/to/file2.ext (new)
 
