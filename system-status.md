@@ -113,10 +113,11 @@
 
 ## What's Active
 
-- Published at v0.29.14 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
+- Published at v0.30.0 on npm as `create-claude-cabinet`. Omega wind-down (prj:efd10e1d) is Phase 8 complete: all 7 registered consumers migrated off omega to built-in memory (0 failures).
 - Debrief routing discipline: `record-lessons.md` is now an instruction phase shipping to all consumers — teaches a decision tree for routing session outputs (built-in memory via `/cc-remember` for decisions/lessons/preferences, CLAUDE.md/briefing for load-bearing project facts, pib-db deferred triggers for conditional revisits, upstream-feedback for CC friction) and explicitly calls out the `feedback-project-*.md` anti-pattern (observed rot rate 4/5 within 7 days). Four instruction phases total: audit-pattern-capture, methodology-capture, record-lessons, upstream-feedback.
 - Orient feedback pipeline hardened: flush does skip-if-exists against feedback/ and feedback/resolved/, atomic outbox reset on clean pass; wrong-write scan excludes `feedback-project-*.md` and `scope: project-specific` files.
-- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.29.14
+- Seven registered downstream consumers (cc-registry): flow, article-rewriter, theater-cheater, claudeconsult-maginnis, sydney-graduation, go-duck-yourself, CC dogfood — all migrated off omega to built-in memory and upgraded to v0.30.0
+- Handoff module (prj:1a04ebd8, done): 12th module shipped in v0.30.0. Skill-based secure credential handoff — RSA-OAEP + AES-GCM, single-subprocess capture-and-encrypt, provider-agnostic email transport, 6 skills, auto-deploy to client plugin. Three rounds of QA, 16 issues caught and fixed. End-to-end test pending in claudeconsult-maginnis.
 - Verify module: `/verify run` owns full lifecycle (timestamps, result capture, cleanup offer, env-var injection for demo mode). Demo mode: composable flags (DEMO/PAUSE_ON_FAIL/NARRATE/TRACE), file-based IPC for human verdicts in non-TTY mode, JSONL progress streaming via Monitor, Playwright trace recording. Runtime at cabinet-verify@0.2.3.
 - Site-audit module: 14 checks (was 15 — blacklight removed, testssl replaced with ssl-checker). Comparison report UX redesign: executive summary, side-by-side cards with hostname labels, per-check `whyItMatters` explanations, Core Web Vitals, element selectors, WCAG rule codes. `site-audit-setup.js` now extracts tarball + installs deps + Puppeteer Chrome + chromedriver + Observatory data files. Runtime at @claude-cabinet/site-audit@0.1.12.
 - `/spring-clean` skill: work-tracker backlog hygiene with organized-mind assessment, 7 locked categories, defer affordance. Wired into work-tracking module with orient heuristic.
@@ -141,4 +142,4 @@
 Planned work is tracked in pib-db (`./pib.db`). Query with
 `node scripts/pib-db.mjs list-projects` and `node scripts/pib-db.mjs list-actions`.
 
-- Skill-based Handoff module (prj:1a04ebd8, act:417bc7b1): 6 skills for structured consultant-client collaboration (capture-and-encrypt, bidirectional email sync, three-layer CC → consultant → client plugin architecture). Plan at `.claude/plans/handoff-skill-based.md`. Supersedes the deferred standalone Rails approach (prj:e104930c → someday).
+- Handoff module shipped in v0.30.0 (prj:1a04ebd8 done). See What's Active above.
