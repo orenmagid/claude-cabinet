@@ -452,6 +452,23 @@ const report = {
   loose_ends: looseEnds,
 }
 
+// Persist the report to disk BEFORE any pib_complete_action calls. The
+// action-completion-gate.sh reads this file; if it doesn't exist, the gate
+// permanently blocks grp:-tagged plans. The workflow has no fs access, so
+// this must happen inside an agent. Order: write report → then mark done.
+await agent(
+  [
+    `Write the following JSON to .claude/verification/group-${args.label}-report.json (create the directory if needed):`,
+    ``,
+    '```json',
+    JSON.stringify(report, null, 2),
+    '```',
+    ``,
+    `Then confirm: report written.`,
+  ].join('\n'),
+  { label: 'persist-report', phase: 'Completion' }
+)
+
 log(`Group "${args.label}" done: ${report.plans_executed} merged. ${looseEnds.length} loose end(s).`)
 return report
 

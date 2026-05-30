@@ -95,9 +95,10 @@ try:
     me = next((p for p in pp if isinstance(p, dict) and p.get('fid') == '$FID'), None)
     cks = d.get('checkpoints', {}) or {}
     integ = cks.get('integration', {}) or {}
+    cp3g = cks.get('cp3_group', '')
     if me is None: print('NOT_IN_REPORT')
     elif me.get('status') != 'merged': print('plan-status=' + str(me.get('status')))
-    elif cks.get('cp3_group') != 'continue': print('cp3_group=' + str(cks.get('cp3_group')))
+    elif cp3g not in ('continue', 'skipped', 'n/a'): print('cp3_group=' + str(cp3g))
     elif integ.get('validate') != 'pass': print('integration.validate=' + str(integ.get('validate')))
     elif integ.get('breadcrumbs') != 'valid': print('integration.breadcrumbs=' + str(integ.get('breadcrumbs')))
     else: print('OK')

@@ -160,6 +160,26 @@ test('malformed report (per_plan not a list) → block, REPORT_UNREADABLE', () =
   } finally { cleanup(tmp); }
 });
 
+test('grp plan: cp3_group=skipped (single-plan group) → allow', () => {
+  const tmp = makeTmp();
+  try {
+    setupDb(tmp, [['act:g', 'grp:demo-1']]);
+    breadcrumb(tmp, 'act:g');
+    report(tmp, 'demo-1', { fid: 'act:g', cp3: 'skipped' });
+    assert.strictEqual(isBlock(runGate(tmp, 'act:g')), false);
+  } finally { cleanup(tmp); }
+});
+
+test('grp plan: cp3_group=n/a (0-merged group) → allow', () => {
+  const tmp = makeTmp();
+  try {
+    setupDb(tmp, [['act:g', 'grp:demo-1']]);
+    breadcrumb(tmp, 'act:g');
+    report(tmp, 'demo-1', { fid: 'act:g', cp3: 'n/a' });
+    assert.strictEqual(isBlock(runGate(tmp, 'act:g')), false);
+  } finally { cleanup(tmp); }
+});
+
 test('plain (non-grp) plan with valid breadcrumb → allow, gate skipped', () => {
   const tmp = makeTmp();
   try {
