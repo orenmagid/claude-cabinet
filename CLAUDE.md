@@ -37,6 +37,10 @@ for Claude Code projects. Small codebase: 12 files in `lib/`, templates in
   packed by `lib/site-audit-setup.js`)
 - `templates/skills/cc-site-audit/` — /cc-site-audit skill definition +
   install.sh + phase seams
+- `templates/skills/handoff*/` — 6 handoff skill definitions (client +
+  consultant sides)
+- `templates/handoff/` — handoff infrastructure: crypto, transport,
+  schema engine, secure input, key generation
 - `templates/cabinet/` — cabinet infrastructure (committees, lifecycle, etc.)
 - `templates/cabinet/critique-contract.md` — Stage-2 critic output format
   for the deliberative audit workflow
@@ -67,8 +71,12 @@ for Claude Code projects. Small codebase: 12 files in `lib/`, templates in
 - **site-audit** (opt-in, off by default): 15-check deployed-site quality
   audit. Runtime at `~/.claude-cabinet/site-audit/<version>/`. /cc-site-audit
   skill + comparison mode + standalone HTML report.
+- **handoff** (opt-in, off by default): Secure credential handoff for
+  consulting engagements. RSA-OAEP + AES-GCM encryption via OS dialog,
+  provider-agnostic email transport (Gmail/Outlook/file fallback), 6
+  skills across consultant and client sides.
 
-Eleven modules total. The **audit** module includes a deliberative workflow
+Twelve modules total. The **audit** module includes a deliberative workflow
 (`deliberative-audit.js`) that runs audits in two stages: Stage-1 members
 investigate, Stage-2 critics annotate findings (challenge/support/context/
 correction). Optional Stage-3 rebuttal lets challenged members respond.

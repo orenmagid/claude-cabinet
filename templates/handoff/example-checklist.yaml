@@ -1,0 +1,81 @@
+# Example handoff checklist — customize for your engagement.
+# See schema.md for the full format reference.
+
+meta:
+  title: "Project Go-Live Credentials"
+  consultant: "Your Name"
+  public_key: "./keys/consultant.pub.jwk"
+
+transport:
+  type: email
+  consultant: "consultant@example.com"
+  client: "client@example.com"
+
+sections:
+  - key: hosting
+    title: "Hosting Setup"
+    items:
+      - key: hosting_provider
+        prompt: "Which hosting provider are you using?"
+        kind: decide
+        options: [Railway, Vercel, Fly.io, Other]
+
+      - key: railway_token
+        prompt: "Your Railway API token"
+        kind: credential
+        help: "Find this at railway.app → Account Settings → Tokens"
+        visibility:
+          depends_on: hosting_provider
+          value_in: [Railway]
+
+      - key: vercel_token
+        prompt: "Your Vercel access token"
+        kind: credential
+        help: "Find this at vercel.com → Settings → Tokens"
+        visibility:
+          depends_on: hosting_provider
+          value_in: [Vercel]
+
+  - key: email_service
+    title: "Email Service"
+    items:
+      - key: email_provider
+        prompt: "Which email service are you using?"
+        kind: decide
+        options: [Postmark, SendGrid, Resend, None]
+
+      - key: postmark_token
+        prompt: "Your Postmark server API token"
+        kind: credential
+        help: "Find this in your Postmark server → API Tokens tab"
+        visibility:
+          depends_on: email_provider
+          value_in: [Postmark]
+
+      - key: sendgrid_key
+        prompt: "Your SendGrid API key"
+        kind: credential
+        visibility:
+          depends_on: email_provider
+          value_in: [SendGrid]
+
+      - key: resend_key
+        prompt: "Your Resend API key"
+        kind: credential
+        help: "Find this at resend.com → API Keys"
+        visibility:
+          depends_on: email_provider
+          value_in: [Resend]
+
+  - key: domain
+    title: "Domain & DNS"
+    items:
+      - key: domain_name
+        prompt: "What domain will this project use?"
+        kind: provide
+        help: "e.g., example.com or app.example.com"
+
+      - key: dns_access
+        prompt: "Do you have access to your domain's DNS settings?"
+        kind: confirm
+        help: "We'll need to add records for the hosting provider and email service."

@@ -348,3 +348,24 @@ field-feedback. The CC maintainer adds it to this section. Project-specific
 patterns that don't generalize stay in `patterns-project.md`.
 
 <!-- Universal patterns below this line -->
+
+### Collapse with `in={true}` on mount renders invisible children
+
+**Pattern:** `<Collapse in={expr}>` where `expr` is truthy on initial
+render. Children exist in the DOM but have height 0 — completely
+invisible. Mantine's Collapse animates from closed→open, so mounting
+already-open skips the animation and the height never resolves.
+
+**Detection:** Flag any `<Collapse in={...}>` where the `in` prop can
+be truthy on first render — e.g., `in={data.length > 0}`, `in={true}`,
+`in={!!initialValue}`. Static `in={false}` or state that starts false
+(`useState(false)`) is safe.
+
+**Fix:** Replace `<Collapse in={opened}>...</Collapse>` with conditional
+rendering: `{opened && <>...</>}`. Use Collapse only when you need the
+open/close animation from a user interaction, not for initial-render
+conditional display.
+
+**Source:** claudeconsult-maginnis, 2026-05-30. Legal theory edit form's
+"Default Content" section auto-expanded when data existed but all fields
+were invisible. Required Playwright DOM inspection to diagnose.
