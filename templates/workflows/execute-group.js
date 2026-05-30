@@ -16,6 +16,9 @@ export const meta = {
 // merge, /validate, breadcrumb writes, pib-db mutations) happens inside an
 // agent() call. This script is pure orchestration.
 
+// The Workflow tool may deliver args as a JSON string — parse if needed.
+const a = typeof args === 'string' ? JSON.parse(args) : (args || {})
+
 // --- Schemas ---
 
 const VERDICT_SCHEMA = {
@@ -99,9 +102,9 @@ function reviewScope({ members, scopeLabel, scopeInstruction, phaseTitle }) {
     agent(
       [
         `You are the cabinet member "${m.key}" performing a checkpoint review.`,
-        `Read the checkpoint protocol and follow it: ${args.checkpointProtocolPath}`,
+        `Read the checkpoint protocol and follow it: ${a.checkpointProtocolPath}`,
         `Read your own expertise/profile: ${m.path}`,
-        args.briefingPath ? `Read the project briefing: ${args.briefingPath}` : '',
+        a.briefingPath ? `Read the project briefing: ${a.briefingPath}` : '',
         m.directive ? `Your execute directive: ${m.directive}` : '',
         ``,
         `Checkpoint scope: ${scopeLabel}.`,
@@ -117,13 +120,13 @@ function reviewScope({ members, scopeLabel, scopeInstruction, phaseTitle }) {
 
 // --- Preconditions ---
 
-const plans = (args.plans || []).filter(Boolean)
-const members = args.cabinetMembers || []
+const plans = (a.plans || []).filter(Boolean)
+const members = a.cabinetMembers || []
 const isGroup = plans.length > 1
 
 if (plans.length === 0) {
   // 0-plan group (e.g. every plan drifted out during the staleness guard).
-  log(`Group "${args.label}" has 0 runnable plans — skipped. Re-run /generate-plan-groups.`)
+  log(`Group "${a.label}" has 0 runnable plans — skipped. Re-run /generate-plan-groups.`)
   return {
     plans_executed: '0 of 0',
     per_plan: [],
@@ -132,7 +135,7 @@ if (plans.length === 0) {
   }
 }
 
-log(`Executing group "${args.label}": ${plans.length} plan(s), ${members.length} cabinet member(s)`)
+log(`Executing group "${a.label}": ${plans.length} plan(s), ${members.length} cabinet member(s)`)
 
 // === Phase: CP1 — Pre-Implementation Review ===
 phase('CP1')
@@ -301,7 +304,7 @@ phase('Integration')
 
 const integration = await agent(
   [
-    `Final integration check for plan group "${args.label}" after ${merged.length} merge(s).`,
+    `Final integration check for plan group "${a.label}" after ${merged.length} merge(s).`,
     `Perform and report:`,
     `1. Run a full /validate on main. Report pass/fail.`,
     `2. Breadcrumb audit: for each of these merged plans, confirm`,
@@ -332,7 +335,7 @@ phase('GroupCP3')
 let groupCp3 = { verdict: 'skipped' }
 if (members.length > 0 && isGroup && merged.length > 0) {
   const qaPicture = [
-    `Group: ${args.label}`,
+    `Group: ${a.label}`,
     `Merged: ${merged.map(o => o.fid).join(', ')}`,
     `Validate: ${integration.validate}; Breadcrumbs: ${integration.breadcrumbs}`,
     `Per-plan CP3 verdicts: ${JSON.stringify(cp3PerPlan)}`,
@@ -374,7 +377,7 @@ if (completionBlocked) {
 // MCP/CLI calls and reports what it created/completed.
 completion = await agent(
   [
-    `Close out plan group "${args.label}".`,
+    `Close out plan group "${a.label}".`,
     `For each merged plan with manual ACs that were deferred, create one pib-db`,
     `action per unverified manual AC (so they are trackable work, not lost).`,
     `Then mark each successfully-merged-and-reviewed plan done via pib_complete_action.`,
@@ -458,7 +461,7 @@ const report = {
 // this must happen inside an agent. Order: write report → then mark done.
 await agent(
   [
-    `Write the following JSON to .claude/verification/group-${args.label}-report.json (create the directory if needed):`,
+    `Write the following JSON to .claude/verification/group-${a.label}-report.json (create the directory if needed):`,
     ``,
     '```json',
     JSON.stringify(report, null, 2),
@@ -469,7 +472,7 @@ await agent(
   { label: 'persist-report', phase: 'Completion' }
 )
 
-log(`Group "${args.label}" done: ${report.plans_executed} merged. ${looseEnds.length} loose end(s).`)
+log(`Group "${a.label}" done: ${report.plans_executed} merged. ${looseEnds.length} loose end(s).`)
 return report
 
 // --- helpers ---
