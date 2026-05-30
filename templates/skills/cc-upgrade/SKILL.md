@@ -269,6 +269,20 @@ and correct path.
 `~/.claude-cabinet/omega-venv/` exists OR `~/.claude/settings.json`
 contains `omega-venv`, run `phases/omega-migration-detect.md`.
 
+### 2.6. Directory Rename Cleanup
+
+**Not version-gated — runs on any upgrade, keyed on disk presence.** When
+CC renames a skill directory, the installer re-keys the manifest but
+leaves the old directory on disk (the cleanup loop classifies it as a
+non-template file and keeps it). These phases detect and remove such
+orphans conversationally:
+
+- **`execute-plans/` → `generate-plan-groups/` + `execute-group/`:** if
+  `.claude/skills/execute-plans/` exists, run
+  `phases/execute-plans-rename-detect.md`.
+
+If the orphan directory isn't present, the phase skips silently.
+
 ### 3. Explain What Changed
 
 Read `phases/explain-changes.md` for how to present changes.

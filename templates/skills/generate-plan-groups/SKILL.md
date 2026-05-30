@@ -1,34 +1,43 @@
 ---
-name: execute-plans
+name: generate-plan-groups
 description: |
-  Find open plans with surface area declarations, build conflict graph, execute
-  non-conflicting plans in parallel via worktree agents. Use when: "execute plans",
-  "run plans", "what can we build in parallel", "/execute-plans".
+  Find open plans with surface-area declarations, build a conflict graph,
+  and persist conflict-free parallel execution groups as pib-db tags. Does
+  NOT execute — hand each group to /execute-group. Use when: "generate plan
+  groups", "what can we build in parallel", "group plans for execution",
+  "/generate-plan-groups".
 disable-model-invocation: true
 related:
   - type: skill
     name: plan
   - type: skill
-    name: execute
+    name: execute-group
   - type: skill
-    name: validate
+    name: execute
   - type: script
-    path: .claude/skills/execute-plans/scripts/build-conflict-graph.js
+    path: .claude/skills/generate-plan-groups/scripts/build-conflict-graph.js
 ---
 
-# /execute-plans — Parallel Plan Execution
+# /generate-plan-groups — Parallel Execution Grouping
 
 ## Purpose
 
-Read open plans with surface area declarations, determine which can safely
-run in parallel (based on file/directory overlap), and execute them via
-worktree-isolated agents. This is the capstone planning skill — it turns
-individual plans into coordinated parallel work.
+Read open plans with surface-area declarations, determine which can safely
+run in parallel (based on file/directory overlap), and **persist the
+conflict-free groups** so `/execute-group` can run them. This skill is the
+scheduler half of the plan→parallel-execution pipeline: it decides *what
+can run together*, tags the plans, and stops.
+
+**It does NOT execute anything.** No worktrees, no merges, no cabinet
+checkpoints. Execution is a separate, deliberately-invoked step
+(`/execute-group <label>`) — splitting generation from execution is what
+lets `/execute-group` run cabinet checkpoints via a workflow orchestrator
+that the old all-in-one skill could not.
 
 This is a **skeleton skill** using the `phases/` directory pattern. The
 orchestration is generic. Your project defines specifics — where plans
-come from, which files are known conflict sources, what to do after each
-group merges — in phase files under `phases/`.
+come from, which files are known conflict sources — in phase files under
+`phases/`.
 
 ### Phase File Protocol
 
@@ -44,8 +53,8 @@ Phase files have three states:
 
 - Plans must have `## Surface Area` sections in their notes declaring
   which files and directories they touch
-- `/validate` skill must be available (used between merges)
 - Node.js available (for the conflict graph script)
+- A work tracker with a tags column (pib-db) to persist the groups
 
 ## Workflow
 
@@ -93,7 +102,7 @@ for parallel execution. Report them as "unschedulable."
 
 Run the conflict detection script:
 ```bash
-echo '$ACTIONS_JSON' | node .claude/skills/execute-plans/scripts/build-conflict-graph.js
+echo '$ACTIONS_JSON' | node .claude/skills/generate-plan-groups/scripts/build-conflict-graph.js
 ```
 
 The script:
@@ -132,16 +141,16 @@ flag plans that touch them.
 When two plans share any high-conflict file, they MUST be in different
 groups — even if the changes seem independent.
 
-### 4. Present Execution Plan
+### 4. Present the Groups
 
-Show the user:
+Show the user the computed grouping:
 
 ```
 Group 1 (can run in parallel):
   - act:abc123 "Build /validate skill" → .claude/skills/validate/
   - act:def456 "Add calendar view" → src/pages/
 
-Group 2 (after Group 1 merges):
+Group 2 (conflicts with Group 1 — run after):
   - act:ghi789 "Refactor sidebar" → src/components/
 
 Serial (conflicts with multiple groups):
@@ -151,88 +160,57 @@ Unschedulable (no surface area):
   - act:mno345 "Research caching strategies"
 ```
 
-**Wait for explicit user approval before executing.**
+**Wait for explicit user approval before persisting the groups.**
 
-> **Trade-off — no cabinet checkpoints in parallel execution.** Worktree
-> agents implement and validate, but they do NOT run the cabinet
-> checkpoint reviews that `/execute` performs (a worktree agent cannot
-> spawn the reviewer sub-agents, so those reviews are skipped here). This
-> means no per-member review of security, data-integrity, or boundary
-> concerns before the change merges. For plans touching shared,
-> security-sensitive, or hard-to-revert files, run `/execute <plan>`
-> individually to get the full checkpoint protocol — otherwise you're
-> accepting the parallel-speed / no-review trade explicitly.
+### 5. Persist the Groups (pib-db tags)
 
-### 5. Execute Each Group
+Once the user approves, tag each grouped action so `/execute-group` can
+find and re-validate it. Tags are comma-separated tokens in the action's
+`tags` column. Write three tokens per action:
 
-For each group, in order:
+- `grp:<YYYY-MM-DD-N>` — the group label (N is the group number for this
+  generation run, e.g. `grp:2026-05-30-1`). `/execute-group <label>` runs
+  one group by this label.
+- `grp-generated:<ISO-8601>` — when this grouping was computed.
+- `grp-hash:<hash>` — a short hash of the group's combined surface-area
+  declarations (concatenate every grouped action's parsed file/dir list,
+  sorted, and hash it). `/execute-group` recomputes this at run time and
+  **halts if it differs** — a drifted plan means the grouping is stale and
+  must be regenerated.
 
-#### a. Spawn Worktree Agents
-For each plan in the group, use the Agent tool with `isolation: "worktree"`:
-- Prompt: the action's full notes (the plan IS the prompt)
-- Include: "Implement the plan, then run /validate. Verify the plan's
-  [auto] acceptance criteria before committing."
-
-Worktree agents implement and validate only — they cannot run cabinet
-checkpoints, because a worktree agent cannot spawn the reviewer
-sub-agents `/execute` relies on. The reviews `/execute` would perform do
-not happen in this path (the user was warned of this trade-off at Step 4).
-
-#### b. Wait for Completion
-All agents in the group run concurrently. Wait for all to finish.
-
-#### c. Sequential Merge
-For each completed worktree (one at a time):
-1. Review the agent's changes (git diff)
-2. Merge the worktree branch into main
-3. Run `/validate` — all checks must pass
-4. If validation fails: **stop**. Report the failure. Park the branch.
-   Do not continue merging.
-
-**Verify agents returned a worktree path** before counting them as done.
-Agents can silently no-op if a plan's changes already exist on main.
-Re-run agents that return no branch.
-
-#### d. Report Results
-After each group completes:
-- Which plans succeeded
-- Which failed and why
-- What the codebase state is
-
-### 6. Post-Group Actions
-
-Read `phases/post-group.md` for what to do after each group merges.
-
-**Skip (absent/empty).** Projects with deployment pipelines, CI checks,
-or other post-merge steps define them here. Without this phase, execution
-proceeds to the next group after validation passes.
-
-### 7. Move to Next Group
-
-Only proceed to the next group after the previous group is fully merged
-and validated (and post-group actions complete, if defined).
-
-### 8. Mark Plans Complete
-
-Read `phases/completion.md` for how to mark plans as done after execution.
-
-**Default (absent/empty):** Mark completed plans via pib-db. Use
-`pib_complete_action` (or CLI fallback):
+Write the tags with `pib_update_action` (or CLI fallback):
 ```bash
-node scripts/pib-db.mjs complete-action <fid>
+node scripts/pib-db.mjs update-action <fid> --tags "grp:2026-05-30-1,grp-generated:2026-05-30T18:55:00Z,grp-hash:a1b2c3"
 ```
 
-Projects using external APIs or different work trackers define this phase.
+Preserve any existing non-`grp` tags on the action. Re-running generation
+must re-tag cleanly rather than accumulating. Do it by **token**, not by
+substring, so a tag like `regrp` or `grpx` is never clobbered:
 
-## Error Handling
+1. Read the action's current `tags`, split on `,`, trim each token.
+2. Drop only tokens whose prefix is **exactly** `grp:`, `grp-generated:`,
+   or `grp-hash:` (i.e. the token starts with that literal including the
+   colon). Keep everything else verbatim.
+3. Append the three new `grp` tokens, re-join with `,`, and write back.
 
-- **Agent fails**: Report the error, park the branch, continue with
-  other agents in the group
-- **Merge conflict**: Report the conflict, park the branch, suggest
-  manual resolution
-- **Validation fails after merge**: Revert the merge, park the branch,
-  report what broke
-- **All agents in a group fail**: Skip to next group, report failures
+**Only `grp:` groups with 2+ plans are worth persisting.** A single-plan
+"group" should just be run with `/execute <plan>` directly — say so rather
+than tagging it.
+
+### 6. Hand Off
+
+Report the persisted group labels and stop:
+
+```
+Persisted 2 parallel groups:
+  grp:2026-05-30-1 (2 plans) — run: /execute-group 2026-05-30-1
+  grp:2026-05-30-2 (3 plans) — run: /execute-group 2026-05-30-2
+
+Serial/unschedulable plans were not grouped — run those with /execute.
+```
+
+This skill ends here. `/execute-group <label>` owns worktree spawning,
+cabinet checkpoints, merging, and completion.
 
 ## Principles
 
@@ -240,18 +218,19 @@ Projects using external APIs or different work trackers define this phase.
   wrong (touches files it didn't declare), that's a plan quality issue.
   The conflict graph is only as good as the declarations.
 - **Conservative scheduling.** When in doubt, serialize. False conflicts
-  just slow things down; missed conflicts cause merge failures.
-- **User approves everything.** The execution plan, each group start,
-  and any error recovery decisions.
-- **Validate between every merge.** Never accumulate unvalidated merges.
+  just slow things down; missed conflicts cause merge failures downstream.
+- **The user approves the grouping** before it's persisted.
 - **File-level precision beats conceptual grouping.** Two plans that
   "feel independent" can still conflict if they both touch a shared
   file. The grouping algorithm works at the file level, not the feature
   level.
+- **Generation is cheap and repeatable.** The persisted group is a hint,
+  not a contract — `/execute-group` re-validates it against current
+  surface areas before running. Regenerate freely.
 
 ## Lessons Learned
 
-These lessons come from real parallel execution runs:
+These lessons come from real parallel grouping runs:
 
 1. **Shared entry points are the #1 conflict source.** Root components,
    API endpoint files, barrel index files, and shared type files are
@@ -266,23 +245,12 @@ These lessons come from real parallel execution runs:
    use different formats. The parser must be flexible — extract any
    recognizable file path, not just lines matching `- files:`.
 
-4. **Worktree agents can silently no-op.** If a plan's changes already
-   exist on main, the agent completes "successfully" but produces no
-   worktree branch. Always verify agents returned a worktree path.
-
-5. **Large-scale parallel execution works.** With accurate surface areas
-   and a correct conflict graph, 13+ parallel worktree agents can run
-   with zero merge conflicts. The file overlap matrix is the critical
-   safety check.
-
 ## Phase Summary
 
 | Phase | Absent = | What it customizes |
 |-------|----------|-------------------|
 | `fetch-plans.md` | Default: pib-db query for actions with surface areas | Where plans come from |
 | `high-conflict-files.md` | Skip | Project-specific shared entry points |
-| `post-group.md` | Skip | Post-merge actions (deploy, CI, etc.) |
-| `completion.md` | Default: pib-db complete-action | How to mark plans done |
 
 ## Extending
 
