@@ -72,6 +72,27 @@ Either way, each spawned agent receives:
   relevant git diff (`this file group`, `pre-commit`, aggregate)
 - An instruction to return the verdict object below
 
+**Plan-first review discipline (critical for `pre-impl` scope):** at
+`pre-impl` scope, the agent receives the plan's full notes. The plan IS
+the primary input — it may already address common risks (auth, validation,
+XSS, race conditions). The agent MUST:
+
+1. **Read the plan text first.** Understand what the plan says it will do
+   and what mitigations it already includes.
+2. **Only raise concerns the plan does NOT address.** If the plan says
+   "preview action lives in Admin::TargetsController with three-layered
+   auth," do not raise "needs admin auth" as a concern — the plan already
+   covers it. Explicitly acknowledge addressed concerns rather than
+   re-raising them.
+3. **Distinguish "the codebase has this risk" from "the plan doesn't
+   mitigate this risk."** A checkpoint is not a codebase audit. The
+   question is whether THIS PLAN is safe to start — not whether the
+   codebase has pre-existing issues outside the plan's scope.
+
+Without this discipline, cabinet members pattern-match against codebase
+state and raise false positives that the plan already handles, wasting
+tokens on re-runs that produce the same concerns.
+
 ## Step 3 — Collect verdicts
 
 Each agent returns exactly this shape:

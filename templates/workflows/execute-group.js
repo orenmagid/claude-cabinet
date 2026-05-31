@@ -110,7 +110,18 @@ function reviewScope({ members, scopeLabel, scopeInstruction, phaseTitle }) {
         `Checkpoint scope: ${scopeLabel}.`,
         scopeInstruction,
         ``,
-        `You have Bash/Read/Grep/Glob — inspect the actual code and diffs yourself.`,
+        `IMPORTANT — plan-first review discipline:`,
+        `1. Read the plan text FIRST. The plan may already address common risks`,
+        `   (auth, validation, XSS, race conditions, etc.).`,
+        `2. Only raise concerns the plan does NOT address. If the plan explicitly`,
+        `   says how it handles a risk, do NOT re-raise it — acknowledge it and`,
+        `   move on. "The plan already covers X" is the right response.`,
+        `3. Distinguish "the codebase has this risk" from "the plan doesn't`,
+        `   mitigate this risk." A checkpoint reviews the PLAN, not the codebase.`,
+        `   Pre-existing codebase issues outside the plan's scope are not findings.`,
+        ``,
+        `You have Bash/Read/Grep/Glob — use them to verify claims in the plan`,
+        `against the actual code, but start from the plan, not from a codebase scan.`,
         `Return a verdict object: { verdict: continue|pause|stop, concerns: [...] }.`,
       ].filter(Boolean).join('\n'),
       { agentType: m.agentType || undefined, label: `${phaseTitle}:${m.key}`, phase: phaseTitle, schema: VERDICT_SCHEMA }
@@ -145,11 +156,11 @@ const cp1 = { group: null, perPlan: [] }
 if (members.length > 0) {
   // Group-level CP1 only meaningful for 2+ plans (combination concerns).
   if (isGroup) {
-    const aggregateSurface = plans.map(p => `- ${p.fid} ${p.text}\n${p.surfaceArea || '(surface area in notes)'}`).join('\n')
+    const planSummaries = plans.map(p => `=== Plan ${p.fid}: ${p.text} ===\n${p.notes || p.surfaceArea || '(no notes)'}\n`).join('\n')
     const groupVerdicts = await reviewScope({
       members,
       scopeLabel: `group aggregate — these ${plans.length} plans will run in parallel`,
-      scopeInstruction: `Review the COMBINATION. Any concern about these plans running together (shared assumptions, ordering, cross-plan interactions)?\n\nPlans:\n${aggregateSurface}`,
+      scopeInstruction: `Review the COMBINATION of these plans running in parallel. Read each plan's full notes — they describe what will be built and how risks are mitigated. Only raise concerns about the COMBINATION that the individual plans don't address (shared assumptions, ordering dependencies, cross-plan interactions, conflicting approaches).\n\n${planSummaries}`,
       phaseTitle: 'CP1',
     })
     const e = escalate(groupVerdicts)
@@ -164,7 +175,7 @@ if (members.length > 0) {
     reviewScope({
       members,
       scopeLabel: `pre-impl review of plan ${p.fid}`,
-      scopeInstruction: `Is this plan safe to start? Review its approach and surface area.\n\nPlan ${p.fid}: ${p.text}\n\n${p.notes || p.surfaceArea || ''}`,
+      scopeInstruction: `Is this plan safe to start? Read the plan's full notes below — the plan may already address common risks. Only raise concerns it does NOT cover.\n\nPlan ${p.fid}: ${p.text}\n\n${p.notes || p.surfaceArea || ''}`,
       phaseTitle: 'CP1',
     }).then(verdicts => ({ fid: p.fid, escalation: escalate(verdicts), verdicts }))
   ))
